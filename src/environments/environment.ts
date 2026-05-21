@@ -33,7 +33,7 @@ export const environment = {
     "--app-header-background": "#ffffff",
     "--app-border-color": "#f2612a"
   },
-  url_api: "http://85.31.63.163:5120/api/v1"
+  url_api: "http://localhost:5120/api/v1"
   // url_api: "http://localhost:5100/api/v1",
   // url_api: "http://213.136.73.210:5100/api/v1"
   // url_api: "http://localhost:3333/api/v1"
