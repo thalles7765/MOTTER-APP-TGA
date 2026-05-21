@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import axios from 'axios';
+import { apiClient } from '../api/api-client';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -11,7 +11,7 @@ export class GeminiService {
 
   async getAnswer(searchvalue = '') {
     // console.log(environment.url_api)
-    return await axios
+    return await apiClient
       .post(`${environment.url_api}/dialog`, {prompt: searchvalue}, { withCredentials: true })
       .then((data) => {
         // this.ROUTES = data.data.data;

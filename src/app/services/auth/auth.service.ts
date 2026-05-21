@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
+import { BranchService } from '../branches/branch.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private _router: Router) { }
+  constructor(private _router: Router, private branchSvc: BranchService) { }
 
   async authUser(user = '', password = '') {
     // console.log(environment.url_api)
@@ -28,6 +29,9 @@ export class AuthService {
   async logoutUser() {
     // console.log(environment.url_api)
     console.log('logout');
+    await this.branchSvc.clearSelectedBranch();
+    await this.branchSvc.clearBranchPolicy();
+
     return await axios
       .post(`${environment.url_api}/auth/logout`, {}, { withCredentials: true })
       .then((data) => {

@@ -1,26 +1,33 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MenuController, AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { MenuController, AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { Router, RouterLink } from '@angular/router';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { branch } from 'src/app/interfaces/branch';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.page.html',
     styleUrls: ['./home.page.scss'],
-    imports: [IonCol, IonRow, IonGrid, IonContent, IonHeader, IonGrid, IonRow, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule]
+    imports: [IonItem, IonLabel, IonSelect, IonSelectOption, IonCol, IonRow, IonGrid, IonContent, IonHeader, IonGrid, IonRow, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule]
 })
 export class HomePage implements OnInit {
   public brand = brandConfig;
+  protected branches: branch[] = [];
+  protected selectedBranch: branch | null = null;
+  protected selectedBranchCode: number | null = null;
+  protected canSelectBranch = false;
 
-  constructor(public menuCtrl: MenuController, private alertController: AlertController, private _route: Router) {
+  constructor(public menuCtrl: MenuController, private alertController: AlertController, private _route: Router, private branchSvc: BranchService) {
     
    }
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log('teste');
     this.menuCtrl.enable(true, 'menuOpt');
+    await this.loadBranches();
   }
 
   async funcEmpty() {
@@ -48,11 +55,58 @@ export class HomePage implements OnInit {
 
 
   async navigateURL(url = '') {
+    if (!this.selectedBranch) {
+      await this.showBranchRequired();
+      return;
+    }
+
     if (url) {
       this._route.navigateByUrl(url);
     } else {
       await this.urlNotFound();
     }
+  }
+
+  async changeBranch(branchCode: number) {
+    const selectedBranch = this.branches.find((item) => item.CODFILIAL === Number(branchCode));
+
+    if (!selectedBranch) {
+      this.selectedBranch = null;
+      this.selectedBranchCode = null;
+      await this.branchSvc.clearSelectedBranch();
+      return;
+    }
+
+    await this.branchSvc.setSelectedBranch(selectedBranch);
+    this.selectedBranch = selectedBranch;
+    this.selectedBranchCode = selectedBranch.CODFILIAL;
+  }
+
+  private async loadBranches() {
+    const [branches, selectedBranch, policy] = await Promise.all([
+      this.branchSvc.getBranches(true),
+      this.branchSvc.getSelectedBranch(),
+      this.branchSvc.getBranchPolicy(),
+    ]);
+
+    this.branches = branches;
+    this.canSelectBranch = policy.canSelectBranch;
+    this.selectedBranch = selectedBranch;
+    this.selectedBranchCode = selectedBranch?.CODFILIAL || null;
+
+    if (!this.selectedBranch && branches.length === 1) {
+      await this.changeBranch(branches[0].CODFILIAL);
+    }
+  }
+
+  private async showBranchRequired() {
+    const alert = await this.alertController.create({
+      header: 'Selecione uma filial',
+      message: 'Para acessar as telas do aplicativo, selecione uma filial primeiro.',
+      buttons: ['Fechar'],
+    });
+
+    await alert.present();
   }
 
 }

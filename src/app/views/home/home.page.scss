@@ -36,3 +36,43 @@
     width: 30px;
   }
 }
+
+.branch-panel {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+
+  ion-item {
+    --background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.12), rgba(var(--ion-color-secondary-rgb), 0.12));
+    --padding-start: 1rem;
+    --inner-padding-end: 1rem;
+  }
+}
+
+.branch-detail {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem 1rem;
+  color: #334155;
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  .branch-name {
+    color: var(--ion-color-primary);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+}
+
+.branch-warning {
+  padding: 0.85rem 1rem 1rem;
+  color: #92400e;
+  background: #fffbeb;
+  font-weight: 700;
+}

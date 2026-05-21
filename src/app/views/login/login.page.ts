@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { NavController, MenuController, IonInputPasswordToggle, AlertController, LoadingController, IonInput, IonItem, IonContent, IonButton, IonHeader, IonIcon } from '@ionic/angular/standalone';
+import { NavController, MenuController, IonInputPasswordToggle, AlertController, LoadingController, ModalController, IonInput, IonItem, IonContent, IonButton, IonHeader, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { addIcons } from 'ionicons';
 import { key, person } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { BranchSelectComponent } from '../branch-select/branch-select.component';
+import { branch } from 'src/app/interfaces/branch';
 
 @Component({
 	selector: 'app-login',
@@ -29,6 +32,8 @@ export class LoginPage implements OnInit {
 		private alertController: AlertController,
 		private router: Router,
 		private loadingController: LoadingController,
+		private modalController: ModalController,
+		private branchSvc: BranchService,
 
 	) {
 		this.credentials = new FormGroup({
@@ -78,7 +83,11 @@ export class LoginPage implements OnInit {
 			if (!login.data.data.error) {
 				await loading.dismiss();
 
-				this.router.navigateByUrl('/app/home')
+				const branchWasSelected = await this.resolveBranchSelection(login.data.data);
+
+				if (branchWasSelected) {
+					this.router.navigateByUrl('/app/home')
+				}
 			} else {
 				await loading.dismiss();
 			}
@@ -107,6 +116,73 @@ export class LoginPage implements OnInit {
 
 		// 	}
 		// );
+	}
+
+	private async resolveBranchSelection(userData: any) {
+		await this.branchSvc.clearSelectedBranch();
+
+		const branches = await this.branchSvc.getBranches(true);
+		const defaultBranch = Number(userData?.default_branch || 0) || null;
+		const canSelectBranch = this.toBoolean(userData?.select_branch);
+
+		await this.branchSvc.setBranchPolicy({ defaultBranch, canSelectBranch });
+
+		const selectedDefaultBranch = this.branchSvc.resolveDefaultBranch(branches, defaultBranch);
+
+		if (selectedDefaultBranch) {
+			await this.branchSvc.setSelectedBranch(selectedDefaultBranch);
+			return true;
+		}
+
+		if (branches.length === 1) {
+			await this.branchSvc.setSelectedBranch(branches[0]);
+			return true;
+		}
+
+		if (!canSelectBranch && branches.length > 0) {
+			await this.branchSvc.setSelectedBranch(branches[0]);
+			return true;
+		}
+
+		if (canSelectBranch && branches.length > 1) {
+			const selectedBranch = await this.openBranchSelection(branches);
+
+			if (selectedBranch) {
+				await this.branchSvc.setSelectedBranch(selectedBranch);
+				return true;
+			}
+		}
+
+		await this.showBranchRequiredAlert();
+		return false;
+	}
+
+	private async openBranchSelection(branches: branch[]) {
+		const modal = await this.modalController.create({
+			component: BranchSelectComponent,
+			componentProps: { branches },
+			backdropDismiss: false,
+			cssClass: 'branch-selection-modal'
+		});
+
+		await modal.present();
+		const { data, role } = await modal.onWillDismiss<branch>();
+
+		return role === 'confirm' ? data || null : null;
+	}
+
+	private async showBranchRequiredAlert() {
+		const alert = await this.alertController.create({
+			header: 'Filial obrigatÃ³ria',
+			message: 'NÃ£o foi possÃ­vel definir uma filial para este usuÃ¡rio.',
+			buttons: ['Fechar']
+		});
+
+		await alert.present();
+	}
+
+	private toBoolean(value: any) {
+		return value === true || value === 1 || value === '1' || value === 'true';
 	}
 
 	// Easy access for form fields
