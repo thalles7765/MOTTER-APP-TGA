@@ -50,9 +50,19 @@
       expand="block"
       color="primary"
       [disabled]="!selectedBranch"
+      (click)="confirm(true)"
+    >
+      Confirmar e abrir sempre nesta filial
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="primary"
+      [disabled]="!selectedBranch"
       (click)="confirm()"
     >
-      Continuar
+      Confirmar somente desta vez
     </ion-button>
   </div>
 </ion-content>

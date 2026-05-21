@@ -39,6 +39,14 @@ export class BranchService {
     return branches;
   }
 
+  async updateDefaultBranch(defaultBranch: number) {
+    return axios.put(
+      `${environment.url_api}/users/branch`,
+      { default_branch: defaultBranch },
+      { withCredentials: true }
+    );
+  }
+
   async setSelectedBranch(selectedBranch: branch) {
     this.selectedBranchSubject.next(selectedBranch);
     await Preferences.set({ key: selectedBranchKey, value: JSON.stringify(selectedBranch) });

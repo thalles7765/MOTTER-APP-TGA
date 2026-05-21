@@ -6,6 +6,11 @@ import { business, location, mail, call, checkmarkCircle } from 'ionicons/icons'
 import { branch } from 'src/app/interfaces/branch';
 import { brandConfig } from 'src/app/branding/brand-config';
 
+export type BranchSelectionResult = {
+  branch: branch;
+  saveAsDefault: boolean;
+};
+
 @Component({
   selector: 'app-branch-select',
   templateUrl: './branch-select.component.html',
@@ -27,9 +32,12 @@ export class BranchSelectComponent {
     this.selectedBranch = selectedBranch;
   }
 
-  confirm() {
+  confirm(saveAsDefault = false) {
     if (this.selectedBranch) {
-      return this.modalCtrl.dismiss(this.selectedBranch, 'confirm');
+      return this.modalCtrl.dismiss({
+        branch: this.selectedBranch,
+        saveAsDefault
+      } as BranchSelectionResult, 'confirm');
     }
 
     return null;

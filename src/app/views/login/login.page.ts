@@ -9,7 +9,7 @@ import { key, person } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
-import { BranchSelectComponent } from '../branch-select/branch-select.component';
+import { BranchSelectComponent, BranchSelectionResult } from '../branch-select/branch-select.component';
 import { branch } from 'src/app/interfaces/branch';
 
 @Component({
@@ -145,10 +145,18 @@ export class LoginPage implements OnInit {
 		}
 
 		if (canSelectBranch && branches.length > 1) {
-			const selectedBranch = await this.openBranchSelection(branches);
+			const selectedBranchResult = await this.openBranchSelection(branches);
 
-			if (selectedBranch) {
-				await this.branchSvc.setSelectedBranch(selectedBranch);
+			if (selectedBranchResult) {
+				if (selectedBranchResult.saveAsDefault) {
+					await this.branchSvc.updateDefaultBranch(selectedBranchResult.branch.CODFILIAL);
+					await this.branchSvc.setBranchPolicy({
+						defaultBranch: selectedBranchResult.branch.CODFILIAL,
+						canSelectBranch
+					});
+				}
+
+				await this.branchSvc.setSelectedBranch(selectedBranchResult.branch);
 				return true;
 			}
 		}
@@ -166,7 +174,7 @@ export class LoginPage implements OnInit {
 		});
 
 		await modal.present();
-		const { data, role } = await modal.onWillDismiss<branch>();
+		const { data, role } = await modal.onWillDismiss<BranchSelectionResult>();
 
 		return role === 'confirm' ? data || null : null;
 	}
