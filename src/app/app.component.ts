@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { AuthService } from './services/auth/auth.service';
 import { environment } from 'src/environments/environment';
+import { applyBrandTheme } from './branding/apply-brand-theme';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,9 @@ export class AppComponent {
   // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
   // }
 
-  constructor(private alertController: AlertController, private authSvc: AuthService) { }
+  constructor(private alertController: AlertController, private authSvc: AuthService) {
+    applyBrandTheme(this.brand);
+  }
 
   async logout(event) {
     // console.log(event)
