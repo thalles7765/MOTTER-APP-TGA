@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LoadingController, ModalController, IonSearchbar, IonHeader, IonToolbar, IonButton, IonButtons, IonMenuButton, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ClientService } from 'src/app/services/clients/client.service';
 import { ClientDetailComponent } from '../client-detail/client-detail.component';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-clients',
@@ -15,6 +16,7 @@ export class ClientsPage implements OnInit {
   @Input() status_modal = 0;
 
   private clientSvc = inject(ClientService);
+  protected brand = brandConfig;
   protected clients: any[] = [];
   // protected searchText = '';
 

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { movements_type } from 'src/app/interfaces/movements_type';
 import { UtilsService } from 'src/app/services/utils/utils.service';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-movements-type',
@@ -13,6 +14,7 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
 })
 export class MovementsTypeComponent implements OnInit {
   @Input() movements: movements_type[] = [];
+  protected brand = brandConfig;
 
   constructor(private loadingController: LoadingController, private utilSvc: UtilsService, private modalCtrl: ModalController) { }
 

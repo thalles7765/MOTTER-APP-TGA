@@ -9,7 +9,7 @@ import { order } from 'src/app/interfaces/order';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Platform } from '@ionic/angular';
-import { environment } from 'src/environments/environment';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-orders-detail',
@@ -22,7 +22,7 @@ export class OrdersDetailComponent implements OnInit {
   protected products: any;
   private orderSvc = inject(OrdersService);
   private pdfObj: any;
-  protected brand = environment;
+  protected brand = brandConfig;
 
   constructor(private loadingController: LoadingController, private alertController: AlertController, private modalCtrl: ModalController, public platform: Platform) { }
 

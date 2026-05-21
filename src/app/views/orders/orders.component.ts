@@ -24,7 +24,7 @@ import {
 import { OrdersDetailComponent } from '../orders-detail/orders-detail.component';
 import { OrderNewComponent } from '../order-new/order-new.component';
 import { order } from 'src/app/interfaces/order';
-import { environment } from 'src/environments/environment';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-orders',
@@ -41,7 +41,7 @@ export class OrdersComponent implements OnInit {
 
   private pdfObj: any;
   private orderSvc = inject(OrdersService);
-  protected brand = environment;
+  protected brand = brandConfig;
   protected orders: any[] = [];
 
   constructor(private modalCtrl: ModalController, private alertController: AlertController, private loadingController: LoadingController, public platform: Platform) {

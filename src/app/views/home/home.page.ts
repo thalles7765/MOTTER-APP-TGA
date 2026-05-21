@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuController, AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { Router, RouterLink } from '@angular/router';
-import { environment } from 'src/environments/environment';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
     selector: 'app-home',
@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
     imports: [IonCol, IonRow, IonGrid, IonContent, IonHeader, IonGrid, IonRow, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule]
 })
 export class HomePage implements OnInit {
-  public brand = environment;
+  public brand = brandConfig;
 
   constructor(public menuCtrl: MenuController, private alertController: AlertController, private _route: Router) {
     

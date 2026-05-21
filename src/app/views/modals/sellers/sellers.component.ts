@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { sellers } from 'src/app/interfaces/sellers';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-sellers',
@@ -13,6 +14,7 @@ import { sellers } from 'src/app/interfaces/sellers';
 })
 export class SellersComponent implements OnInit {
   @Input() sellers: sellers[] = [];
+  protected brand = brandConfig;
 
   constructor(private loadingController: LoadingController, private utilSvc: UtilsService, private modalCtrl: ModalController) { }
 

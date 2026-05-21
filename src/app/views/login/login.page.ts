@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { addIcons } from 'ionicons';
 import { key, person } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
-import { environment } from 'src/environments/environment';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
 	selector: 'app-login',
@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginPage implements OnInit {
 
-	protected brand = environment;
+	protected brand = brandConfig;
 	protected credentials: FormGroup;
 
 	constructor(

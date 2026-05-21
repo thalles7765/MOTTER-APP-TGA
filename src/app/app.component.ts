@@ -5,8 +5,8 @@ import { AlertController, IonApp, IonSplitPane, IonMenu, IonContent, IonList, Io
 import { addIcons } from 'ionicons';
 import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { AuthService } from './services/auth/auth.service';
-import { environment } from 'src/environments/environment';
 import { applyBrandTheme } from './branding/apply-brand-theme';
+import { brandConfig } from './branding/brand-config';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +15,7 @@ import { applyBrandTheme } from './branding/apply-brand-theme';
   imports: [RouterLink, RouterLinkActive, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterLink, IonRouterOutlet],
 })
 export class AppComponent {
-  public brand = environment;
+  public brand = brandConfig;
 
   public appPages = [
     { title: 'Início', url: '/app/home', icon: 'home' },

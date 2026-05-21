@@ -6,6 +6,7 @@ import { ProductService } from 'src/app/services/products/product.service';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner'
 import { Router } from '@angular/router';
 import { ProductDetailPage } from '../product-detail/product-detail.page';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-products',
@@ -19,6 +20,7 @@ export class ProductsPage implements OnInit {
 
   private productSvc = inject(ProductService);
 
+  protected brand = brandConfig;
   protected products: any[] = [];
   protected searchText = '';
 

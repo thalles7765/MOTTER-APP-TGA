@@ -6,6 +6,7 @@ import { ProductService } from 'src/app/services/products/product.service';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner'
 import { ActivatedRoute } from '@angular/router';
 import { ConfigService } from 'src/app/services/config/config.service';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-product-detail',
@@ -16,6 +17,7 @@ import { ConfigService } from 'src/app/services/config/config.service';
 })
 export class ProductDetailPage implements OnInit {
   @Input() product: any;
+  protected brand = brandConfig;
   protected xConfig;
 
   private productSvc = inject(ProductService);

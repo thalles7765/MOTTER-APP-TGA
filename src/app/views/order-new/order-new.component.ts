@@ -23,6 +23,7 @@ import { OrdersService } from 'src/app/services/orders/orders.service';
 import { SellersComponent } from '../modals/sellers/sellers.component';
 import { sellers } from 'src/app/interfaces/sellers';
 import { ConfigService } from 'src/app/services/config/config.service';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-order-new',
@@ -32,6 +33,7 @@ import { ConfigService } from 'src/app/services/config/config.service';
 })
 export class OrderNewComponent implements OnInit {
   @ViewChild('modalQtd', { static: true }) modalQtd!: IonModal;
+  protected brand = brandConfig;
   protected isOpenModal: boolean = false;
   protected typeModal = 1; //1 = QUANTIDADE; 2 = DESCONTO;
   protected qtdOpt: boolean = false;

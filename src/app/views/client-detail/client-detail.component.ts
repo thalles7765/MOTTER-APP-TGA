@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, ModalController, IonButton, IonContent, IonHeader, IonTitle, IonButtons, IonMenuButton, IonToolbar } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-client-detail',
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ClientDetailComponent implements OnInit {
   @Input() client;
+  protected brand = brandConfig;
 
   constructor(private alertController: AlertController, private modalCtrl: ModalController) { }
 

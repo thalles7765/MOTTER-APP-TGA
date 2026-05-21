@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonMenuButton, IonSearchbar, IonHeader, IonTitle, IonToolbar, IonButtons } from '@ionic/angular/standalone';
 import { GeminiService } from 'src/app/services/gemini/gemini.service';
+import { brandConfig } from 'src/app/branding/brand-config';
 
 @Component({
   selector: 'app-antrisia',
@@ -12,6 +13,7 @@ import { GeminiService } from 'src/app/services/gemini/gemini.service';
   imports: [IonButtons, IonMenuButton, IonSearchbar, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class AntrisiaPage implements OnInit {
+  protected brand = brandConfig;
   protected searchText = '';
   protected answerText = '';
 
