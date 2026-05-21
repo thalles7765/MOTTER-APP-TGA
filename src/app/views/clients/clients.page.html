@@ -1,0 +1,180 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (status_modal !== 1) {
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    }
+
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>Clientes</ion-title>
+    </div>
+
+    @if (status_modal === 1) {
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar>
+
+  <div
+    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
+  >
+    <ion-searchbar
+      [debounce]="1000"
+      (ionInput)="searchClients($event)"
+      animated="true"
+      placeholder="Pesquisar Cliente"
+      show-clear-button="always"
+    ></ion-searchbar>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    @if (clients.length <= 0) {
+    <div
+      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/cliente.png"
+        height="40px"
+        alt=""
+      />
+      <p class="mb-0 text-center w-100 fw-bold fw-italic">
+        Nenhum registro encontrado...
+      </p>
+    </div>
+    } @for (xClient of clients; track $index) {
+    <div
+      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
+      style="background-color: whitesmoke"
+    >
+      <div class="d-flex flex-column align-items-center gap-3">
+        <img
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+          "
+          src="../../../assets/icon/cliente.png"
+          width="40px"
+          alt=""
+        />
+
+        @if (status_modal === 1) {
+        <div class="box-pulse" (click)="confirm(xClient)">
+          <a class="botao-pulse">Selecionar</a>
+        </div>
+        }
+      </div>
+
+      <div class="d-flex flex-column w-100" (click)="openModal(xClient)">
+        @if (xClient.NOMEFANTASIA) {
+        <p class="mb-1 fw-bold small">{{xClient.NOMEFANTASIA}}</p>
+        } @else {
+        <p class="mb-1 fw-bold small">{{xClient.RAZAOSOCIAL}}</p>
+        }
+
+        <p class="mb-1 fw-bold small">{{xClient.CODCFO}}</p>
+
+        @if (xClient.CGCCFO) {
+        <p class="mb-0 text-gray small">{{xClient.CGCCFO}}</p>
+        } @if (xClient.TELEFONE) {
+        <p class="mb-0 text-gray small">
+          Telefone: <b>{{xClient.TELEFONE}}</b>
+        </p>
+        } @if (xClient.DATAULTMOVIMENTO) {
+        <p class="mb-2 text-gray small">
+          Últ. Compra: <b>{{xClient.DATAULTMOVIMENTO | date: 'dd/MM/yyyy'}}</b>
+        </p>
+        } @if (xClient.LIMITECREDITO > 1) {
+        <p class="mb-0 text-gray small">
+          Limite Créd.:
+          <b>{{xClient.LIMITECREDITO | currency: 'BRL'}}</b>
+        </p>
+        }
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          @if (xClient.VALOR_ABERTO > 1) {
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>À vencer</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{xClient.VALOR_ABERTO | currency: 'BRL'}}</b>
+            </p>
+          </div>
+          } @if (xClient.VALOR_VENCIDO > 1) {
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-danger"
+            >
+              <b>Vencido</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{xClient.VALOR_VENCIDO | currency: 'BRL'}}</b>
+            </p>
+          </div>
+          }
+        </div>
+
+        @if (xClient.DESC_CONCEITO) { @if (xClient.DESC_CONCEITO === 'OTIMO' ||
+        xClient.DESC_CONCEITO === 'BOM' ) {
+        <div class="w-100 rounded shadow-sm p-1 bg-success d-flex">
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>{{xClient.DESC_CONCEITO}}</b>
+          </p>
+        </div>
+        } @else if (xClient.DESC_CONCEITO === 'REGULAR' || xClient.DESC_CONCEITO
+        === 'RUIM' ) {
+        <div class="w-100 rounded shadow-sm p-1 bg-warning d-flex">
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>{{xClient.DESC_CONCEITO}}</b>
+          </p>
+        </div>
+        } @else {
+        <div class="w-100 rounded shadow-sm p-1 bg-danger d-flex">
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>{{xClient.DESC_CONCEITO}}</b>
+          </p>
+        </div>
+        } }
+      </div>
+
+      <!-- <div class="d-flex float-end text-success">
+        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
+      </div> -->
+    </div>
+    }
+  </div>
+</ion-content>

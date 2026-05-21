@@ -1,0 +1,113 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title> Configurações </ion-title>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    <div
+      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
+      style="background-color: whitesmoke"
+    >
+      <!-- <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/Splash/img432xRect.png"
+        height="65px"
+        alt=""
+      /> -->
+
+      <div class="d-flex flex-column w-100 gap-2">
+        <p class="mb-1 w-100 text-center p-2">Defina os parâmetros</p>
+
+        <ion-input
+          fill="solid"
+          label=""
+          labelPlacement="floating"
+          helperText="Movimento padrão do pedido"          
+          value="2.1.01"
+          [readonly]="true"
+        ></ion-input>
+
+        <ion-input
+          fill="solid"
+          label=""
+          labelPlacement="floating"
+          helperText="Código / Nome Vendedor"
+          ngModel
+          value="{{xConfig?.codven}} / {{xConfig?.fullName}}"
+          [readonly]="true"
+        ></ion-input>
+
+        <ion-input
+          fill="solid"
+          label=""
+          labelPlacement="floating"
+          helperText="E-mail"
+          errorText="Invalid email"
+          ngModel
+          [value]="xConfig?.email? xConfig?.email : xConfig?.vendedor?.EMAIL"
+          [readonly]="true"
+        ></ion-input>
+
+        <ion-input
+          fill="solid"
+          label=""
+          labelPlacement="floating"
+          helperText="Telefone"
+          ngModel
+          [value]="xConfig?.vendedor?.TELVEND1 || 'N/A'"
+          [readonly]="true"
+        ></ion-input>        
+
+        <ion-input
+          fill="solid"
+          label=""
+          labelPlacement="floating"
+          helperText="Visualiza todos movimentos"
+          value="Sim"        
+          [readonly]="true"
+        ></ion-input>
+
+        <br />
+
+        <!-- <p class="mb-1 fw-bold small">teste</p>
+        <p class="mb-0 text-gray small">teste</p> -->
+
+        <!-- <p class="mb-2 text-gray small">
+          Últ. Compra: <b>{{xClient.DATAULTMOVIMENTO | date: 'dd/MM/yyyy'}}</b>
+        </p> -->
+
+        <!-- <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>À vencer</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ 0 | currency: 'BRL'}}</b>
+            </p>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</ion-content>

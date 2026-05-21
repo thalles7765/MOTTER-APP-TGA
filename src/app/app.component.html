@@ -1,0 +1,59 @@
+<ion-app>
+  <ion-split-pane contentId="menuOpt">
+    <ion-menu contentId="menuOpt" type="overlay">
+      <ion-content>
+        <ion-list id="inbox-list">
+          <div class="d-flex flex-row p-2 gap-2 align-items-center">
+            <img
+              src="../assets/Splash/img432xRect.png"
+              style="
+                border-radius: 10px;
+                border-radius: 50%;
+                border-style: 2px solid #fff;
+              "
+              height="60px"
+              alt=""
+            />
+
+            <div class="d-flex flex-column p-1">
+              <p class="mb-0">Olá,</p>
+              <h3 class="m-0 fw-bold">{{ brand.companyName }}</h3>
+            </div>
+          </div>
+          <!-- <ion-list-header>Olá,</ion-list-header>
+          <ion-note>Thalles Henrique</ion-note> -->
+
+          <!-- <p>teste</p> -->
+          <!-- *ngFor="let p of appPages; let i = index" -->
+
+          @for (p of appPages; track $index) {
+            <ion-item
+            routerDirection="root"
+            [routerLink]="p.url"
+            lines="none"
+            detail="false"
+            routerLinkActive="selected"
+            (click)="logout(p)"
+          >
+            <ion-icon
+              aria-hidden="true"
+              slot="start"
+              [ios]="p.icon + '-outline'"
+              [md]="p.icon + '-sharp'"
+            ></ion-icon>
+            <ion-label>{{p.title}}</ion-label>
+          </ion-item>
+          }
+         
+        </ion-list>
+
+        <div
+          class="d-flex flex-row w-100 p-2 overflow-hidden align-items-center justify-content-center"
+        >
+          <img src="../assets/icon/favicon.png" alt="" />
+        </div>
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="menuOpt"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

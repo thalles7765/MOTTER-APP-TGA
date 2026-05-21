@@ -1,0 +1,116 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons> -->
+
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title> Detalhe </ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    <!-- *ngFor="let xtest of [1,2,3,4,5,6,7,8,9,10]" -->
+
+    <div
+      class="d-flex p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <div class="d-flex flex-column align-items-center w-100 gap-2">
+        <!-- <i class="material-icons" style="font-size: 55px;">qr_code</i> -->
+        <img
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+            margin-bottom: 5px;
+          "
+          src="../../../assets/Splash/img432xRect.png"
+          height="75px"
+          width="75px"
+          alt=""
+        />
+
+        <div class="d-flex flex-column">
+          @if (client.CD_LEGENDA === 6) {
+          <div
+            class="p-1 justify-content-center d-flex flex-row bg-primary shadow-sm rounded w-100"
+          >
+            <p class="text-white fw-bold small mb-0 w-100 text-center">
+              Produto em Promoção
+            </p>
+          </div>
+          } @if (client.CD_LEGENDA === 2) {
+          <div
+            class="p-1 justify-content-center d-flex flex-row bg-success shadow-sm rounded w-100"
+          >
+            <p class="text-white fw-bold small mb-0 w-100 text-center">
+              Fora de Linha
+            </p>
+          </div>
+          }
+
+          <p class="mb-2 fw-bold">{{ client?.NOMEFANTASIA }}</p>
+          <p class="mb-0 small">
+            Razão Social: <b>{{ client?.RAZAOSOCIAL }}</b>
+          </p>
+          <p class="mb-0 small">
+            Código: <b>{{ client?.CODCFO || "N/A" }}</b>
+          </p>
+          <p class="mb-0 small">
+            CPF/CCNPJ: <b>{{ client?.CGCCFO || "N/A" }}</b>
+          </p>
+          <p class="mb-0 small">
+            Telefone: <b>{{ client?.TELEFONE || "N/A" }}</b>
+          </p>
+          <p class="mb-3 small">
+            Email: <b>{{ client?.EMAIL || "N/A" }}</b>
+          </p>
+
+          <p class="mb-1 small">
+            Limite Crédito:
+            <b class="text-primary">{{
+              client?.LIMITECREDITO | currency : "BRL"
+            }}</b>
+          </p>
+          <p class="mb-1 small">
+            Valor Vencido:
+            <b class="text-danger">{{
+              client?.VALOR_VENCIDO | currency : "BRL"
+            }}</b>
+          </p>
+
+          <p class="mb-3 small">
+            Valor Aberto:
+            <b class="text-success">{{
+              client?.VALOR_ABERTO | currency : "BRL"
+            }}</b>
+          </p>
+
+          <p class="mb-1 small">
+            Última Alteração:
+            <b class="text-black">{{
+              client?.DATAULTALTERACAO | date : "dd/MM/yyyy"
+            }}</b>
+          </p>
+
+          <p class="mb-2 small">
+            Último Movimento:
+            <b class="text-black">{{
+              client?.DATAULTMOVIMENTO | date : "dd/MM/yyyy"
+            }}</b>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

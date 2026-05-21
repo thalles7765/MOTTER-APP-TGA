@@ -1,0 +1,209 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>{{ brand.companyFullName }}</ion-title>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    <div class="d-flex p-2 align-items-center flex-column w-100 gap-2">
+      <!-- <p class="mb-1 fw-bold">Opções</p> -->
+      <!-- <img src="../../../assets/Splash/img432xRect.png" height="150px" alt="" /> -->
+
+      <div
+        class="d-flex flex-column align-items-center justify-content-center gap-3 p-2 w-100"
+      >
+        <div class="btt-menu" (click)="navigateURL('/app/products')">
+          <div class="left-dp">
+            <img
+              class="img-left"
+              src="../../../assets/icon/produto.png"
+              alt=""
+            />
+            <p class="mb-0">Produtos</p>
+          </div>
+
+          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
+        </div>
+
+        <div class="btt-menu" (click)="navigateURL('/app/clients')">
+          <div class="left-dp">
+            <img
+              class="img-left"
+              src="../../../assets/icon/cliente.png"
+              alt=""
+            />
+
+            <p class="mb-0">Clientes</p>
+          </div>
+
+          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
+        </div>
+
+        <div class="btt-menu" (click)="navigateURL('/app/orders')">
+          <div class="left-dp">
+            <img
+              class="img-left"
+              src="../../../assets/icon/venda2.png"
+              alt=""
+            />
+
+            <p class="mb-0">Movimentos</p>
+          </div>
+
+          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
+        </div>
+
+        <!-- <div class="btt-menu"  (click)="navigateURL('/app/antrisia')">
+          <div class="left-dp">
+            <img
+              class="img-left"
+              src="../../../assets/icon/intelligence.png"
+              alt=""
+            />
+
+            <p class="mb-0">Antrisia (I.A)</p>
+          </div>
+
+          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
+        </div> -->
+      </div>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <img src="../../../assets/banners/1.png" />
+          </ion-col>
+
+          <ion-col size="6">
+            <img src="../../../assets/banners/2.png" />
+          </ion-col>
+
+          <ion-col size="6">
+            <img src="../../../assets/banners/3.png" />
+          </ion-col>
+
+          <ion-col size="6">
+            <img src="../../../assets/banners/4.png" />
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- <div
+      class="d-flex p-3 shadow rounded align-items-center flex-column w-100 gap-2"
+    >
+      <p class="mb-1 fw-bold">Redes Sociais</p>
+      <div
+        class="d-flex flex-row align-items-center justify-content-center gap-3 p-2 w-100"
+      >
+        <div
+          class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+        >
+          <img
+            style="
+              border-radius: 8px;
+              border-style: solid;
+              border-width: 2px;
+              border-color: coral;
+            "
+            src="../../../assets/Splash/img432xRect.png"
+            height="50px"
+            alt=""
+          />
+
+          <p class="mb-0">Instagram</p>
+        </div>
+
+        <div
+          class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+        >
+          <img
+            style="
+              border-radius: 8px;
+              border-style: solid;
+              border-width: 2px;
+              border-color: coral;
+            "
+            src="../../../assets/Splash/img432xRect.png"
+            height="50px"
+            alt=""
+          />
+
+          <p class="mb-0">Facebook</p>
+        </div>
+      </div>
+    </div> -->
+
+    <div
+      class="d-flex p-3 shadow rounded align-items-center flex-column w-100 gap-2"
+    >
+      <p class="mb-0 fw-bold">Redes Sociais</p>
+      <!--<p class="mb-2">{{ brand.website }}</p> -->
+
+      <div
+        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+      >
+        <img
+          style="
+            border-radius: 8px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: rgb(4, 70, 124);
+          "
+          src="../../../assets/icon/website.png"
+          height="50px"
+          alt=""
+        />
+
+        <p class="mb-0">Website</p>
+      </div>
+
+      <div
+        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+      >
+        <img
+          style="
+            border-radius: 8px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: rgb(4, 70, 124);
+          "
+          src="../../../assets/icon/facebook.png"
+          height="50px"
+          alt=""
+        />
+
+        <p class="mb-0">Facebook</p>
+      </div>
+
+      <div
+        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+      >
+        <img
+          style="
+            border-radius: 8px;
+            border-style: solid;
+            border-width: 2px;
+            border-color: rgb(243, 131, 39);
+          "
+          src="../../../assets/icon/instagram.png"
+          height="50px"
+          alt=""
+        />
+
+        <p class="mb-0">Instagram</p>
+      </div>
+
+      <!-- <img src="../../../assets/Splash/img432xRect.png" height="75px" alt="" /> -->
+    </div>
+  </div>
+</ion-content>

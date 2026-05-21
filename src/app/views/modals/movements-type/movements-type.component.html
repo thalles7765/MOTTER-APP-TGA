@@ -1,0 +1,145 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img src="../../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>Tipo Movimento</ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- <div
+    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
+  >
+    <ion-searchbar
+      [debounce]="1000"
+      (ionInput)="searchClients($event)"
+      animated="true"
+      placeholder="Pesquisar Cliente"
+      show-clear-button="always"
+    ></ion-searchbar>
+  </div> -->
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    @if (movements.length <= 0) {
+    <div
+      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../../assets/icon/venda.png"
+        height="40px"
+        alt=""
+      />
+      <p class="mb-0 text-center w-100 fw-bold fw-italic">
+        Nenhum registro encontrado...
+      </p>
+    </div>
+    } @for (xmov of movements; track $index) {
+    <div
+      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
+      style="background-color: whitesmoke"
+    >
+      <div class="d-flex flex-column align-items-center gap-3">
+        <img
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+          "
+          src="../../../../assets/icon/venda.png"
+          width="40px"
+          alt=""
+        />
+
+        <div class="box-pulse" (click)="confirm(xmov)">
+          <a class="botao-pulse">Selecionar</a>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column w-100">
+        <!-- <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Tipo Movimento
+        </p> -->
+
+        <p class="text-primary mb-2 w-100 fw-bold" style="font-size: 0.8rem">
+          ({{ xmov.CODTIPOMOV }}) - {{ xmov.NOME }}
+        </p>
+
+        @if (xmov.CODCPG) {
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Condição Pgto
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ xmov.CODCPG }}
+        </p>
+        } @if (xmov.CODCCUSTO) {
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Centro de Custo
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ xmov.CODCCUSTO }}
+        </p>
+        } @if (xmov.CODTIPODOCLAN) {
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Tipo Documento
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ xmov.CODTIPODOCLAN }}
+        </p>
+        } @if (xmov.TIPOOPERACAO) {
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Tipo Operação
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ xmov.TIPOOPERACAO }}
+        </p>
+        } @if (xmov.CODNAT) {
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Natureza
+        </p>
+
+        <p
+          class="text-black small mb-2 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ xmov.CODNAT }}
+        </p>
+        }
+      </div>
+
+      <!-- <div class="d-flex float-end text-success">
+        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
+      </div> -->
+    </div>
+    }
+  </div>
+</ion-content>

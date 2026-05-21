@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Robertopf App</string>
+    <string name="title_activity_main">Robertopf App</string>
+    <string name="package_name">robertopf.appsell.store</string>
+    <string name="custom_url_scheme">robertopf.appsell.store</string>
+</resources>

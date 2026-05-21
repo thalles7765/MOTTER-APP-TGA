@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>Antrisia (I.A)</ion-title>
+    </div>
+  </ion-toolbar>
+  <div class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1" >
+    <ion-searchbar [value]="searchText" [debounce]="1200" (ionInput)="searchAnswer($event)" animated="true" placeholder="Oque deseja saber?" show-clear-button="always"></ion-searchbar>
+  
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="shadow rounded p-4 gap-2 bg-warning d-flex flex-column align-items-center justify-content-center w-100 ">
+
+      <p class="fw-bold mb-0 text-black"> {{ answerText !== '' ? answerText : 'Faça sua pergunta acima...'}} </p>
+    
+  </div>
+
+  <br />
+
+  <div class="shadow rounded p-3 bg-dark d-flex flex-column align-items-center justify-content-center w-100 ">
+    
+    <p class="fw-bold mb-0 text-white"> Inteligência Artificial </p>
+    
+  </div>
+</ion-content>

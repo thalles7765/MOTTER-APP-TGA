@@ -1,0 +1,194 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (status_modal !== 1) {
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    }
+
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>Produtos</ion-title>
+    </div>
+
+    @if (status_modal === 1) {
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar>
+
+  <div
+    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
+  >
+    <ion-searchbar
+      [value]="searchText"
+      [debounce]="1000"
+      (ionInput)="searchProduct($event)"
+      animated="true"
+      placeholder="Pesquisar Produto"
+      show-clear-button="always"
+    ></ion-searchbar>
+    <img
+      (click)="openCamera()"
+      src="../../../assets/icon/camera.png"
+      style="margin-right: 10px"
+      height="32px"
+      alt=""
+    />
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-3">
+    <!-- *ngFor="let xtest of [1,2,3,4,5,6,7,8,9,10]" -->
+    @if (products.length <= 0) {
+    <div
+      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/produto.png"
+        height="50px"
+        alt=""
+      />
+      <p class="mb-0 text-center w-100 fw-bold fw-italic">
+        Nenhum registro encontrado...
+      </p>
+    </div>
+    } @for (xProduct of products; track $index) {
+
+    <!-- (click)="navigateURL('/app/product/detail', xProduct)" -->
+    <div
+      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+      id="open-modal"
+      expand="block"
+    >
+      <div class="d-flex flex-row align-items-center w-100 gap-2">
+        <img
+          style="
+            border-radius: 8px;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+          "
+          src="../../../assets/icon/produto.png"
+          height="50px"
+          alt=""
+        />
+
+        <!-- <i class="material-icons" style="font-size: 55px;">qr_code</i> -->
+
+        <div class="d-flex flex-column w-100">
+          <p class="mb-1 fw-bold small">{{xProduct.NOMEFANTASIA}}</p>
+          <p style="font-size: 0.8rem" class="mb-0 fw-bold">
+            {{xProduct.CODBARRAS}}
+          </p>
+          @if (xProduct.DESC_CURVA === 'CURVA A') {
+          <p
+            style="font-size: 0.7rem"
+            class="text-white mb-2 p-1 rounded bg-primary shadow-sm fw-bold"
+          >
+            {{xProduct.DESC_CURVA}}
+          </p>
+          } @else if (xProduct.DESC_CURVA === 'CURVA B') {
+          <p
+            style="font-size: 0.7rem"
+            class="text-white mb-2 p-1 rounded bg-info shadow-sm fw-bold"
+          >
+            {{xProduct.DESC_CURVA}}
+          </p>
+          }@else {
+          <p
+            style="font-size: 0.7rem"
+            class="text-white mb-2 p-1 rounded bg-secondary shadow-sm fw-bold"
+          >
+            {{xProduct.DESC_CURVA}}
+          </p>
+          }
+
+          <p style="font-size: 0.7rem" class="mb-0">
+            {{xProduct.DESC_FABRICANTE}}
+          </p>
+          <p style="font-size: 0.7rem" class="mb-2">{{xProduct.DESC_GRUPO}}</p>
+          <!-- <p
+            [class]="xtest <= 5? 'mb-0 text-gray small' : 'mb-0 text-gray small text-decoration-line-through'"
+          >
+            Preço: <b>R$1,48</b>
+          </p> -->
+          <div class="w-100 d-flex flex-row mb-2 gap-2">
+            <p
+              class="w-100 mb-0 text-center text-primary"
+              style="font-size: 0.7rem"
+            >
+              Saldo:
+              <b>{{xProduct.SALDOGERALFISICO}}</b>
+            </p>
+
+            <p class="w-100 mb-2 text-center" style="font-size: 0.7rem">
+              Unidade:
+              <b>{{ xProduct.UNIDADE }}</b>
+            </p>
+          </div>
+
+          @if (xProduct.SALDOGERALFISICO <= 0) {
+          <p
+            style="font-size: 0.7rem"
+            class="text-white text-center mb-2 p-1 rounded bg-danger shadow-sm fw-bold"
+          >
+            PRODUTO SEM SALDO
+          </p>
+          }          
+
+          @if (xProduct.CD_LEGENDA === 6) {
+          <div
+            class="p-1 justify-content-center d-flex flex-row bg-primary shadow-sm rounded w-100 mb-2"
+          >
+            <p
+              style="font-size: 0.7rem"
+              class="text-white fw-bold small mb-0 w-100 text-center"
+            >
+              PROMOÇÃO
+            </p>
+          </div>
+          } @if (xProduct.CD_LEGENDA === 2) {
+          <div
+            class="p-1 justify-content-center d-flex flex-row bg-success shadow-sm rounded w-100 mb-2"
+          >
+            <p
+              style="font-size: 0.7rem"
+              class="text-white fw-bold small mb-0 w-100 text-center"
+            >
+              FORA DE LINHA
+            </p>
+          </div>
+          }
+
+          <div class="d-flex flex-row gap-2 w-100">
+            @if (status_modal === 1) {
+            <div class="box-pulse" (click)="confirm(xProduct)">
+              <a class="botao-pulse">+</a>
+            </div>
+            }
+            <p class="mb-1 small w-100 text-center p-2 shadow-sm rounded">
+              <b class="text-primary">{{xProduct.PRECO2 | currency : 'BRL'}}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex float-end text-success" (click)="openModal(xProduct)">
+        <i class="material-icons" style="font-size: 35px">navigate_next</i>
+      </div>
+    </div>
+    }
+  </div>
+</ion-content>

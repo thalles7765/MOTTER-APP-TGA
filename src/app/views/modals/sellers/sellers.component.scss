@@ -1,0 +1,104 @@
+
+.box-pulse {
+    width: 100%;
+    // width:250px;
+    margin: 0 auto;
+    padding: 0 10px;
+    // padding: 5px;
+  }
+  .box-pulse a {
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-family: Verdana, Geneva, sans-serif;
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+  }
+  .botao-pulse {
+    // padding: 20px 30px;
+    padding: 8px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    background-color: #df6b0d;
+    border-radius:5px;
+    -webkit-animation: pulse 1s ease infinite;
+    -moz-animation: pulse 1s ease infinite;
+    -ms-animation: pulse 1s ease infinite;
+    -o-animation: pulse 1s ease infinite;
+    animation: pulse 1s ease infinite;
+  }
+  .botao-pulse:hover {
+    color: #fff;
+  }
+  @-webkit-keyframes pulse {
+    0% {
+      -webkit-transform: scale(1);
+    }
+    25% {
+      -webkit-transform: scale(1.1);
+    }
+    50% {
+      -webkit-transform: scale(1);
+    }
+    100% {
+      -webkit-transform: scale(1);
+    }
+  }
+  @-moz-keyframes pulse {
+    0% {
+      -moz-transform: scale(1);
+    }
+    25% {
+      -moz-transform: scale(1.1);
+    }
+    50% {
+      -moz-transform: scale(1);
+    }
+    100% {
+      -moz-transform: scale(1);
+    }
+  }
+  @-ms-keyframes pulse {
+    0% {
+      -ms-transform: scale(1);
+    }
+    25% {
+      -ms-transform: scale(1.1);
+    }
+    50% {
+      -ms-transform: scale(1);
+    }
+    100% {
+      -ms-transform: scale(1);
+    }
+  }
+  @-o-keyframes pulse {
+    0% {
+      -o-transform: scale(1);
+    }
+    25% {
+      -o-transform: scale(1.1);
+    }
+    50% {
+      -o-transform: scale(1);
+    }
+    100% {
+      -o-transform: scale(1);
+    }
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  /*Botão Pulsa*/
+  

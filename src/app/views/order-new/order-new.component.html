@@ -1,0 +1,512 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title> Movimento </ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-modal
+    [isOpen]="isOpenModal"
+    [initialBreakpoint]="1"
+    [breakpoints]="[0, 1]"
+  >
+    <ng-template>
+      @if (typeModal === 1) {
+      <div class="d-flex flex-column w-100 p-2 gap-2">
+        <div
+          class="d-flex flex-row w-100 gap-3 align-items-center mt-3 justify-content-center"
+        >
+          <ion-button
+            [fill]="qtdOpt ? 'outline' : 'solid'"
+            color="primary"
+            (click)="qtdOpt = false"
+            >Selecione</ion-button
+          >
+          <ion-button
+            [fill]="!qtdOpt ? 'outline' : 'solid'"
+            color="tertiary"
+            (click)="qtdOpt = true"
+            >Digitação</ion-button
+          >
+        </div>
+
+        <div class="counter__section p-4 mb-3">
+          @if (!qtdOpt) {
+          <ion-button (click)="decrementQtd(product_selected)">-</ion-button>
+          <p>{{ product_selected?.QUANTIDADE }}</p>
+          <ion-button (click)="incrementQtd(product_selected)">+</ion-button>
+          }@else {
+          <ion-button color="tertiary" (click)="incrementQtd(product_selected)"
+            >+1</ion-button
+          >
+          <ion-item>
+            <ion-input
+              #qtdInput
+              [ngModel]="product_selected?.QUANTIDADE"
+              (ionChange)="incrementQtd(product_selected, qtdInput.value, 1)"
+              class="text-center"
+              type="number"
+              placeholder="000"
+            ></ion-input>
+          </ion-item>
+          <ion-button
+            class="ml-1"
+            color="tertiary"
+            (click)="incrementQtd(product_selected, 25)"
+            >+25</ion-button
+          >
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="d-flex flex-column w-100 p-2 gap-2">
+        <div
+          class="d-flex flex-row w-100 gap-3 align-items-center mt-3 justify-content-center"
+        >
+          <ion-button
+            [fill]="qtdOpt ? 'outline' : 'solid'"
+            color="primary"
+            (click)="qtdOpt = false"
+            >Valor</ion-button
+          >
+          <ion-button
+            [fill]="!qtdOpt ? 'outline' : 'solid'"
+            color="tertiary"
+            (click)="qtdOpt = true"
+            >Percentual</ion-button
+          >
+        </div>
+
+        <div
+          class="d-flex flex-row p-4 mb-3 w-100 justify-content-center align-items-center"
+        >
+          @if (!qtdOpt) {
+          <ion-item>
+            <ion-input
+              #descInput
+              [ngModel]="order.VALORDESC.toFixed(4)"
+              (ionChange)="incrementDiscount(descInput.value)"
+              class="text-center"
+              type="number"
+              placeholder="000"
+            ></ion-input>
+          </ion-item>
+          }@else {
+          <ion-button color="tertiary" (click)="incrementDiscount(1, 2)"
+            >+1%</ion-button
+          >
+          <ion-item>
+            <ion-input
+              #descInput2
+              [ngModel]="order?.PERCENTUALDESC?.toFixed(2)"
+              (ionChange)="incrementDiscount(descInput2.value)"
+              class="text-center"
+              type="number"
+              placeholder="000"
+            ></ion-input>
+          </ion-item>
+          <ion-button color="tertiary" (click)="incrementDiscount(5, 2)"
+            >+5%</ion-button
+          >
+          }
+        </div>
+      </div>
+      }
+    </ng-template>
+  </ion-modal>
+
+  @if (order.ITEMS) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="confirmOrder()">
+      <ion-icon name="checkmark"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
+
+  <div class="d-flex flex-column align-items-center p-3 gap-2">
+    <div
+      class="d-flex flex-row p-2 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <div class="d-flex flex-column gap-1 w-100 align-items-center">
+        @if (showDate) {
+        <ion-datetime
+          class="mb-2 rounded"
+          (ionChange)="changeDate($event)"
+          presentation="date"
+        ></ion-datetime>
+        } @if (showHeader === true) {
+        <div
+          class="d-flex flex-column gap-1 w-100 align-items-center"
+          (click)="openModal(3)"
+        >
+          <img
+            style="
+              border-radius: 50%;
+              justify-content: center;
+              border: 2px #f1622b solid;
+              padding: 3px;
+            "
+            src="../../../assets/icon/cliente.png"
+            height="30px"
+            width="30px"
+            alt=""
+          />
+
+          <p
+            style="font-size: 0.7rem"
+            class="mb-0 fw-bold w-100 text-center small"
+          >
+            {{ order?.VENDEDOR?.CODVEN }} - {{ order?.VENDEDOR?.NOME }}
+          </p>
+        </div>
+
+        <div
+          class="d-flex flex-row w-100 gap-2 align-items-center justify-content-between"
+        >
+          <div
+            class="d-flex flex-column gap-1 w-100 align-items-center"
+            (click)="showDate = !showDate"
+          >
+            <img
+              style="
+                border-radius: 50%;
+                justify-content: center;
+                border: 2px #f1622b solid;
+                padding: 3px;
+              "
+              src="../../../assets/icon/date_30px.png"
+              height="30px"
+              width="30px"
+              alt=""
+            />
+
+            <p
+              style="font-size: 0.7rem"
+              class="mb-0 fw-bold w-100 text-center small"
+            >
+              {{ order?.DATAEMISSAO | date : "dd/MM/yyyy" }}
+            </p>
+          </div>
+
+          <div
+            class="d-flex flex-column gap-1 w-100 align-items-center"
+            (click)="openModal(1)"
+          >
+            <img
+              style="
+                border-radius: 50%;
+                justify-content: center;
+                border: 2px #f1622b solid;
+                padding: 3px;
+              "
+              src="../../../assets/icon/venda.png"
+              height="30px"
+              width="30px"
+              alt=""
+            />
+
+            <p
+              style="font-size: 0.7rem"
+              class="mb-0 fw-bold w-100 text-center small"
+            >
+              {{ order?.CODTMV }} - {{ order?.MOVIMENTO?.NOME }}
+            </p>
+          </div>
+        </div>
+        } @else {
+        <div
+          (click)="(showHeader = !showHeader) && (hiddenHeader = !hiddenHeader)"
+          class="d-flex flex-row bg-primary w-100 text-white align-items-center shadow-sm rounded p-2 gap-2"
+        >
+          <ion-icon name="eye"></ion-icon>
+          <p class="small mb-0 text-white fw-bold text-center w-100">
+            Mostrar Cabeçalho
+          </p>
+        </div>
+        }
+
+        <ul
+          class="w-100 mb-2 mt-2"
+          style="height: 3px; background-color: #ffffff"
+        ></ul>
+
+        <div
+          class="d-flex flex-row w-100 gap-2 align-items-center justify-content-between"
+        >
+          <div
+            class="d-flex flex-column gap-1 w-100 align-items-center"
+            (click)="openModal(2)"
+          >
+            <img
+              style="
+                border-radius: 50%;
+                justify-content: center;
+                border: 2px #f1622b solid;
+                padding: 3px;
+              "
+              src="../../../assets/icon/pag_money.png"
+              height="30px"
+              width="30px"
+              alt=""
+            />
+
+            <p
+              style="font-size: 0.7rem"
+              class="mb-0 fw-bold w-100 text-center small"
+            >
+              {{ order?.CODCPG }} - {{ order?.PAGAMENTO?.NOME }}
+            </p>
+          </div>
+
+          <div
+            (click)="openModal(99)"
+            class="d-flex flex-column gap-1 w-100 align-items-center"
+          >
+            <img
+              style="
+                border-radius: 50%;
+                justify-content: center;
+                border: 2px #f1622b solid;
+                padding: 3px;
+              "
+              src="../../../assets/icon/cliente.png"
+              height="30px"
+              width="30px"
+              alt=""
+            />
+
+            <p
+              style="font-size: 0.7rem"
+              class="lh-0 mb-0 fw-bold w-100 text-center small"
+            >
+              {{ order?.CODCFO }} - {{ order?.CLIENTE?.NOMEFANTASIA }}
+            </p>
+          </div>
+        </div>
+
+        <ul
+          class="w-100 mb-2 mt-2"
+          style="height: 3px; background-color: #ffffff"
+        ></ul>
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>Bruto</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ order?.VALORBRUTO || 0 | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div
+            class="w-50 rounded shadow-sm p-1 d-flex flex-column"
+            (click)="openModalQtdDesc(null, 2)"
+          >
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>Desconto</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>{{ order?.VALORDESC || 0 | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>Líquido</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>{{ order?.VALORLIQUIDO || 0 | currency : "BRL" }}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ### LISTA DE PRODUTOS ### -->
+
+    <!-- <div class="d-flex flex-row gap-2 align-items-center w-100">
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/produto.png"
+        height="40px"
+        width="40px"
+        alt=""
+      />
+      <p class="text-black mb-0 w-100 small">
+        Lista de Produtos (<b>{{ 0 }}</b
+        >)
+      </p>
+    </div> -->
+
+    <div
+      class="d-flex flex-row gap-2 align-items-center justify-content-between w-100"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/produto.png"
+        height="40px"
+        width="40px"
+        alt=""
+      />
+
+      <div
+        class="d-flex flex-row w-100 gap-2 align-items-center"
+        (click)="openAddProduct()"
+      >
+        <div class="box-pulse">
+          <a class="botao-pulse">Adicionar Produto</a>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      @if (!order?.ITEMS) {
+      <div
+        class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+        style="background-color: whitesmoke"
+      >
+        <img
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+          "
+          src="../../../assets/icon/produto.png"
+          height="40px"
+          alt=""
+        />
+        <p class="mb-0 text-center w-100">Nenhum produto adicionado...</p>
+      </div>
+
+      } @for (product of order.ITEMS; track $index) {
+      <div class="d-flex flex-column w-100 gap-2 align-items-center">
+        <div
+          class="w-100 d-flex flex-row align-items-center justify-content-between gap-2"
+        >
+          <p class="text-black small mb-1 w-100" style="font-size: 0.7rem">
+            (<b>{{ product.CODPRD }}</b
+            >) - {{ product?.NOMEFANTASIA }}
+          </p>
+
+          <ion-fab-button size="small" color="danger" (click)="removeProduct(product)">
+            <ion-icon name="trash"></ion-icon>
+          </ion-fab-button>
+          <!-- <div class="rounded shadow bg-danger p-2 justify-content-center"> <mat-icon></mat-icon></div> -->
+        </div>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Cód. Barras / Unidade / Curva
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.7rem"
+        >
+          {{ product?.CODBARRAS || "N/A" }} / {{ product?.UNIDADE }} /
+          {{ product?.DESC_CURVA }}
+        </p>
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>Preço Unit.</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ product?.PRECO2 | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div
+            class="w-50 rounded shadow-sm p-1 d-flex flex-column"
+            (click)="openModalQtdDesc(product, 1)"
+          >
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>Qtd.</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>{{ product?.QUANTIDADE || 0 | number : "1.4" }}</b>
+            </p>
+          </div>
+
+          <!-- <ion-button id="open-modal" expand="block">{{ product?.QUANTIDADE || 0 }}</ion-button> -->
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>Total</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>{{ product?.VALORTOTALITEM | currency : "BRL" }}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ul
+        class="w-100 mb-1"
+        style="height: 2px; background-color: #f2612a"
+      ></ul>
+
+      }
+    </div>
+  </div>
+</ion-content>

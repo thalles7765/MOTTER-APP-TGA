@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <!-- <ion-toolbar>
+
+  
+  </ion-toolbar> -->
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-start gap-2 p-2 mb-1">
+    <img src="../../../assets/logo.png" style="width: 100%" alt="" />
+    <!-- <ion-title>Medianeira Ferragens</ion-title> -->
+    <p style="font-size: 1.2rem" class="mb-0">Bem vindo!</p>
+  </div>
+
+  <ul class="w-100 mb-3" style="height: 3px; background-color: #f2612a"></ul>
+
+  <form (ngSubmit)="login(credentials)" [formGroup]="credentials" class="mb-5">
+    <div
+      class="d-flex flex-column justify-content-center align-items-center gap-3 mb-4 w-100"
+    >
+      <div class="w-100" style="margin-right: 26px">
+        <ion-item>
+          <ion-icon aria-hidden="true" name="person" slot="start"></ion-icon>
+          <ion-input
+            oninput="this.value = this.value.toUpperCase()"
+            label="Usuário"
+            labelPlacement="floating"
+            placeholder="Usuário"
+            formControlName="username"
+          ></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="w-100" style="margin-right: 26px">
+        <ion-item>
+          <ion-icon aria-hidden="true" name="key" slot="start"></ion-icon>
+          <ion-input
+            label="Senha"
+            labelPlacement="floating"
+            type="password"
+            placeholder="Senha"
+            formControlName="password"
+            ><ion-input-password-toggle
+              color="primary"
+              slot="end"
+            ></ion-input-password-toggle
+          ></ion-input>
+        </ion-item>
+      </div>
+    </div>
+
+    <ion-button
+      type="submit"
+      expand="block"
+      color="primary"
+      [disabled]="!credentials.valid"
+      >Acessar</ion-button
+    >
+
+    <ul></ul>
+
+    <ion-button (click)="setDataStorage()" expand="block" color="warning"
+      >Salvar Acesso</ion-button
+    >
+
+    <!-- <ion-button type="button" expand="block" color="tertiary">
+			<ion-icon name="logo-google" slot="start"></ion-icon>
+			Sign in with Google
+		</ion-button>
+		<ion-button type="button" expand="block" color="tertiary">
+			<ion-icon name="logo-apple" slot="start"></ion-icon>
+			Sign in with Apple
+		</ion-button> -->
+  </form>
+  <p style="font-size: 0.8rem; color: #252525" class="mb-0 w-100 text-center">
+    Acesse nosso site em:
+  </p>
+  <p
+    style="font-size: 0.8rem; color: #252525"
+    class="mb-0 w-100 text-center fw-bold"
+  >
+    http://www.medianeiraferragens.com.br/
+  </p>
+</ion-content>

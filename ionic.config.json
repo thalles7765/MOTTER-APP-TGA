@@ -1,0 +1,7 @@
+{
+  "name": "medapp-store",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

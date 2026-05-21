@@ -1,0 +1,302 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title> Movimento - Detalhe </ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="d-flex flex-column align-items-center p-3 gap-2">
+    <div
+      class="d-flex flex-row gap-2 align-items-center justify-content-between w-100"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/venda.png"
+        height="50px"
+        width="50px"
+        alt=""
+      />
+
+      <div class="d-flex flex-row w-100 gap-2 align-items-center">
+        <div class="box-pulse" (click)="downloadPdf(order)">
+          <a class="botao-pulse">Compartilhar PDF</a>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="d-flex flex-row p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <div class="d-flex flex-column gap-1 w-100 align-items-center">
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          ({{ order.CODTMV }}) - {{ order.NOME }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Nº Mov / Data Emissão
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ order.NUMEROMOV }} / {{ order.DATAEMISSAO | date : "dd/MM/yyyy" }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Cliente
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          ({{ order.CODCFO }}) -
+          {{
+            order.NOMECONSUMIDOR !== ""
+              ? order.NOMECONSUMIDOR
+              : order.NOMEFANTASIA
+          }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Condição Pagamento
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          ({{ order.CODCPG }}) - {{ order.DESC_CONDPGTO }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Vendedor
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          ({{ order.CODVEN1 }}) - {{ order.VENDEDOR }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Valores Totais
+        </p>
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>Bruto</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ order.VALORBRUTO | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>Desconto</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>{{ order.VALORDESC | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>Líquido</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>{{ order.VALORLIQUIDO | currency : "BRL" }}</b>
+            </p>
+          </div>
+        </div>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Status
+        </p>
+
+        @if (order.STATUSPEDIDO === 'A' ) {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
+        >
+          <i class="material-icons text-white">verified</i>
+
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Atendido</b>
+          </p>
+        </div>
+        } @else if (order.STATUSPEDIDO === 'P' ) {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
+        >
+          <i class="material-icons text-white">unpublished</i>
+
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Faturado Parcial</b>
+          </p>
+        </div>
+        } @else {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
+        >
+          <i class="material-icons text-white">radio_button_unchecked</i>
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Pendente</b>
+          </p>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- ### LISTA DE PRODUTOS ### -->
+
+    <div class="d-flex flex-row gap-2 align-items-center w-100">
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/produto.png"
+        height="50px"
+        width="50px"
+        alt=""
+      />
+      <p class="text-black mb-0 w-100">
+        Lista de Produtos (<b>{{ products?.length || 0 }}</b
+        >)
+      </p>
+    </div>
+
+    <div
+      class="d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      @for (product of products; track $index) {
+      <div class="d-flex flex-column w-100 gap-2 align-items-center">
+        <p class="text-black small mb-1 w-100" style="font-size: 0.7rem">
+          (<b>{{ product.CODPRD }}</b
+          >) - {{ product?.NOMEFANTASIA }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Cód. Barras / Unidade / Curva
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.7rem"
+        >
+          {{ product?.CODBARRAS }} / {{ product?.CODUND_ECM }} /
+          {{ product?.DESC_CURVA }}
+        </p>
+
+        <!-- <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+        Valor final Item
+         </p> -->
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>Preço Unit.</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ product?.PRECOUNITARIO | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>Qtd.</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-primary"
+            >
+              <b>{{ product?.QUANTIDADE }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>Total</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-success"
+            >
+              <b>{{ product?.VALORTOTALITEM | currency : "BRL" }}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ul
+        class="w-100 mb-1"
+        style="height: 2px; background-color: #f2612a"
+      ></ul>
+
+      }
+    </div>
+  </div>
+</ion-content>

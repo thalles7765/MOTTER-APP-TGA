@@ -1,0 +1,262 @@
+<ion-header [translucent]="true" class="mb-2">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="d-flex flex-row align-items-center gap-1 p-2">
+      <img src="../../../assets/icon/favicon.png" height="60px" alt="" />
+
+      <ion-title>Movimentos</ion-title>
+    </div>
+  </ion-toolbar>
+
+  <div
+    class="d-flex flex-column w-100 gap-1 justify-content-between align-items-center p-1 mb-1"
+  >
+    <div
+      class="d-flex flex-row w-100 gap-1 justify-content-between align-items-center p-1"
+    >
+      <ion-searchbar
+        [debounce]="1000"
+        (ionInput)="searchOrders()"
+        animated="true"
+        placeholder="Pesquisar Movimento"
+        show-clear-button="always"
+        #searchGroup
+      ></ion-searchbar>
+
+      <ion-button (click)="toggleAccordion()">
+        <ion-icon slot="icon-only" ios="filter" md="settings-sharp"></ion-icon>
+      </ion-button>
+    </div>
+    <ion-accordion-group #accordionGroup>
+      <ion-accordion value="1">
+        <!-- <ion-item  slot="header" color="light">
+          <ion-label></ion-label>
+        </ion-item> -->
+        <div class="mb-2 w-100" slot="content">
+          <ion-datetime
+            #dateGroup
+            (ionChange)="changeDate($event)"
+            class="mb-2"
+            presentation="date"
+            [preferWheel]="true"
+          ></ion-datetime>
+
+          <ion-list>
+            <ion-item>
+              <ion-select
+                cancel-text="Fechar"
+                ok-text="Confirmar"
+                #selectGroup
+                aria-label="Status"
+                placeholder="Selecione Status"
+                [multiple]="true"
+                value="D"
+                (ionChange)="changeDate($event)"
+              >
+                <ion-select-option value="A">Atendido</ion-select-option>
+                <ion-select-option value="D">Pendente</ion-select-option>
+                <ion-select-option value="P">Parcial</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button class="botao-pulse" (click)="openNewOrder()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    <!-- <ion-fab-list side="top">
+      <ion-fab-button>
+        <ion-icon name="bag-add"></ion-icon>      
+      </ion-fab-button>
+    </ion-fab-list> -->
+  </ion-fab>
+  <!-- <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Clientes</ion-title>
+    </ion-toolbar>
+  </ion-header> -->
+
+  <!-- <p class="mb-1 fw-bold w-100 text-center mt-3">Clientes</p> -->
+
+  <div class="d-flex flex-column align-items-center px-3 mb-3 gap-3">
+    @if (orders.length <= 0) {
+    <div
+      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
+      style="background-color: whitesmoke"
+    >
+      <img
+        style="
+          border-radius: 50%;
+          justify-content: center;
+          border: 2px #f1622b solid;
+          padding: 2px;
+        "
+        src="../../../assets/icon/venda.png"
+        height="50px"
+        alt=""
+      />
+      <p class="mb-0 text-center w-100 fw-bold fw-italic">
+        Nenhum registro encontrado...
+      </p>
+    </div>
+
+    } @for (xOrders of orders; track $index) {
+    <div
+      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
+      style="background-color: whitesmoke"
+    >
+      <div class="gap-3 d-flex flex-column">
+        <img
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 2px;
+            min-width: 42px !important;
+            width: 42px;
+          "
+          src="../../../assets/icon/venda.png"
+          alt=""
+        />
+
+        <img
+          (click)="downloadPdf(xOrders)"          
+          style="
+            border-radius: 50%;
+            justify-content: center;
+            border: 2px #f1622b solid;
+            padding: 4px;
+            min-width: 42px !important;
+            width: 42px;
+          "
+          src="../../../assets/icon/compartilhar.png"
+          alt=""
+        />
+      </div>
+
+      <div class="d-flex flex-column w-100" (click)="openDetail(xOrders)">
+        @if (xOrders.NOMECONSUMIDOR) {
+        <p class="mb-1 fw-bold small">{{ xOrders.NOMECONSUMIDOR }}</p>
+        } @else {
+        <p class="mb-1 fw-bold small">{{ xOrders.NOMEFANTASIA }}</p>
+        }
+
+        <p style="font-size: 0.8rem" class="mb-0 fw-bold small">
+          {{ xOrders.NOME }} ( {{ xOrders.CODTMV }} )
+        </p>
+        <!-- <p class="mb-0 fw-bold small">{{ xOrders.CODTMV }}</p> -->
+        <p style="font-size: 0.7rem" class="mb-1 small">
+          Vend:
+          <b>{{ xOrders.VENDEDOR }} </b>
+        </p>
+        <p style="font-size: 0.8rem" class="mb-2 small">
+          Nº Mov.:
+          <b
+            >{{ xOrders.NUMEROMOV }} /
+            {{ xOrders.DATAEMISSAO | date : "dd/MM/yyyy" }}</b
+          >
+        </p>
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <p
+            class="w-100 mb-0 text-center text-primary"
+            style="font-size: 0.7rem"
+          >
+            Desconto:
+            <b>{{ xOrders.VALORDESC | currency : "BRL" }}</b>
+          </p>
+          <p class="w-100 mb-2 text-center" style="font-size: 0.7rem">
+            Despesa:
+            <b>{{ xOrders.VALORDESP | currency : "BRL" }}</b>
+          </p>
+        </div>
+
+        <div class="w-100 d-flex flex-row mb-2 gap-2">
+          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-gray"
+            >
+              <b>Bruto</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ xOrders.VALORBRUTO | currency : "BRL" }}</b>
+            </p>
+          </div>
+
+          <div class="w-50 rounded shadow p-1 d-flex flex-column">
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-gray"
+            >
+              <b>Líquido</b>
+            </p>
+            <p
+              style="font-size: 0.7rem"
+              class="w-100 text-center mb-0 text-black"
+            >
+              <b>{{ xOrders.VALORLIQUIDO | currency : "BRL" }}</b>
+            </p>
+          </div>
+        </div>
+
+        @if (xOrders.STATUSPEDIDO === 'A' ) {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
+        >
+          <i class="material-icons text-white">verified</i>
+
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Atendido</b>
+          </p>
+        </div>
+        } @else if (xOrders.STATUSPEDIDO === 'P' ) {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
+        >
+          <i class="material-icons text-white">unpublished</i>
+
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Faturado Parcial</b>
+          </p>
+        </div>
+        } @else {
+        <div
+          class="w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
+        >
+          <i class="material-icons text-white">radio_button_unchecked</i>
+          <p
+            style="font-size: 0.7rem"
+            class="w-100 text-center mb-0 text-white"
+          >
+            <b>Pendente</b>
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- <div class="d-flex float-end text-success">
+        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
+      </div> -->
+    </div>
+    }
+  </div>
+</ion-content>
