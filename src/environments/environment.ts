@@ -9,6 +9,12 @@ export const environment = {
   companyName: "Medianeira",
   companyFullName: "Medianeira Ferragens",
   website: "http://www.medianeiraferragens.com.br/",
+  companyDocument: "24.855.393/0001-83",
+  stateRegistration: "13.631.728-6",
+  cityState: "PRIMAVERA DO LESTE - MT",
+  zipCode: "78850-000",
+  phone: "(66)3498-1359",
+  mobilePhone: "(66)9 9975-9062",
   assets: {
     logo: "assets/brands/medianeira/logo.png",
     menuLogo: "assets/brands/medianeira/Splash/img432xRect.png",

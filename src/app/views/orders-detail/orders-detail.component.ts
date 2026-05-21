@@ -9,6 +9,7 @@ import { order } from 'src/app/interfaces/order';
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Platform } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-orders-detail',
@@ -21,6 +22,7 @@ export class OrdersDetailComponent implements OnInit {
   protected products: any;
   private orderSvc = inject(OrdersService);
   private pdfObj: any;
+  protected brand = environment;
 
   constructor(private loadingController: LoadingController, private alertController: AlertController, private modalCtrl: ModalController, public platform: Platform) { }
 
@@ -196,7 +198,7 @@ export class OrdersDetailComponent implements OnInit {
     var dd = {
       header: {
         columns: [
-          // { text: 'Medianeira - App', fontSize: 8, bold:true, italics: true, marginLeft:40, marginTop: 15 },
+          // { text: `${this.brand.companyName} - App`, fontSize: 8, bold:true, italics: true, marginLeft:40, marginTop: 15 },
           { text: 'Orçamento gerado via aplicativo mobile', marginLeft: 40, fontSize: 8, italics: true, bold: true, marginTop: 15 },
           { text: 'Versão do sistema 1.5', fontSize: 8, italics: true, marginLeft: 170, bold: true, marginTop: 15 },
         ]
@@ -204,7 +206,7 @@ export class OrdersDetailComponent implements OnInit {
       footer: {
         columns: [
           { text: 'Motter Sistemas', marginLeft: 40, style: 'documentFooterCenter', bold: true, fontSize: 10 },
-          { text: 'http://www.medianeiraferragens.com.br/', marginLeft: 35, style: 'documentFooterRight' },
+          { text: this.brand.website, marginLeft: 35, style: 'documentFooterRight' },
         ]
       },
       content: [
@@ -217,7 +219,7 @@ export class OrdersDetailComponent implements OnInit {
             },
             [
               {
-                text: 'Medianeira Ferragens',
+                text: this.brand.companyFullName,
                 fontSize: 18,
                 bold: true,
                 marginTop: 15,
@@ -228,11 +230,11 @@ export class OrdersDetailComponent implements OnInit {
                   {
                     columns: [
                       {
-                        text: '24.855.393/0001-83',
+                        text: this.brand.companyDocument,
                         width: '*'
                       },
                       {
-                        text: 'Insc.: 13.631.728-6',
+                        text: this.brand.stateRegistration ? `Insc.: ${this.brand.stateRegistration}` : '',
                         width: 120
                       }
                     ]
@@ -240,11 +242,11 @@ export class OrdersDetailComponent implements OnInit {
                   {
                     columns: [
                       {
-                        text: 'PRIMAVERA DO LESTE - MT',
+                        text: this.brand.cityState,
                         width: '*'
                       },
                       {
-                        text: '(66)3498-1359',
+                        text: this.brand.phone,
                         bold: true,
                         width: 120
                       }
@@ -253,12 +255,12 @@ export class OrdersDetailComponent implements OnInit {
                   {
                     columns: [
                       {
-                        text: '78850-000',
+                        text: this.brand.zipCode,
                         width: '*'
 
                       },
                       {
-                        text: '(66)9 9975-9062',
+                        text: this.brand.mobilePhone,
                         bold: true,
                         width: 120
 
