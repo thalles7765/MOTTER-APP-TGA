@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img [src]="brand.assets.favicon" height="52px" alt="" />
+      <ion-title>Saldos por filial</ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stock-summary">
+    <p class="eyebrow">{{ product?.CODPRD }}</p>
+    <h2>{{ product?.NOMEFANTASIA }}</h2>
+  </div>
+
+  <div class="stock-list">
+    @for (stock of stocks; track $index) {
+      <div class="stock-card">
+        <div class="stock-card-header">
+          <div>
+            <p class="branch-label">Filial {{ stock.CODFILIAL }}</p>
+            <h3>{{ branchName(stock) }}</h3>
+          </div>
+
+          <div class="stock-badge">
+            {{ stock.SALDOFISICO1 || 0 }}
+          </div>
+        </div>
+
+        <div class="stock-info">
+          <p>
+            <ion-icon name="business"></ion-icon>
+            {{ branchDocument(stock) }}
+          </p>
+          <p>
+            <ion-icon name="location"></ion-icon>
+            {{ branchCity(stock) }}
+          </p>
+          <p>
+            <ion-icon name="cube"></ion-icon>
+            Local {{ stock.CODLOC }} | Saldo 2: {{ stock.SALDOFISICO2 || 0 }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

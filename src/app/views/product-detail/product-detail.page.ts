@@ -7,6 +7,17 @@ import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner'
 import { ActivatedRoute } from '@angular/router';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { branch } from 'src/app/interfaces/branch';
+import { ProductStockBranchesComponent } from '../product-stock-branches/product-stock-branches.component';
+
+type ProductStock = {
+  CODEMPRESA: number;
+  CODFILIAL: number;
+  CODLOC: string;
+  SALDOFISICO1: number;
+  SALDOFISICO2?: number;
+};
 
 @Component({
   selector: 'app-product-detail',
@@ -19,13 +30,16 @@ export class ProductDetailPage implements OnInit {
   @Input() product: any;
   protected brand = brandConfig;
   protected xConfig;
+  protected branches: branch[] = [];
+  protected selectedBranch: branch | null = null;
+  protected canSelectBranch = false;
 
   private productSvc = inject(ProductService);
 
   // protected product;
   protected searchText = '';
 
-  constructor(private alertController: AlertController, private cfgSvc: ConfigService, private _route: ActivatedRoute, private modalCtrl: ModalController) { }
+  constructor(private alertController: AlertController, private cfgSvc: ConfigService, private _route: ActivatedRoute, private modalCtrl: ModalController, private branchSvc: BranchService) { }
 
   cancel() {
     return this.modalCtrl.dismiss(null, 'cancel');
@@ -36,7 +50,69 @@ export class ProductDetailPage implements OnInit {
   }
 
   async ngOnInit() {
+    await this.loadBranchContext();
     await this.getConfig();
+  }
+
+  selectedBranchStock() {
+    if (!this.selectedBranch) {
+      return null;
+    }
+
+    return this.productStocks().find((stock) =>
+      stock.CODEMPRESA === this.selectedBranch?.CODEMPRESA &&
+      stock.CODFILIAL === this.selectedBranch?.CODFILIAL
+    ) || null;
+  }
+
+  selectedBranchBalance() {
+    return this.selectedBranchStock()?.SALDOFISICO1 || 0;
+  }
+
+  hasOtherBranchBalance() {
+    if (!this.canSelectBranch || !this.selectedBranch) {
+      return false;
+    }
+
+    return this.productStocks().some((stock) =>
+      (stock.CODEMPRESA !== this.selectedBranch?.CODEMPRESA ||
+        stock.CODFILIAL !== this.selectedBranch?.CODFILIAL) &&
+      Number(stock.SALDOFISICO1 || 0) > 0
+    );
+  }
+
+  async openStockBranches(event?: Event) {
+    event?.stopPropagation();
+
+    if (!this.canSelectBranch || this.productStocks().length <= 0) {
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ProductStockBranchesComponent,
+      componentProps: {
+        product: this.product,
+        branches: this.branches
+      }
+    });
+
+    await modal.present();
+  }
+
+  private productStocks(): ProductStock[] {
+    return this.product?.saldos || [];
+  }
+
+  private async loadBranchContext() {
+    const [branches, selectedBranch, branchPolicy] = await Promise.all([
+      this.branchSvc.getBranches(),
+      this.branchSvc.getSelectedBranch(),
+      this.branchSvc.getBranchPolicy()
+    ]);
+
+    this.branches = branches;
+    this.selectedBranch = selectedBranch;
+    this.canSelectBranch = branchPolicy.canSelectBranch;
   }
 
   async getConfig() {

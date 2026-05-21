@@ -1,0 +1,33 @@
+.stock-detail {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  margin-bottom: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.28);
+  border-radius: 8px;
+  color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  text-align: center;
+  line-height: 1.1;
+
+  span,
+  small {
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  b {
+    font-size: 1.25rem;
+  }
+
+  &:disabled {
+    opacity: 1;
+  }
+
+  &.has-other-stock {
+    border-color: rgba(var(--ion-color-secondary-rgb), 0.5);
+    color: var(--ion-color-secondary);
+    background: rgba(var(--ion-color-secondary-rgb), 0.12);
+  }
+}

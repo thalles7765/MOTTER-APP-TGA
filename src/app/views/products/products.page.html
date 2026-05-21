@@ -124,14 +124,20 @@
           >
             Preço: <b>R$1,48</b>
           </p> -->
-          <div class="w-100 d-flex flex-row mb-2 gap-2">
-            <p
-              class="w-100 mb-0 text-center text-primary"
-              style="font-size: 0.7rem"
+          <div class="w-100 d-flex flex-row mb-2 gap-2 align-items-stretch">
+            <button
+              type="button"
+              class="stock-pill"
+              [class.has-other-stock]="hasOtherBranchBalance(xProduct)"
+              [disabled]="!canSelectBranch || !xProduct.saldos?.length"
+              (click)="openStockBranches(xProduct, $event)"
             >
-              Saldo:
-              <b>{{xProduct.SALDOGERALFISICO}}</b>
-            </p>
+              <span>Saldo filial</span>
+              <b>{{ selectedBranchBalance(xProduct) }}</b>
+              @if (hasOtherBranchBalance(xProduct)) {
+                <small>+ em outra filial</small>
+              }
+            </button>
 
             <p class="w-100 mb-2 text-center" style="font-size: 0.7rem">
               Unidade:
@@ -139,7 +145,7 @@
             </p>
           </div>
 
-          @if (xProduct.SALDOGERALFISICO <= 0) {
+          @if (selectedBranchBalance(xProduct) <= 0) {
           <p
             style="font-size: 0.7rem"
             class="text-white text-center mb-2 p-1 rounded bg-danger shadow-sm fw-bold"

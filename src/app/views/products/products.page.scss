@@ -1,4 +1,38 @@
 
+.stock-pill {
+  display: grid;
+  gap: 0.1rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.28);
+  border-radius: 8px;
+  color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  text-align: center;
+  line-height: 1.1;
+
+  span,
+  small {
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  b {
+    font-size: 1rem;
+  }
+
+  &:disabled {
+    opacity: 1;
+  }
+
+  &.has-other-stock {
+    border-color: rgba(var(--ion-color-secondary-rgb), 0.5);
+    color: var(--ion-color-secondary);
+    background: rgba(var(--ion-color-secondary-rgb), 0.12);
+  }
+}
+
 .box-pulse {
     width: 50%;
     // width:250px;

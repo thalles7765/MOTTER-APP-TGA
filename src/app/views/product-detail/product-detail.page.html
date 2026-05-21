@@ -110,9 +110,22 @@
             Preço: <b>R$1,48</b>
           </p> -->
 
-          <p class="mb-0 text-gray small">
-            Saldo : <b>{{product?.SALDOGERALFISICO || 0}}</b>
-          </p>
+          <button
+            type="button"
+            class="stock-detail"
+            [class.has-other-stock]="hasOtherBranchBalance()"
+            [disabled]="!canSelectBranch || !product?.saldos?.length"
+            (click)="openStockBranches($event)"
+          >
+            <span>Saldo da filial selecionada</span>
+            <b>{{ selectedBranchBalance() }}</b>
+            @if (selectedBranchStock()?.CODLOC) {
+              <small>Local {{ selectedBranchStock()?.CODLOC }}</small>
+            }
+            @if (hasOtherBranchBalance()) {
+              <small>Possui saldo em outra filial</small>
+            }
+          </button>
           <!-- <p class="mb-2 text-gray small">
             Saldo 2: <b>{{product?.SALDOGERALFISICO2 || 0}}</b>
           </p> -->

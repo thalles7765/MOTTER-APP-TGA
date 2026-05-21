@@ -7,6 +7,17 @@ import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner'
 import { Router } from '@angular/router';
 import { ProductDetailPage } from '../product-detail/product-detail.page';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { branch } from 'src/app/interfaces/branch';
+import { ProductStockBranchesComponent } from '../product-stock-branches/product-stock-branches.component';
+
+type ProductStock = {
+  CODEMPRESA: number;
+  CODFILIAL: number;
+  CODLOC: string;
+  SALDOFISICO1: number;
+  SALDOFISICO2?: number;
+};
 
 @Component({
   selector: 'app-products',
@@ -22,11 +33,15 @@ export class ProductsPage implements OnInit {
 
   protected brand = brandConfig;
   protected products: any[] = [];
+  protected branches: branch[] = [];
+  protected selectedBranch: branch | null = null;
+  protected canSelectBranch = false;
   protected searchText = '';
 
-  constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController) { }
+  constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController, private branchSvc: BranchService) { }
 
   async ngOnInit() {
+    await this.loadBranchContext();
     await this.getProdutcts();
 
     console.log('status modal', this.status_modal)
@@ -111,6 +126,67 @@ export class ProductsPage implements OnInit {
     // if (role === 'confirm') {
     //   this.message = `Hello, ${data}!`;
     // }
+  }
+
+  selectedBranchStock(product: any) {
+    if (!this.selectedBranch) {
+      return null;
+    }
+
+    return this.productStocks(product).find((stock) =>
+      stock.CODEMPRESA === this.selectedBranch?.CODEMPRESA &&
+      stock.CODFILIAL === this.selectedBranch?.CODFILIAL
+    ) || null;
+  }
+
+  selectedBranchBalance(product: any) {
+    return this.selectedBranchStock(product)?.SALDOFISICO1 || 0;
+  }
+
+  hasOtherBranchBalance(product: any) {
+    if (!this.canSelectBranch || !this.selectedBranch) {
+      return false;
+    }
+
+    return this.productStocks(product).some((stock) =>
+      (stock.CODEMPRESA !== this.selectedBranch?.CODEMPRESA ||
+        stock.CODFILIAL !== this.selectedBranch?.CODFILIAL) &&
+      Number(stock.SALDOFISICO1 || 0) > 0
+    );
+  }
+
+  async openStockBranches(product: any, event?: Event) {
+    event?.stopPropagation();
+
+    if (!this.canSelectBranch || this.productStocks(product).length <= 0) {
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ProductStockBranchesComponent,
+      componentProps: {
+        product,
+        branches: this.branches
+      }
+    });
+
+    await modal.present();
+  }
+
+  private productStocks(product: any): ProductStock[] {
+    return product?.saldos || [];
+  }
+
+  private async loadBranchContext() {
+    const [branches, selectedBranch, branchPolicy] = await Promise.all([
+      this.branchSvc.getBranches(),
+      this.branchSvc.getSelectedBranch(),
+      this.branchSvc.getBranchPolicy()
+    ]);
+
+    this.branches = branches;
+    this.selectedBranch = selectedBranch;
+    this.canSelectBranch = branchPolicy.canSelectBranch;
   }
 
   async navigateURL(url = '', data) {
