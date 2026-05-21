@@ -83,6 +83,22 @@
                 }
               ]
             },
+            "mercandressa": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.mercandressa.ts"
+                }
+              ]
+            },
+            "mercandressa-production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.mercandressa.prod.ts"
+                }
+              ]
+            },
             "ci": {
               "progress": false
             }
@@ -103,6 +119,9 @@
             },
             "robertopf": {
               "buildTarget": "app:build:development,robertopf"
+            },
+            "mercandressa": {
+              "buildTarget": "app:build:development,mercandressa"
             },
             "ci": {
               "progress": false

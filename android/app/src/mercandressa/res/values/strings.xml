@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mercandressa App</string>
+    <string name="title_activity_main">Mercandressa App</string>
+    <string name="package_name">mercandressa.appsell.store</string>
+    <string name="custom_url_scheme">mercandressa.appsell.store</string>
+</resources>

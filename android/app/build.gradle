@@ -32,6 +32,10 @@ android {
             dimension "client"
             applicationId "robertopf.appsell.store"
         }
+        mercandressa {
+            dimension "client"
+            applicationId "mercandressa.appsell.store"
+        }
     }
 }
 
