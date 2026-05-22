@@ -26,7 +26,7 @@
           <!-- <p>teste</p> -->
           <!-- *ngFor="let p of appPages; let i = index" -->
 
-          @for (p of appPages; track $index) {
+          @for (p of visibleAppPages; track $index) {
             <ion-item
             routerDirection="root"
             [routerLink]="p.url"

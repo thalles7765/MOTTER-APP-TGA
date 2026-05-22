@@ -1,0 +1,127 @@
+.permission-search { padding: 0 0.35rem; }
+
+.permission-filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0 0.55rem 0.65rem;
+}
+
+.permission-filter {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.24);
+  border-radius: 999px;
+  color: var(--ion-color-primary);
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.permission-filter.active {
+  color: #fff;
+  background: var(--ion-color-primary);
+}
+
+.permission-hero {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary), var(--ion-color-tertiary));
+}
+
+.permission-hero p,
+.permission-hero h2,
+.user-login,
+.user-card-header h3,
+.user-card-header span,
+.permission-row p,
+.permission-row span { margin: 0; }
+
+.permission-hero p {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.permission-hero h2 {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.user-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.user-card {
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.user-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem;
+  border: 0;
+  background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.1), rgba(var(--ion-color-secondary-rgb), 0.08));
+  text-align: left;
+}
+
+.user-login {
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.user-card-header h3 { font-size: 1rem; }
+
+.user-card-header span {
+  display: inline-flex;
+  margin-top: 0.35rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  color: #15803d;
+  background: #dcfce7;
+  font-size: 0.7rem;
+}
+
+.user-card-header span.inactive {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.permission-grid { padding: 0.65rem 0.9rem 0.9rem; }
+
+.permission-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.permission-row p {
+  font-size: 0.88rem;
+}
+
+.permission-row span {
+  color: #64748b;
+  font-size: 0.72rem;
+}
+
+.empty-state {
+  padding: 1rem;
+  color: #475569;
+  background: #f8fafc;
+  text-align: center;
+}

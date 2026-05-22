@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authenticationGuard } from './services/auth/authguard.service';
+import { adminGuard, authenticationGuard } from './services/auth/authguard.service';
 
 export const routes: Routes = [
   {
@@ -47,6 +47,11 @@ export const routes: Routes = [
     canActivate: [authenticationGuard]
   },
   {
+    path: 'app/user-permissions',
+    loadComponent: () => import('./views/user-permissions/user-permissions.page').then(m => m.UserPermissionsPage),
+    canActivate: [adminGuard]
+  },
+  {
     path: 'app/store',
     loadComponent: () => import('./views/store/store.page').then(m => m.StorePage),
     canActivate: [authenticationGuard]
@@ -57,4 +62,3 @@ export const routes: Routes = [
     canActivate: [authenticationGuard]
   },
 ];
-

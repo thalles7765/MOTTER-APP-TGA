@@ -16,6 +16,7 @@ import { brandConfig } from './branding/brand-config';
 })
 export class AppComponent {
   public brand = brandConfig;
+  public isAdmin = false;
 
   public appPages = [
     { title: 'Início', url: '/app/home', icon: 'home' },
@@ -25,6 +26,7 @@ export class AppComponent {
     { title: 'Movimentos', url: '/app/orders', icon: 'bag' },
     // { title: 'Antrisia (I.A)', url: '/app/antrisia', icon: 'bulb' },
     { title: 'Configurações', url: '/app/config', icon: 'settings' },
+    { title: 'Permissões', url: '/app/user-permissions', icon: 'shield-checkmark', adminOnly: true },
     { title: 'Sair', url: '/app/login', icon: 'log-in' },
     // { title: 'Orçamentos', url: '/app/store', icon: 'document-text' },
     // { title: 'Configurações', url: '/app/config', icon: 'settings' },    
@@ -37,6 +39,14 @@ export class AppComponent {
 
   constructor(private alertController: AlertController, private authSvc: AuthService) {
     applyBrandTheme(this.brand);
+    this.authSvc.currentUser$.subscribe((user) => {
+      this.isAdmin = this.toBoolean(user?.admin);
+    });
+    this.authSvc.getCurrentUser();
+  }
+
+  get visibleAppPages() {
+    return this.appPages.filter((page) => !page.adminOnly || this.isAdmin);
   }
 
   async logout(event) {
@@ -56,6 +66,10 @@ export class AppComponent {
     });
 
     await alert.present();
+  }
+
+  private toBoolean(value: any) {
+    return value === true || value === 1 || value === '1' || value === 'true';
   }
 
 }

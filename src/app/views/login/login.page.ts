@@ -81,6 +81,7 @@ export class LoginPage implements OnInit {
 			// console.log('###@@@')
 			// console.log(login.data)
 			if (!login.data.data.error) {
+				await this.auth.setCurrentUser(login.data.data);
 				await loading.dismiss();
 
 				const branchWasSelected = await this.resolveBranchSelection(login.data.data);

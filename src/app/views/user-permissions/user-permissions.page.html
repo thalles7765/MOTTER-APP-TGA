@@ -1,0 +1,94 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img [src]="brand.assets.favicon" height="52px" alt="" />
+      <ion-title>Permissões</ion-title>
+    </div>
+  </ion-toolbar>
+
+  <div class="permission-search">
+    <ion-searchbar
+      [value]="searchText"
+      [debounce]="400"
+      (ionInput)="searchUsers($event)"
+      animated="true"
+      placeholder="Pesquisar usuário"
+      show-clear-button="always"
+    ></ion-searchbar>
+  </div>
+
+  <div class="permission-filter-bar">
+    @for (filter of filterOptions; track filter.key) {
+      <button
+        type="button"
+        class="permission-filter"
+        [class.active]="isFilterActive(filter.key)"
+        (click)="toggleFilter(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+
+    @if (activeFilters.size > 0) {
+      <button type="button" class="permission-filter" (click)="clearFilters()">
+        Limpar
+      </button>
+    }
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="permission-hero">
+    <ion-icon name="shield-checkmark"></ion-icon>
+    <div>
+      <p>Administração</p>
+      <h2>Permissões dos usuários</h2>
+    </div>
+  </div>
+
+  <div class="user-list">
+    @if (filteredUsers.length <= 0) {
+      <div class="empty-state">
+        Nenhum usuário encontrado.
+      </div>
+    }
+
+    @for (user of filteredUsers; track userId(user)) {
+      <div class="user-card">
+        <button type="button" class="user-card-header" (click)="toggleExpanded(user)">
+          <div>
+            <p class="user-login">{{ userLogin(user) }}</p>
+            <h3>{{ userName(user) }}</h3>
+            <span [class.inactive]="!user.active">
+              {{ user.active ? 'Ativo' : 'Inativo' }}
+            </span>
+          </div>
+
+          <ion-icon [name]="isExpanded(user) ? 'chevron-down' : 'chevron-forward'"></ion-icon>
+        </button>
+
+        @if (isExpanded(user)) {
+          <div class="permission-grid">
+            @for (permission of permissionOptions; track permission.key) {
+              <div class="permission-row">
+                <div>
+                  <p>{{ permission.label }}</p>
+                  <span>{{ permission.description }}</span>
+                </div>
+
+                <ion-toggle
+                  [checked]="user[permission.key]"
+                  (ionChange)="updatePermission(user, permission.key, $event)"
+                ></ion-toggle>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ion-content>
