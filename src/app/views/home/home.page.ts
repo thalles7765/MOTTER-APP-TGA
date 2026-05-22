@@ -1,8 +1,8 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MenuController, AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton, IonIcon, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
-import { Router, RouterLink } from '@angular/router';
+import { MenuController, AlertController, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
 import { branch } from 'src/app/interfaces/branch';
@@ -11,7 +11,7 @@ import { branch } from 'src/app/interfaces/branch';
     selector: 'app-home',
     templateUrl: './home.page.html',
     styleUrls: ['./home.page.scss'],
-    imports: [IonItem, IonLabel, IonSelect, IonSelectOption, IonCol, IonRow, IonGrid, IonContent, IonHeader, IonGrid, IonRow, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule]
+    imports: [IonItem, IonLabel, IonSelect, IonSelectOption, IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule]
 })
 export class HomePage implements OnInit {
   public brand = brandConfig;
@@ -19,13 +19,41 @@ export class HomePage implements OnInit {
   protected selectedBranch: branch | null = null;
   protected selectedBranchCode: number | null = null;
   protected canSelectBranch = false;
+  protected menuItems = [
+    {
+      title: 'Produtos',
+      subtitle: 'Consulta de catálogo e saldos',
+      url: '/app/products',
+      icon: 'assets/icon/produto.png',
+      accent: 'products'
+    },
+    {
+      title: 'Clientes',
+      subtitle: 'Carteira e informações comerciais',
+      url: '/app/clients',
+      icon: 'assets/icon/cliente.png',
+      accent: 'clients'
+    },
+    {
+      title: 'Movimentos',
+      subtitle: 'Pedidos, orçamentos e histórico',
+      url: '/app/orders',
+      icon: 'assets/icon/venda2.png',
+      accent: 'orders'
+    },
+  ];
+
+  protected socialItems = [
+    { title: 'Website', icon: 'assets/icon/website.png', url: this.brand.website },
+    { title: 'Facebook', icon: 'assets/icon/facebook.png' },
+    { title: 'Instagram', icon: 'assets/icon/instagram.png' },
+  ];
 
   constructor(public menuCtrl: MenuController, private alertController: AlertController, private _route: Router, private branchSvc: BranchService) {
     
    }
 
   async ngOnInit() {
-    console.log('teste');
     this.menuCtrl.enable(true, 'menuOpt');
     await this.loadBranches();
   }
@@ -65,6 +93,14 @@ export class HomePage implements OnInit {
     } else {
       await this.urlNotFound();
     }
+  }
+
+  openExternalUrl(url?: string) {
+    if (!url) {
+      return;
+    }
+
+    window.open(url, '_blank');
   }
 
   async changeBranch(branchCode: number) {
