@@ -4,9 +4,10 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <div class="d-flex align-items-center gap-2 px-2 py-1">
-      <img [src]="brand.assets.favicon" width="44" height="44" style="object-fit: contain;" alt="" />
-      <ion-title>{{ brand.companyFullName }}</ion-title>
+    <div class="d-flex">
+      <!-- <img [src]="brand.assets.favicon" width="44" height="44" style="object-fit: contain;" alt="" /> -->
+      <!-- <ion-title>{{ brand.companyFullName }}</ion-title> -->
+      <ion-title>Menu</ion-title>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -17,9 +18,10 @@
       <div class="hero-copy">
         <img [src]="brand.assets.logo" alt="" />
         <div>
-          <p>{{ brand.cityState || brand.companyName }}</p>
-          <h1>{{ brand.companyFullName }}</h1>
           <span>{{ selectedBranch ? selectedBranch.NOMEFANTASIA : 'Selecione uma filial' }}</span>
+          <p>{{ brand.cityState || brand.companyName }}</p>
+          <p>{{ selectedBranch ? selectedBranch.CGC : ''}}</p>
+          <!-- <h1>{{ brand.companyFullName }}</h1> -->
         </div>
       </div>
     </section>
@@ -44,9 +46,10 @@
 
       @if (selectedBranch) {
         <div class="branch-detail">
-          <strong>{{ selectedBranch.CODFILIAL }} - {{ selectedBranch.NOMEFANTASIA }}</strong>
+          <!-- <strong>{{ selectedBranch.RAZAOSOCIAL }}</strong> -->
+          <span>{{ selectedBranch.RAZAOSOCIAL }}</span>
           <span>{{ selectedBranch.RUA }}, {{ selectedBranch.NUMERO }} - {{ selectedBranch.BAIRRO }}</span>
-          <span>{{ selectedBranch.CIDADE }} - {{ selectedBranch.ESTADO }} | {{ selectedBranch.TELEFONE }}</span>
+          <span>{{ selectedBranch.TELEFONE }}</span>
         </div>
       } @else {
         <div class="branch-warning">
