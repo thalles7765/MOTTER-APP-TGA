@@ -123,7 +123,7 @@ export class LoginPage implements OnInit {
 
 		const branches = await this.branchSvc.getBranches(true);
 		const defaultBranch = Number(userData?.default_branch || 0) || null;
-		const canSelectBranch = this.toBoolean(userData?.select_branch);
+		const canSelectBranch = this.toBoolean(userData?.select_branch) || this.toBoolean(userData?.admin);
 
 		await this.branchSvc.setBranchPolicy({ defaultBranch, canSelectBranch });
 
