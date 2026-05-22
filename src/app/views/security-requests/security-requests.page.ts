@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonMenuButton, IonTitle, IonToolbar, LoadingController, ModalController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, closeCircle, desktop, eye, refresh, shieldCheckmark, time } from 'ionicons/icons';
@@ -11,6 +12,7 @@ import { SecurityService } from 'src/app/services/security/security.service';
 import { SecurityRequestDetailComponent } from '../security-request-detail/security-request-detail.component';
 
 type SecurityStatusFilter = 'all' | 'A' | 'L' | 'B';
+type BranchScope = 'selected' | 'all';
 
 @Component({
   selector: 'app-security-requests',
@@ -24,6 +26,7 @@ export class SecurityRequestsPage implements OnInit {
   protected selectedBranch: branch | null = null;
   protected requests: security_request[] = [];
   protected activeFilter: SecurityStatusFilter = 'A';
+  protected branchScope: BranchScope = 'selected';
 
   protected filterOptions: { key: SecurityStatusFilter; label: string }[] = [
     { key: 'A', label: 'Aguardando' },
@@ -35,6 +38,7 @@ export class SecurityRequestsPage implements OnInit {
   constructor(
     private branchSvc: BranchService,
     private securitySvc: SecurityService,
+    private route: ActivatedRoute,
     private loadingController: LoadingController,
     private modalController: ModalController,
     private toastController: ToastController
@@ -43,6 +47,10 @@ export class SecurityRequestsPage implements OnInit {
   }
 
   async ngOnInit() {
+    if (this.route.snapshot.queryParamMap.get('allBranches') === '1') {
+      this.branchScope = 'all';
+    }
+
     await this.loadRequests();
   }
 
@@ -65,13 +73,15 @@ export class SecurityRequestsPage implements OnInit {
       await loading.present();
       this.selectedBranch = await this.branchSvc.getSelectedBranch();
 
-      if (!this.selectedBranch) {
+      if (this.branchScope === 'selected' && !this.selectedBranch) {
         this.requests = [];
         await this.showToast('Selecione uma filial para visualizar as solicitações.');
         return;
       }
 
-      this.requests = await this.securitySvc.getRequests(this.selectedBranch.CODFILIAL);
+      this.requests = await this.securitySvc.getRequests(
+        this.branchScope === 'selected' ? this.selectedBranch?.CODFILIAL : null
+      );
     } catch (error) {
       await this.showToast('Não foi possível carregar as solicitações.');
     } finally {
@@ -85,6 +95,15 @@ export class SecurityRequestsPage implements OnInit {
 
   isFilterActive(filter: SecurityStatusFilter) {
     return this.activeFilter === filter;
+  }
+
+  setBranchScope(scope: BranchScope) {
+    this.branchScope = scope;
+    this.loadRequests();
+  }
+
+  isBranchScopeActive(scope: BranchScope) {
+    return this.branchScope === scope;
   }
 
   statusText(status: string) {

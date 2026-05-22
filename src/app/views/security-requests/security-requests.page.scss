@@ -1,7 +1,7 @@
 .security-hero {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0.9rem;
   color: #fff;
   background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary), var(--ion-color-tertiary));
 }
@@ -15,23 +15,30 @@
 
 .security-hero h1 {
   font-size: 1.35rem;
-  font-weight: 900;
 }
 
 .security-hero span {
   display: inline-flex;
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 999px;
 }
 
+.branch-scope-bar,
 .filter-bar {
   display: flex;
   overflow-x: auto;
+}
+
+.branch-scope-bar {
   padding: 0.75rem 0.9rem 0;
 }
 
-.filter-chip {
+.filter-bar {
+  padding: 0.75rem 0.9rem 0;
+}
+
+.filter-chip,
+.scope-chip {
   flex: 0 0 auto;
   padding: 0.35rem 0.62rem;
   border: 1px solid rgba(var(--ion-color-primary-rgb), 0.22);
@@ -42,21 +49,21 @@
   font-weight: 800;
 }
 
-.filter-chip.active {
+.filter-chip.active,
+.scope-chip.active {
   color: #fff;
   background: var(--ion-color-primary);
 }
 
 .request-list {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.6rem;
   padding: 0.9rem;
 }
 
 .request-card {
   overflow: hidden;
   border-left: 4px solid #f59e0b;
-  border-radius: 8px;
   background: #fff;
 }
 
@@ -82,6 +89,12 @@
   font-size: 0.72rem;
 }
 
+.request-main small {
+  display: inline-block;
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
 .request-topline span {
   padding: 0.16rem 0.4rem;
   border-radius: 999px;
@@ -94,7 +107,6 @@
 
 .request-card p {
   overflow: hidden;
-  color: #64748b;
   font-size: 0.78rem;
   white-space: nowrap;
   text-overflow: ellipsis;

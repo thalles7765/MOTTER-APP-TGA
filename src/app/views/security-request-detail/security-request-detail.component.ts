@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { checkmarkCircle, closeCircle, desktop, documentText, lockClosed, person, time } from 'ionicons/icons';
+import { business, checkmarkCircle, closeCircle, desktop, documentText, lockClosed, person, time } from 'ionicons/icons';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { security_request } from 'src/app/interfaces/security-request';
 
@@ -21,7 +21,7 @@ export class SecurityRequestDetailComponent {
   protected message = '';
 
   constructor(private modalCtrl: ModalController) {
-    addIcons({ checkmarkCircle, closeCircle, desktop, documentText, lockClosed, person, time });
+    addIcons({ business, checkmarkCircle, closeCircle, desktop, documentText, lockClosed, person, time });
   }
 
   statusText(status: string) {

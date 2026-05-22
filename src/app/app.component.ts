@@ -1,12 +1,13 @@
 
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AlertController, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { AuthService } from './services/auth/auth.service';
 import { applyBrandTheme } from './branding/apply-brand-theme';
 import { brandConfig } from './branding/brand-config';
+import { SecurityService } from './services/security/security.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ import { brandConfig } from './branding/brand-config';
 export class AppComponent {
   public brand = brandConfig;
   public isAdmin = false;
+  public pendingSecurityRequests = 0;
 
   public appPages = [
     { title: 'Início', url: '/app/home', icon: 'home' },
@@ -38,12 +40,24 @@ export class AppComponent {
   // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
   // }
 
-  constructor(private alertController: AlertController, private authSvc: AuthService) {
+  constructor(
+    private alertController: AlertController,
+    private authSvc: AuthService,
+    private securitySvc: SecurityService,
+    private router: Router
+  ) {
     applyBrandTheme(this.brand);
     this.authSvc.currentUser$.subscribe((user) => {
       this.isAdmin = this.toBoolean(user?.admin);
+
+      if (this.isAdmin) {
+        this.loadPendingSecurityRequests();
+      } else {
+        this.pendingSecurityRequests = 0;
+      }
     });
     this.authSvc.getCurrentUser();
+    setInterval(() => this.loadPendingSecurityRequests(), 60000);
   }
 
   get visibleAppPages() {
@@ -71,6 +85,24 @@ export class AppComponent {
 
   private toBoolean(value: any) {
     return value === true || value === 1 || value === '1' || value === 'true';
+  }
+
+  async openSecurityRequests() {
+    this.pendingSecurityRequests = 0;
+    await this.router.navigate(['/app/security-requests'], { queryParams: { allBranches: '1' } });
+  }
+
+  private async loadPendingSecurityRequests() {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    try {
+      const requests = await this.securitySvc.getRequests();
+      this.pendingSecurityRequests = requests.filter((request) => request.STATUS === 'A').length;
+    } catch (error) {
+      this.pendingSecurityRequests = 0;
+    }
   }
 
 }

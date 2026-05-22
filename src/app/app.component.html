@@ -56,4 +56,18 @@
     </ion-menu>
     <ion-router-outlet id="menuOpt"></ion-router-outlet>
   </ion-split-pane>
+
+  @if (isAdmin && pendingSecurityRequests > 0) {
+    <button
+      type="button"
+      class="d-inline-flex align-items-center gap-2 position-fixed border-0 text-white fw-bold"
+      style="right: 12px; bottom: 12px; z-index: 10000; padding: 0.5rem 0.7rem; border-radius: 999px; background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));"
+      (click)="openSecurityRequests()"
+    >
+      <span class="d-grid bg-white" style="place-items: center; min-width: 1.35rem; height: 1.35rem; border-radius: 999px; color: var(--ion-color-primary);">
+        {{ pendingSecurityRequests }}
+      </span>
+      Liberações pendentes
+    </button>
+  }
 </ion-app>

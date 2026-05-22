@@ -7,10 +7,12 @@ import { apiClient } from '../api/api-client';
   providedIn: 'root'
 })
 export class SecurityService {
-  async getRequests(codfilial: number): Promise<security_request[]> {
+  async getRequests(codfilial?: number | null): Promise<security_request[]> {
+    const params = codfilial ? { codfilial } : {};
+
     return apiClient
       .get(`${environment.url_api}/security`, {
-        params: { codfilial },
+        params,
         withCredentials: true
       })
       .then((response) => response.data?.data || []);

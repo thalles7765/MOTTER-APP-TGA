@@ -15,11 +15,20 @@
 <ion-content>
   <section class="security-hero">
     <div>
-      <p>{{ selectedBranch?.NOMEFANTASIA || brand.companyName }}</p>
+      <p>{{ branchScope === 'all' ? 'Todas filiais' : selectedBranch?.NOMEFANTASIA || brand.companyName }}</p>
       <h1>Solicitações de acesso</h1>
       <span>{{ waitingCount }} aguardando liberação</span>
     </div>
     <ion-icon name="shield-checkmark"></ion-icon>
+  </section>
+
+  <section class="branch-scope-bar">
+    <button type="button" class="scope-chip" [class.active]="isBranchScopeActive('selected')" (click)="setBranchScope('selected')">
+      Filial selecionada
+    </button>
+    <button type="button" class="scope-chip" [class.active]="isBranchScopeActive('all')" (click)="setBranchScope('all')">
+      Todas filiais
+    </button>
   </section>
 
   <section class="filter-bar">
@@ -50,6 +59,7 @@
               <strong>#{{ request.IDSOLICITA }}</strong>
               <span>{{ statusText(request.STATUS) }}</span>
             </div>
+            <small>Filial {{ request.CODFILIAL }}</small>
             <h2>{{ request.OPCAO || 'Solicitação de acesso' }}</h2>
             <p>{{ request.TEXTO || 'Sem descrição informada.' }}</p>
           </div>
