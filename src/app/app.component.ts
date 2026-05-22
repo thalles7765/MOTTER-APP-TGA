@@ -40,6 +40,8 @@ export class AppComponent {
   constructor(private alertController: AlertController, private authSvc: AuthService) {
     applyBrandTheme(this.brand);
     this.authSvc.currentUser$.subscribe((user) => {
+      console.log('@@@@')
+      console.log(user);
       this.isAdmin = this.toBoolean(user?.admin);
     });
     this.authSvc.getCurrentUser();

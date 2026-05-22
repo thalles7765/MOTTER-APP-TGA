@@ -127,18 +127,20 @@ export class UserPermissionsPage implements OnInit {
   }
 
   userName(user: app_user) {
-    return user.name || user.NOME || user.username || user.USERNAME || `Usuário ${this.userId(user)}`;
+    return user.name || user.NOME || user.user || user.USER || user.username || user.USERNAME || `Usuário ${this.userId(user)}`;
   }
 
   userLogin(user: app_user) {
-    return user.username || user.USERNAME || 'sem login';
+    return user.username || user.USERNAME || user.user || user.USER || user.email || user.EMAIL || 'sem login';
   }
 
   private normalizeUser(user: any): app_user {
     return {
       ...user,
       id: user.id || user.ID,
-      username: user.username || user.USERNAME,
+      user: user.user || user.USER || user.username || user.USERNAME,
+      username: user.username || user.USERNAME || user.user || user.USER,
+      email: user.email || user.EMAIL,
       name: user.name || user.NOME,
       admin: this.toBoolean(user.admin),
       clients: this.toBoolean(user.clients),
