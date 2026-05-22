@@ -21,6 +21,8 @@ type ProductStock = {
   ESTOQUEMAXIMO?: number;
 };
 
+type ProductFilter = 'withStock' | 'withoutStock' | 'withoutPrice' | 'withPrice' | 'withPromotion' | 'withoutPromotion';
+
 @Component({
   selector: 'app-products',
   templateUrl: './products.page.html',
@@ -39,6 +41,15 @@ export class ProductsPage implements OnInit {
   protected selectedBranch: branch | null = null;
   protected canSelectBranch = false;
   protected searchText = '';
+  protected activeFilters = new Set<ProductFilter>();
+  protected productFilters: { key: ProductFilter; label: string }[] = [
+    { key: 'withStock', label: 'C/ Saldo' },
+    { key: 'withoutStock', label: 'S/ Saldo' },
+    { key: 'withoutPrice', label: 'Sem Preço' },
+    { key: 'withPrice', label: 'Com Preço' },
+    { key: 'withPromotion', label: 'C/ Promoção' },
+    { key: 'withoutPromotion', label: 'S/ Promoção' },
+  ];
 
   constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController, private branchSvc: BranchService) { }
 
@@ -55,6 +66,31 @@ export class ProductsPage implements OnInit {
 
   confirm(product) {
     this.modalCtrl.dismiss(product, 'confirm');
+  }
+
+  get filteredProducts() {
+    return this.products.filter((product) =>
+      this.matchesStockFilters(product) &&
+      this.matchesPriceFilters(product) &&
+      this.matchesPromotionFilters(product)
+    );
+  }
+
+  toggleFilter(filter: ProductFilter) {
+    if (this.activeFilters.has(filter)) {
+      this.activeFilters.delete(filter);
+      return;
+    }
+
+    this.activeFilters.add(filter);
+  }
+
+  isFilterActive(filter: ProductFilter) {
+    return this.activeFilters.has(filter);
+  }
+
+  clearFilters() {
+    this.activeFilters.clear();
   }
 
   async showLoading() {
@@ -181,6 +217,45 @@ export class ProductsPage implements OnInit {
 
   private productStocks(product: any): ProductStock[] {
     return product?.saldos || [];
+  }
+
+  private matchesStockFilters(product: any) {
+    const withStock = this.activeFilters.has('withStock');
+    const withoutStock = this.activeFilters.has('withoutStock');
+
+    if (!withStock && !withoutStock) {
+      return true;
+    }
+
+    const hasStock = this.selectedBranchBalance(product) > 0;
+
+    return (withStock && hasStock) || (withoutStock && !hasStock);
+  }
+
+  private matchesPriceFilters(product: any) {
+    const withPrice = this.activeFilters.has('withPrice');
+    const withoutPrice = this.activeFilters.has('withoutPrice');
+
+    if (!withPrice && !withoutPrice) {
+      return true;
+    }
+
+    const hasPrice = Number(product?.PRECO2 || 0) > 0;
+
+    return (withPrice && hasPrice) || (withoutPrice && !hasPrice);
+  }
+
+  private matchesPromotionFilters(product: any) {
+    const withPromotion = this.activeFilters.has('withPromotion');
+    const withoutPromotion = this.activeFilters.has('withoutPromotion');
+
+    if (!withPromotion && !withoutPromotion) {
+      return true;
+    }
+
+    const hasPromotion = product?.CD_LEGENDA === 6;
+
+    return (withPromotion && hasPromotion) || (withoutPromotion && !hasPromotion);
   }
 
   private resolveStockStatusClass(stock: ProductStock | null) {

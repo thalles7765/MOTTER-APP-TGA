@@ -38,12 +38,31 @@
       alt=""
     />
   </div>
+
+  <div class="product-filter-bar">
+    @for (filter of productFilters; track filter.key) {
+      <button
+        type="button"
+        class="product-filter"
+        [class.active]="isFilterActive(filter.key)"
+        (click)="toggleFilter(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+
+    @if (activeFilters.size > 0) {
+      <button type="button" class="product-filter clear" (click)="clearFilters()">
+        Limpar
+      </button>
+    }
+  </div>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="d-flex flex-column align-items-center p-3 gap-3">
     <!-- *ngFor="let xtest of [1,2,3,4,5,6,7,8,9,10]" -->
-    @if (products.length <= 0) {
+    @if (filteredProducts.length <= 0) {
     <div
       class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
       style="background-color: whitesmoke"
@@ -63,7 +82,7 @@
         Nenhum registro encontrado...
       </p>
     </div>
-    } @for (xProduct of products; track $index) {
+    } @for (xProduct of filteredProducts; track $index) {
 
     <!-- (click)="navigateURL('/app/product/detail', xProduct)" -->
     <div
@@ -136,7 +155,7 @@
               <span>Saldo filial</span>
               <b>{{ selectedBranchBalance(xProduct) }}</b>
               @if (hasOtherBranchBalance(xProduct)) {
-                <small>+ em outra filial</small>
+                <small class="text-success">+ em outra filial</small>
               }
             </button>
 
@@ -146,14 +165,14 @@
             </p>
           </div>
 
-          @if (selectedBranchBalance(xProduct) <= 0) {
+          <!-- @if (selectedBranchBalance(xProduct) <= 0) {
           <p
             style="font-size: 0.7rem"
             class="text-white text-center mb-2 p-1 rounded bg-danger shadow-sm fw-bold"
           >
             PRODUTO SEM SALDO
           </p>
-          }          
+          }           -->
 
           @if (xProduct.CD_LEGENDA === 6) {
           <div

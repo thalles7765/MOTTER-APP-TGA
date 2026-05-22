@@ -1,4 +1,25 @@
 
+.product-filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0 0.55rem 0.55rem;
+}
+
+.product-filter {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.24);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  &.active {
+    color: #ffffff;
+    background: var(--ion-color-primary);
+  }
+}
+
 .stock-pill {
   --stock-color: var(--ion-color-primary);
   --stock-bg: rgba(var(--ion-color-primary-rgb), 0.08);
