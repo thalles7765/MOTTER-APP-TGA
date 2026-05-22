@@ -27,6 +27,7 @@ export class AppComponent {
     // { title: 'Antrisia (I.A)', url: '/app/antrisia', icon: 'bulb' },
     { title: 'Configurações', url: '/app/config', icon: 'settings' },
     { title: 'Permissões', url: '/app/user-permissions', icon: 'shield-checkmark', adminOnly: true },
+    { title: 'Liberações', url: '/app/security-requests', icon: 'lock-open', adminOnly: true },
     { title: 'Sair', url: '/app/login', icon: 'log-in' },
     // { title: 'Orçamentos', url: '/app/store', icon: 'document-text' },
     // { title: 'Configurações', url: '/app/config', icon: 'settings' },    
@@ -40,8 +41,6 @@ export class AppComponent {
   constructor(private alertController: AlertController, private authSvc: AuthService) {
     applyBrandTheme(this.brand);
     this.authSvc.currentUser$.subscribe((user) => {
-      console.log('@@@@')
-      console.log(user);
       this.isAdmin = this.toBoolean(user?.admin);
     });
     this.authSvc.getCurrentUser();
