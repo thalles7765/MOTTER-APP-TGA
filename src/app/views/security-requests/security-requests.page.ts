@@ -24,6 +24,7 @@ type BranchScope = 'selected' | 'all';
 export class SecurityRequestsPage implements OnInit {
   protected brand = brandConfig;
   protected selectedBranch: branch | null = null;
+  protected branches: branch[] = [];
   protected requests: security_request[] = [];
   protected activeFilter: SecurityStatusFilter = 'A';
   protected branchScope: BranchScope = 'selected';
@@ -71,6 +72,7 @@ export class SecurityRequestsPage implements OnInit {
 
     try {
       await loading.present();
+      this.branches = await this.branchSvc.getBranches();
       this.selectedBranch = await this.branchSvc.getSelectedBranch();
 
       if (this.branchScope === 'selected' && !this.selectedBranch) {
@@ -133,7 +135,7 @@ export class SecurityRequestsPage implements OnInit {
   async openRequest(request: security_request) {
     const modal = await this.modalController.create({
       component: SecurityRequestDetailComponent,
-      componentProps: { request },
+      componentProps: { request, branches: this.branches },
       cssClass: 'security-request-modal'
     });
 

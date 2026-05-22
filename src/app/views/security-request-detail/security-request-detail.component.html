@@ -47,7 +47,10 @@
       <ion-icon name="business"></ion-icon>
       <div>
         <span>Filial</span>
-        <strong>{{ request.CODFILIAL }}</strong>
+        <strong>{{ request.CODFILIAL }} - {{ branchName() }}</strong>
+        <small>{{ branchDocument() }}</small>
+        <small>{{ branchCity() }}</small>
+        <small>{{ branchAddress() }}</small>
       </div>
     </article>
 
