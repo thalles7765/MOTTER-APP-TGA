@@ -17,6 +17,8 @@ type ProductStock = {
   CODLOC: string;
   SALDOFISICO1: number;
   SALDOFISICO2?: number;
+  ESTOQUEMINIMO?: number;
+  ESTOQUEMAXIMO?: number;
 };
 
 @Component({
@@ -69,6 +71,10 @@ export class ProductDetailPage implements OnInit {
     return this.selectedBranchStock()?.SALDOFISICO1 || 0;
   }
 
+  stockStatusClass() {
+    return this.resolveStockStatusClass(this.selectedBranchStock());
+  }
+
   hasOtherBranchBalance() {
     if (!this.canSelectBranch || !this.selectedBranch) {
       return false;
@@ -101,6 +107,30 @@ export class ProductDetailPage implements OnInit {
 
   private productStocks(): ProductStock[] {
     return this.product?.saldos || [];
+  }
+
+  private resolveStockStatusClass(stock: ProductStock | null) {
+    const balance = Number(stock?.SALDOFISICO1 || 0);
+    const minStock = Number(stock?.ESTOQUEMINIMO || 0);
+    const maxStock = Number(stock?.ESTOQUEMAXIMO || 0);
+
+    if (balance < 0) {
+      return 'stock-negative';
+    }
+
+    if (minStock > 0 && balance < minStock) {
+      return 'stock-low';
+    }
+
+    if (maxStock > 0 && balance > maxStock) {
+      return 'stock-high';
+    }
+
+    if (balance === 0) {
+      return 'stock-neutral';
+    }
+
+    return 'stock-ok';
   }
 
   private async loadBranchContext() {

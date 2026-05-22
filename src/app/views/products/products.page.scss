@@ -1,25 +1,29 @@
 
 .stock-pill {
+  --stock-color: var(--ion-color-primary);
+  --stock-bg: rgba(var(--ion-color-primary-rgb), 0.08);
+  --stock-border: rgba(var(--ion-color-primary-rgb), 0.28);
   display: grid;
-  gap: 0.1rem;
-  width: 100%;
-  min-height: 48px;
-  padding: 0.35rem 0.45rem;
-  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.28);
+  flex: 0 0 43%;
+  width: 43%;
+  max-width: 43%;
+  min-height: 40px;
+  margin-bottom: 0.25rem;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--stock-border);
   border-radius: 8px;
-  color: var(--ion-color-primary);
-  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  color: var(--stock-color);
+  background: var(--stock-bg);
   text-align: center;
-  line-height: 1.1;
 
   span,
   small {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 700;
   }
 
   b {
-    font-size: 1rem;
+    font-size: 0.88rem;
   }
 
   &:disabled {
@@ -27,9 +31,34 @@
   }
 
   &.has-other-stock {
-    border-color: rgba(var(--ion-color-secondary-rgb), 0.5);
-    color: var(--ion-color-secondary);
-    background: rgba(var(--ion-color-secondary-rgb), 0.12);
+    --stock-color: var(--ion-color-secondary);
+    --stock-bg: rgba(var(--ion-color-secondary-rgb), 0.12);
+    --stock-border: rgba(var(--ion-color-secondary-rgb), 0.5);
+  }
+
+  &.stock-negative,
+  &.stock-low {
+    --stock-color: #b91c1c;
+    --stock-bg: #fee2e2;
+    --stock-border: rgba(220, 38, 38, 0.45);
+  }
+
+  &.stock-neutral {
+    --stock-color: #475569;
+    --stock-bg: #f1f5f9;
+    --stock-border: rgba(100, 116, 139, 0.28);
+  }
+
+  &.stock-high {
+    --stock-color: #0369a1;
+    --stock-bg: #e0f2fe;
+    --stock-border: rgba(2, 132, 199, 0.4);
+  }
+
+  &.stock-ok {
+    --stock-color: #15803d;
+    --stock-bg: #dcfce7;
+    --stock-border: rgba(22, 163, 74, 0.34);
   }
 }
 
@@ -45,9 +74,6 @@
     display: inline-block;
     font-size: 1.2rem;
     font-family: Verdana, Geneva, sans-serif;
-    -webkit-transition: all 0.4s;
-    -moz-transition: all 0.4s;
-    -o-transition: all 0.4s;
     transition: all 0.4s;
   }
   .botao-pulse {
@@ -58,70 +84,10 @@
     color: #fff;
     background-color: #df6b0d;
     border-radius:5px;
-    -webkit-animation: pulse 1s ease infinite;
-    -moz-animation: pulse 1s ease infinite;
-    -ms-animation: pulse 1s ease infinite;
-    -o-animation: pulse 1s ease infinite;
     animation: pulse 1s ease infinite;
   }
   .botao-pulse:hover {
     color: #fff;
-  }
-  @-webkit-keyframes pulse {
-    0% {
-      -webkit-transform: scale(1);
-    }
-    25% {
-      -webkit-transform: scale(1.1);
-    }
-    50% {
-      -webkit-transform: scale(1);
-    }
-    100% {
-      -webkit-transform: scale(1);
-    }
-  }
-  @-moz-keyframes pulse {
-    0% {
-      -moz-transform: scale(1);
-    }
-    25% {
-      -moz-transform: scale(1.1);
-    }
-    50% {
-      -moz-transform: scale(1);
-    }
-    100% {
-      -moz-transform: scale(1);
-    }
-  }
-  @-ms-keyframes pulse {
-    0% {
-      -ms-transform: scale(1);
-    }
-    25% {
-      -ms-transform: scale(1.1);
-    }
-    50% {
-      -ms-transform: scale(1);
-    }
-    100% {
-      -ms-transform: scale(1);
-    }
-  }
-  @-o-keyframes pulse {
-    0% {
-      -o-transform: scale(1);
-    }
-    25% {
-      -o-transform: scale(1.1);
-    }
-    50% {
-      -o-transform: scale(1);
-    }
-    100% {
-      -o-transform: scale(1);
-    }
   }
   @keyframes pulse {
     0% {

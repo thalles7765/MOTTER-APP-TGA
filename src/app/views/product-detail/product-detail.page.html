@@ -110,12 +110,13 @@
             Preço: <b>R$1,48</b>
           </p> -->
 
-          <button
-            type="button"
-            class="stock-detail"
-            [class.has-other-stock]="hasOtherBranchBalance()"
-            [disabled]="!canSelectBranch || !product?.saldos?.length"
-            (click)="openStockBranches($event)"
+            <button
+              type="button"
+              class="stock-detail"
+              [ngClass]="stockStatusClass()"
+              [class.has-other-stock]="hasOtherBranchBalance()"
+              [disabled]="!canSelectBranch || !product?.saldos?.length"
+              (click)="openStockBranches($event)"
           >
             <span>Saldo da filial selecionada</span>
             <b>{{ selectedBranchBalance() }}</b>

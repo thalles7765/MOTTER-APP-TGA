@@ -19,14 +19,14 @@
 
   <div class="stock-list">
     @for (stock of stocks; track $index) {
-      <div class="stock-card">
+      <div class="stock-card" [ngClass]="stockStatusClass(stock)">
         <div class="stock-card-header">
           <div>
             <p class="branch-label">Filial {{ stock.CODFILIAL }}</p>
             <h3>{{ branchName(stock) }}</h3>
           </div>
 
-          <div class="stock-badge">
+          <div class="stock-badge" [ngClass]="stockStatusClass(stock)">
             {{ stock.SALDOFISICO1 || 0 }}
           </div>
         </div>
@@ -44,6 +44,12 @@
             <ion-icon name="cube"></ion-icon>
             Local {{ stock.CODLOC }} | Saldo 2: {{ stock.SALDOFISICO2 || 0 }}
           </p>
+          @if ((stock.ESTOQUEMINIMO || 0) > 0 || (stock.ESTOQUEMAXIMO || 0) > 0) {
+            <p>
+              <ion-icon name="cube"></ion-icon>
+              Min {{ stock.ESTOQUEMINIMO || 0 }} | Max {{ stock.ESTOQUEMAXIMO || 0 }}
+            </p>
+          }
         </div>
       </div>
     }

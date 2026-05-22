@@ -124,13 +124,14 @@
           >
             Preço: <b>R$1,48</b>
           </p> -->
-          <div class="w-100 d-flex flex-row mb-2 gap-2 align-items-stretch">
-            <button
-              type="button"
-              class="stock-pill"
-              [class.has-other-stock]="hasOtherBranchBalance(xProduct)"
-              [disabled]="!canSelectBranch || !xProduct.saldos?.length"
-              (click)="openStockBranches(xProduct, $event)"
+          <div class="w-100 d-flex flex-row mb-1 gap-1 align-items-stretch">
+              <button
+                type="button"
+                class="stock-pill"
+                [ngClass]="stockStatusClass(xProduct)"
+                [class.has-other-stock]="hasOtherBranchBalance(xProduct)"
+                [disabled]="!canSelectBranch || !xProduct.saldos?.length"
+                (click)="openStockBranches(xProduct, $event)"
             >
               <span>Saldo filial</span>
               <b>{{ selectedBranchBalance(xProduct) }}</b>

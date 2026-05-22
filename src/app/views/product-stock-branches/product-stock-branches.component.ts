@@ -12,6 +12,8 @@ type ProductStock = {
   CODLOC: string;
   SALDOFISICO1: number;
   SALDOFISICO2?: number;
+  ESTOQUEMINIMO?: number;
+  ESTOQUEMAXIMO?: number;
 };
 
 @Component({
@@ -51,6 +53,30 @@ export class ProductStockBranchesComponent {
     }
 
     return `${stockBranch.CIDADE} - ${stockBranch.ESTADO}`;
+  }
+
+  stockStatusClass(stock: ProductStock) {
+    const balance = Number(stock.SALDOFISICO1 || 0);
+    const minStock = Number(stock.ESTOQUEMINIMO || 0);
+    const maxStock = Number(stock.ESTOQUEMAXIMO || 0);
+
+    if (balance < 0) {
+      return 'stock-negative';
+    }
+
+    if (minStock > 0 && balance < minStock) {
+      return 'stock-low';
+    }
+
+    if (maxStock > 0 && balance > maxStock) {
+      return 'stock-high';
+    }
+
+    if (balance === 0) {
+      return 'stock-neutral';
+    }
+
+    return 'stock-ok';
   }
 
   cancel() {

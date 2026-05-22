@@ -1,9 +1,10 @@
 .stock-detail {
   display: grid;
-  gap: 0.15rem;
-  width: 100%;
-  margin-bottom: 0.65rem;
-  padding: 0.65rem 0.75rem;
+  gap: 0.1rem;
+  width: 82%;
+  max-width: 260px;
+  margin: 0 auto 0.25rem;
+  padding: 0.45rem 0.6rem;
   border: 1px solid rgba(var(--ion-color-primary-rgb), 0.28);
   border-radius: 8px;
   color: var(--ion-color-primary);
@@ -13,12 +14,12 @@
 
   span,
   small {
-    font-size: 0.72rem;
+    font-size: 0.64rem;
     font-weight: 700;
   }
 
   b {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   &:disabled {
@@ -29,5 +30,30 @@
     border-color: rgba(var(--ion-color-secondary-rgb), 0.5);
     color: var(--ion-color-secondary);
     background: rgba(var(--ion-color-secondary-rgb), 0.12);
+  }
+
+  &.stock-negative,
+  &.stock-low {
+    border-color: rgba(220, 38, 38, 0.45);
+    color: #b91c1c;
+    background: #fee2e2;
+  }
+
+  &.stock-neutral {
+    border-color: rgba(100, 116, 139, 0.28);
+    color: #475569;
+    background: #f1f5f9;
+  }
+
+  &.stock-high {
+    border-color: rgba(2, 132, 199, 0.4);
+    color: #0369a1;
+    background: #e0f2fe;
+  }
+
+  &.stock-ok {
+    border-color: rgba(22, 163, 74, 0.34);
+    color: #15803d;
+    background: #dcfce7;
   }
 }
