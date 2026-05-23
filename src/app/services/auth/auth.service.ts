@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { BranchService } from '../branches/branch.service';
 import { app_user } from 'src/app/interfaces/app-user';
+import { NotificationService } from '../notifications/notification.service';
 
 const currentUserKey = 'current_user';
 
@@ -16,7 +17,11 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<app_user | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private _router: Router, private branchSvc: BranchService) {
+  constructor(
+    private _router: Router,
+    private branchSvc: BranchService,
+    private notificationSvc: NotificationService
+  ) {
     this.hydrateCurrentUser();
   }
 
@@ -109,6 +114,7 @@ export class AuthService {
 
   private async clearAppSession() {
     await Promise.allSettled([
+      this.notificationSvc.unregisterCurrentToken(),
       this.branchSvc.clearSelectedBranch(),
       this.branchSvc.clearBranchPolicy(),
       this.clearCurrentUser(),

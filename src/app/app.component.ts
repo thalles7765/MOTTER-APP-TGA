@@ -9,6 +9,7 @@ import { applyBrandTheme } from './branding/apply-brand-theme';
 import { brandConfig } from './branding/brand-config';
 import { SecurityService } from './services/security/security.service';
 import { Subscription } from 'rxjs';
+import { NotificationService } from './services/notifications/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,7 @@ export class AppComponent implements OnDestroy {
     private alertController: AlertController,
     private authSvc: AuthService,
     private securitySvc: SecurityService,
+    private notificationSvc: NotificationService,
     private router: Router,
     private menuCtrl: MenuController
   ) {
@@ -58,8 +60,10 @@ export class AppComponent implements OnDestroy {
 
       if (this.isAdmin) {
         this.loadPendingSecurityRequests();
+        this.notificationSvc.registerAdminDevice(user);
       } else {
         this.pendingSecurityRequests = 0;
+        this.notificationSvc.unregisterCurrentToken();
       }
     });
     this.authSvc.getCurrentUser();
