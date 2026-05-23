@@ -1,0 +1,124 @@
+.branch-modal {
+  --background: #f8fafc;
+}
+
+.branch-hero {
+  padding: 2rem 1.25rem 1.5rem;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary) 58%, var(--ion-color-tertiary));
+
+  img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border-radius: 14px;
+    background: #ffffff;
+    padding: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  .eyebrow,
+  .subtitle {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  h2 {
+    margin: 0.2rem 0;
+    font-size: 1.65rem;
+    font-weight: 800;
+  }
+}
+
+.branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1rem 6rem;
+}
+
+.branch-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  padding: 1rem;
+  background: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 14px 28px rgba(var(--ion-color-primary-rgb), 0.22);
+  }
+}
+
+.branch-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  span {
+    color: var(--ion-color-primary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.2rem 0 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  ion-icon {
+    flex: 0 0 auto;
+    color: var(--ion-color-primary);
+    font-size: 1.6rem;
+  }
+}
+
+.company-name {
+  margin: 0.65rem 0;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.branch-info {
+  display: grid;
+  gap: 0.35rem;
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    color: #334155;
+    font-size: 0.85rem;
+  }
+
+  ion-icon {
+    color: var(--ion-color-secondary);
+    font-size: 1rem;
+  }
+}
+
+.branch-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  background: rgba(248, 250, 252, 0.94);
+  backdrop-filter: blur(8px);
+}

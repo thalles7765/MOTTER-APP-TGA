@@ -4,206 +4,104 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
-
-      <ion-title>{{ brand.companyFullName }}</ion-title>
+    <div class="d-flex">
+      <!-- <img [src]="brand.assets.favicon" width="44" height="44" style="object-fit: contain;" alt="" /> -->
+      <!-- <ion-title>{{ brand.companyFullName }}</ion-title> -->
+      <ion-title>Menu</ion-title>
     </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
-    <div class="d-flex p-2 align-items-center flex-column w-100 gap-2">
-      <!-- <p class="mb-1 fw-bold">Opções</p> -->
-      <!-- <img src="../../../assets/Splash/img432xRect.png" height="150px" alt="" /> -->
-
-      <div
-        class="d-flex flex-column align-items-center justify-content-center gap-3 p-2 w-100"
-      >
-        <div class="btt-menu" (click)="navigateURL('/app/products')">
-          <div class="left-dp">
-            <img
-              class="img-left"
-              src="../../../assets/icon/produto.png"
-              alt=""
-            />
-            <p class="mb-0">Produtos</p>
-          </div>
-
-          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
+  <main class="home-shell">
+    <section class="home-hero">
+      <div class="hero-copy">
+        <img [src]="brand.assets.logo" alt="" />
+        <div>
+          <span>{{ selectedBranch ? selectedBranch.NOMEFANTASIA : 'Selecione uma filial' }}</span>
+          <p>{{ brand.cityState || brand.companyName }}</p>
+          <p>{{ selectedBranch ? selectedBranch.CGC : ''}}</p>
+          <!-- <h1>{{ brand.companyFullName }}</h1> -->
         </div>
-
-        <div class="btt-menu" (click)="navigateURL('/app/clients')">
-          <div class="left-dp">
-            <img
-              class="img-left"
-              src="../../../assets/icon/cliente.png"
-              alt=""
-            />
-
-            <p class="mb-0">Clientes</p>
-          </div>
-
-          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
-        </div>
-
-        <div class="btt-menu" (click)="navigateURL('/app/orders')">
-          <div class="left-dp">
-            <img
-              class="img-left"
-              src="../../../assets/icon/venda2.png"
-              alt=""
-            />
-
-            <p class="mb-0">Movimentos</p>
-          </div>
-
-          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
-        </div>
-
-        <!-- <div class="btt-menu"  (click)="navigateURL('/app/antrisia')">
-          <div class="left-dp">
-            <img
-              class="img-left"
-              src="../../../assets/icon/intelligence.png"
-              alt=""
-            />
-
-            <p class="mb-0">Antrisia (I.A)</p>
-          </div>
-
-          <img src="../../../assets/icon/right.png" [height]="40" alt="" />
-        </div> -->
       </div>
+    </section>
 
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6">
-            <img [src]="brand.assets.banners[0]" />
-          </ion-col>
-
-          <ion-col size="6">
-            <img [src]="brand.assets.banners[1]" />
-          </ion-col>
-
-          <ion-col size="6">
-            <img [src]="brand.assets.banners[2]" />
-          </ion-col>
-
-          <ion-col size="6">
-            <img [src]="brand.assets.banners[3]" />
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
-
-    <!-- <div
-      class="d-flex p-3 shadow rounded align-items-center flex-column w-100 gap-2"
-    >
-      <p class="mb-1 fw-bold">Redes Sociais</p>
-      <div
-        class="d-flex flex-row align-items-center justify-content-center gap-3 p-2 w-100"
-      >
-        <div
-          class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
+    <section class="branch-panel">
+      <ion-item lines="none">
+        <ion-label position="stacked">Filial selecionada</ion-label>
+        <ion-select
+          interface="popover"
+          placeholder="Selecione uma filial"
+          [(ngModel)]="selectedBranchCode"
+          [disabled]="!canSelectBranch && !!selectedBranch"
+          (ionChange)="changeBranch($event.detail.value)"
         >
-          <img
-            style="
-              border-radius: 8px;
-              border-style: solid;
-              border-width: 2px;
-              border-color: coral;
-            "
-            src="../../../assets/Splash/img432xRect.png"
-            height="50px"
-            alt=""
-          />
+          @for (branch of branches; track branch.CODFILIAL) {
+            <ion-select-option [value]="branch.CODFILIAL">
+              {{ branch.CODFILIAL }} - {{ branch.NOMEFANTASIA }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
 
-          <p class="mb-0">Instagram</p>
+      @if (selectedBranch) {
+        <div class="branch-detail">
+          <!-- <strong>{{ selectedBranch.RAZAOSOCIAL }}</strong> -->
+          <span>{{ selectedBranch.RAZAOSOCIAL }}</span>
+          <span>{{ selectedBranch.RUA }}, {{ selectedBranch.NUMERO }} - {{ selectedBranch.BAIRRO }}</span>
+          <span>{{ selectedBranch.TELEFONE }}</span>
         </div>
-
-        <div
-          class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
-        >
-          <img
-            style="
-              border-radius: 8px;
-              border-style: solid;
-              border-width: 2px;
-              border-color: coral;
-            "
-            src="../../../assets/Splash/img432xRect.png"
-            height="50px"
-            alt=""
-          />
-
-          <p class="mb-0">Facebook</p>
+      } @else {
+        <div class="branch-warning">
+          Selecione uma filial para liberar as telas do aplicativo.
         </div>
+      }
+    </section>
+
+    <section class="banner-carousel">
+      <div class="carousel-track">
+        @for (banner of brand.assets.banners; track banner) {
+          <figure>
+            <img [src]="banner" alt="" />
+          </figure>
+        }
+        @for (banner of brand.assets.banners; track banner + '-loop') {
+          <figure>
+            <img [src]="banner" alt="" />
+          </figure>
+        }
       </div>
-    </div> -->
+    </section>
 
-    <div
-      class="d-flex p-3 shadow rounded align-items-center flex-column w-100 gap-2"
-    >
-      <p class="mb-0 fw-bold">Redes Sociais</p>
-      <!--<p class="mb-2">{{ brand.website }}</p> -->
+    <section class="menu-grid">
+      @for (item of menuItems; track item.url) {
+        <button type="button" class="menu-card" [ngClass]="item.accent" (click)="navigateURL(item.url)">
+          <span class="menu-icon">
+            <img [src]="item.icon" alt="" />
+          </span>
+          <span class="menu-text">
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.subtitle }}</small>
+          </span>
+          <span class="menu-arrow">&gt;</span>
+        </button>
+      }
+    </section>
 
-      <div
-        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
-      >
-        <img
-          style="
-            border-radius: 8px;
-            border-style: solid;
-            border-width: 2px;
-            border-color: rgb(4, 70, 124);
-          "
-          src="../../../assets/icon/website.png"
-          height="50px"
-          alt=""
-        />
-
-        <p class="mb-0">Website</p>
-      </div>
-
-      <div
-        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
-      >
-        <img
-          style="
-            border-radius: 8px;
-            border-style: solid;
-            border-width: 2px;
-            border-color: rgb(4, 70, 124);
-          "
-          src="../../../assets/icon/facebook.png"
-          height="50px"
-          alt=""
-        />
-
-        <p class="mb-0">Facebook</p>
+    <section class="social-panel p-3 bg-white rounded">
+      <div>
+        <p class="m-0 fw-bold text-uppercase" style="font-size: .72rem; color: var(--ion-color-primary);">Conecte-se</p>
+        <h2 class="m-0" style="font-size: 1.05rem;">Canais oficiais</h2>
       </div>
 
-      <div
-        class="d-flex flex-row gap-2 p-3 align-items-center shadow-sm rounded"
-      >
-        <img
-          style="
-            border-radius: 8px;
-            border-style: solid;
-            border-width: 2px;
-            border-color: rgb(243, 131, 39);
-          "
-          src="../../../assets/icon/instagram.png"
-          height="50px"
-          alt=""
-        />
-
-        <p class="mb-0">Instagram</p>
+      <div class="d-grid gap-2 mt-3" style="grid-template-columns: repeat(3, 1fr);">
+        @for (social of socialItems; track social.title) {
+          <button type="button" class="d-grid justify-items-center bg-white border-0 rounded p-2" style="box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .08);" (click)="openExternalUrl(social.url)">
+            <img [src]="social.icon" height="36" width="36" style="object-fit: contain;" alt="" />
+            <span class="fw-bold mt-1" style="font-size: .75rem; color: #334155;">{{ social.title }}</span>
+          </button>
+        }
       </div>
-
-      <!-- <img src="../../../assets/Splash/img432xRect.png" height="75px" alt="" /> -->
-    </div>
-  </div>
+    </section>
+  </main>
 </ion-content>

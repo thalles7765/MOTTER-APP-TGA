@@ -24,6 +24,51 @@ export class ClientDetailComponent implements OnInit {
     return this.modalCtrl.dismiss(null, 'confirm');
   }
 
+  protected clientName() {
+    return this.client?.NOMEFANTASIA || this.client?.RAZAOSOCIAL || 'Cliente sem nome';
+  }
+
+  protected status() {
+    const overdue = Number(this.client?.VALOR_VENCIDO || 0);
+    const open = Number(this.client?.VALOR_ABERTO || 0);
+    const limit = Number(this.client?.LIMITECREDITO || 0);
+
+    if (overdue > 0) {
+      return { label: 'Devedor', className: 'danger', text: 'Cliente com valor vencido' };
+    }
+
+    if (open > 0) {
+      return { label: 'Em aberto', className: 'warning', text: 'Cliente com valores a vencer' };
+    }
+
+    if (limit > 0) {
+      return { label: 'Bom limite', className: 'success', text: 'Cliente com limite saudavel' };
+    }
+
+    return { label: 'Neutro', className: 'neutral', text: 'Sem alerta financeiro' };
+  }
+
+  protected availableLimit() {
+    return Math.max(
+      Number(this.client?.LIMITECREDITO || 0) - Number(this.client?.VALOR_ABERTO || 0) - Number(this.client?.VALOR_VENCIDO || 0),
+      0
+    );
+  }
+
+  protected conceptClass() {
+    const concept = String(this.client?.DESC_CONCEITO || '').toUpperCase();
+
+    if (concept === 'OTIMO' || concept === 'BOM') {
+      return 'success';
+    }
+
+    if (concept === 'REGULAR' || concept === 'RUIM') {
+      return 'warning';
+    }
+
+    return concept ? 'danger' : 'neutral';
+  }
+
   async ngOnInit() {
 
   }

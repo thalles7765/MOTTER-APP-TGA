@@ -1,36 +1,26 @@
-<ion-header [translucent]="true">
-  <!-- <ion-toolbar>
+<ion-content [fullscreen]="true" class="login-content">
+  <main class="login-shell">
+    <section class="login-hero">
+      <span class="logo-orbit">
+        <img [src]="brand.assets.logo" alt="" />
+      </span>
+      <p>Bem-vindo</p>
+      <!-- <h1>{{ brand.companyName }}</h1> -->
+    </section>
 
-  
-  </ion-toolbar> -->
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-start gap-2 p-2 mb-1">
-    <img [src]="brand.assets.logo" style="width: 100%" alt="" />
-    <p style="font-size: 1.2rem" class="mb-0">Bem vindo!</p>
-  </div>
-
-  <ul class="w-100 mb-3" style="height: 3px; background-color: var(--app-border-color)"></ul>
-
-  <form (ngSubmit)="login(credentials)" [formGroup]="credentials" class="mb-5">
-    <div
-      class="d-flex flex-column justify-content-center align-items-center gap-3 mb-4 w-100"
-    >
-      <div class="w-100" style="margin-right: 26px">
+    <form (ngSubmit)="login(credentials)" [formGroup]="credentials" class="login-card">
+      <div class="input-stack">
         <ion-item>
           <ion-icon aria-hidden="true" name="person" slot="start"></ion-icon>
           <ion-input
             oninput="this.value = this.value.toUpperCase()"
-            label="Usuário"
+            label="Usuario"
             labelPlacement="floating"
-            placeholder="Usuário"
+            placeholder="Usuario"
             formControlName="username"
           ></ion-input>
         </ion-item>
-      </div>
 
-      <div class="w-100" style="margin-right: 26px">
         <ion-item>
           <ion-icon aria-hidden="true" name="key" slot="start"></ion-icon>
           <ion-input
@@ -39,47 +29,26 @@
             type="password"
             placeholder="Senha"
             formControlName="password"
-            ><ion-input-password-toggle
-              color="primary"
-              slot="end"
-            ></ion-input-password-toggle
-          ></ion-input>
+          >
+            <ion-input-password-toggle color="primary" slot="end"></ion-input-password-toggle>
+          </ion-input>
         </ion-item>
       </div>
-    </div>
 
-    <ion-button
-      type="submit"
-      expand="block"
-      color="primary"
-      [disabled]="!credentials.valid"
-      >Acessar</ion-button
-    >
+      <ion-button type="submit" expand="block" class="login-button" [disabled]="!credentials.valid">
+        Acessar
+      </ion-button>
 
-    <ul></ul>
+      <button type="button" class="save-access" (click)="setDataStorage()">
+        Salvar acesso neste dispositivo
+      </button>
+    </form>
 
-    <ion-button (click)="setDataStorage()" expand="block" color="warning"
-      >Salvar Acesso</ion-button
-    >
-
-    <!-- <ion-button type="button" expand="block" color="tertiary">
-			<ion-icon name="logo-google" slot="start"></ion-icon>
-			Sign in with Google
-		</ion-button>
-		<ion-button type="button" expand="block" color="tertiary">
-			<ion-icon name="logo-apple" slot="start"></ion-icon>
-			Sign in with Apple
-		</ion-button> -->
-  </form>
-  @if (brand.website) {
-  <p style="font-size: 0.8rem; color: #252525" class="mb-0 w-100 text-center">
-    Acesse nosso site em:
-  </p>
-  <p
-    style="font-size: 0.8rem; color: #252525"
-    class="mb-0 w-100 text-center fw-bold"
-  >
-    {{ brand.website }}
-  </p>
-  }
+    @if (brand.website) {
+      <footer class="login-site">
+        <span>Acesse nosso site</span>
+        <strong>{{ brand.website }}</strong>
+      </footer>
+    }
+  </main>
 </ion-content>

@@ -1,0 +1,122 @@
+.stock-summary {
+  padding: 1.1rem 1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 800;
+    opacity: 0.9;
+  }
+
+  h2 {
+    margin: 0.25rem 0 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+}
+
+.stock-list {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem;
+}
+
+.stock-card {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.stock-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  .branch-label {
+    margin: 0;
+    color: var(--ion-color-primary);
+    font-size: 0.64rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.2rem 0 0;
+    color: #1f2937;
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+}
+
+.stock-badge {
+  min-width: 46px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #ffffff;
+  background: var(--ion-color-primary);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.stock-info {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: #334155;
+    font-size: 0.76rem;
+  }
+
+  ion-icon {
+    color: var(--ion-color-secondary);
+    font-size: 1rem;
+  }
+}
+
+.stock-card.stock-negative,
+.stock-card.stock-low {
+  border-color: rgba(220, 38, 38, 0.32);
+  background: #fff1f2;
+}
+
+.stock-card.stock-neutral {
+  border-color: rgba(100, 116, 139, 0.22);
+  background: #f8fafc;
+}
+
+.stock-card.stock-high {
+  border-color: rgba(2, 132, 199, 0.3);
+  background: #f0f9ff;
+}
+
+.stock-card.stock-ok {
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+.stock-badge.stock-negative,
+.stock-badge.stock-low {
+  background: #dc2626;
+}
+
+.stock-badge.stock-neutral {
+  background: #64748b;
+}
+
+.stock-badge.stock-high {
+  background: #0284c7;
+}
+
+.stock-badge.stock-ok {
+  background: #16a34a;
+}

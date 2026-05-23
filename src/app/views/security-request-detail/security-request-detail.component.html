@@ -1,0 +1,94 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Solicitação #{{ request.IDSOLICITA }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <section class="detail-hero">
+    <div>
+      <p>{{ brand.companyName }}</p>
+      <h2>{{ request.OPCAO || 'Solicitação de acesso' }}</h2>
+    </div>
+    <span [ngClass]="statusClass(request.STATUS)">
+      {{ statusText(request.STATUS) }}
+    </span>
+  </section>
+
+  <section class="detail-grid">
+    <article>
+      <ion-icon name="person"></ion-icon>
+      <div>
+        <span>Usuário</span>
+        <strong>{{ request.USUARIO || 'Nao informado' }}</strong>
+      </div>
+    </article>
+
+    <article>
+      <ion-icon name="desktop"></ion-icon>
+      <div>
+        <span>Computador</span>
+        <strong>{{ request.COMPUTADOR || 'Nao informado' }}</strong>
+      </div>
+    </article>
+
+    <article>
+      <ion-icon name="lock-closed"></ion-icon>
+      <div>
+        <span>Sistema</span>
+        <strong>{{ request.CODSISTEMA || 'Nao informado' }}</strong>
+      </div>
+    </article>
+
+    <article>
+      <ion-icon name="business"></ion-icon>
+      <div>
+        <span>Filial</span>
+        <strong>{{ request.CODFILIAL }} - {{ branchName() }}</strong>
+        <small>{{ branchDocument() }}</small>
+        <small>{{ branchCity() }}</small>
+        <small>{{ branchAddress() }}</small>
+      </div>
+    </article>
+
+    <article>
+      <ion-icon name="time"></ion-icon>
+      <div>
+        <span>Data</span>
+        <strong>{{ request.DATA | date : 'dd/MM/yyyy HH:mm' }}</strong>
+      </div>
+    </article>
+  </section>
+
+  <section class="text-panel">
+    <div>
+      <ion-icon name="document-text"></ion-icon>
+      <h3>Mensagem da solicitação</h3>
+    </div>
+    <p>{{ request.TEXTO || 'Sem descrição informada.' }}</p>
+  </section>
+
+  <section class="message-panel">
+    <ion-textarea
+      label="Mensagem de retorno"
+      labelPlacement="stacked"
+      [(ngModel)]="message"
+      placeholder="Ex: Autorizado"
+      rows="3"
+    ></ion-textarea>
+  </section>
+
+  <footer class="action-bar">
+    <ion-button class="block-btn" expand="block" (click)="block()">
+      <ion-icon name="close-circle" slot="start"></ion-icon>
+      Bloquear acesso
+    </ion-button>
+    <ion-button class="release-btn" expand="block" (click)="release()">
+      <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+      Liberar acesso
+    </ion-button>
+  </footer>
+</ion-content>

@@ -1,0 +1,68 @@
+<ion-content [fullscreen]="true" class="branch-modal">
+  <div class="branch-hero">
+    <img [src]="brand.assets.favicon" alt="" />
+    <p class="eyebrow">Selecione a filial</p>
+    <h2>{{ brand.companyName }}</h2>
+    <p class="subtitle">Escolha em qual filial deseja trabalhar.</p>
+  </div>
+
+  <div class="branch-list">
+    @for (branch of branches; track branch.CODFILIAL) {
+      <button
+        type="button"
+        class="branch-card"
+        [class.selected]="selectedBranch?.CODFILIAL === branch.CODFILIAL"
+        (click)="selectBranch(branch)"
+      >
+        <div class="branch-card-header">
+          <div>
+            <span>Filial {{ branch.CODFILIAL }}</span>
+            <h3>{{ branch.NOMEFANTASIA }}</h3>
+          </div>
+
+          @if (selectedBranch?.CODFILIAL === branch.CODFILIAL) {
+            <ion-icon name="checkmark-circle"></ion-icon>
+          }
+        </div>
+
+        <p class="company-name">{{ branch.RAZAOSOCIAL }}</p>
+
+        <div class="branch-info">
+          <p>
+            <ion-icon name="location"></ion-icon>
+            {{ branch.CIDADE }} - {{ branch.ESTADO }}
+          </p>
+          <p>
+            <ion-icon name="call"></ion-icon>
+            {{ branch.TELEFONE || branch.FAX || 'Sem telefone' }}
+          </p>
+          <p>
+            <ion-icon name="mail"></ion-icon>
+            {{ branch.EMAIL || 'Sem e-mail' }}
+          </p>
+        </div>
+      </button>
+    }
+  </div>
+
+  <div class="branch-actions">
+    <ion-button
+      expand="block"
+      color="primary"
+      [disabled]="!selectedBranch"
+      (click)="confirm(true)"
+    >
+      Confirmar e abrir sempre nesta filial
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="primary"
+      [disabled]="!selectedBranch"
+      (click)="confirm()"
+    >
+      Confirmar somente desta vez
+    </ion-button>
+  </div>
+</ion-content>

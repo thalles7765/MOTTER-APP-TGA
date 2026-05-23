@@ -1,0 +1,138 @@
+.security-hero {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.9rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary), var(--ion-color-tertiary));
+}
+
+.security-hero p,
+.security-hero h1,
+.request-card h2,
+.request-card p { margin: 0; }
+
+.security-hero p { font-size: 0.72rem; }
+
+.security-hero h1 {
+  font-size: 1.35rem;
+}
+
+.security-hero span {
+  display: inline-flex;
+  margin-top: 0.3rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.branch-scope-bar,
+.filter-bar {
+  display: flex;
+  overflow-x: auto;
+}
+
+.branch-scope-bar {
+  padding: 0.75rem 0.9rem 0;
+}
+
+.filter-bar {
+  padding: 0.75rem 0.9rem 0;
+}
+
+.filter-chip,
+.scope-chip {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.62rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.22);
+  border-radius: 999px;
+  color: var(--ion-color-primary);
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.filter-chip.active,
+.scope-chip.active {
+  color: #fff;
+  background: var(--ion-color-primary);
+}
+
+.request-list {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.9rem;
+}
+
+.request-card {
+  overflow: hidden;
+  border-left: 4px solid #f59e0b;
+  background: #fff;
+}
+
+.request-card.released { border-left-color: #16a34a; }
+.request-card.blocked { border-left-color: #dc2626; }
+
+.request-main {
+  width: 100%;
+  padding: 0.8rem;
+  border: 0;
+  background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.09), rgba(var(--ion-color-secondary-rgb), 0.08));
+  text-align: left;
+}
+
+.request-topline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.request-topline strong {
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+}
+
+.request-main small {
+  display: inline-block;
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.request-topline span {
+  padding: 0.16rem 0.4rem;
+  border-radius: 999px;
+  color: #92400e;
+  background: #fef3c7;
+  font-size: 0.7rem;
+}
+
+.request-card h2 { font-size: 0.98rem; }
+
+.request-card p {
+  overflow: hidden;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.request-meta,
+.request-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 0.85rem;
+}
+
+.request-meta {
+  flex-wrap: wrap;
+  color: #475569;
+  font-size: 0.72rem;
+}
+
+.request-actions {
+  justify-content: flex-end;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.empty-state {
+  padding: 1rem;
+  background: #f8fafc;
+  text-align: center;
+}

@@ -1,129 +1,62 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="selector-header">
   <ion-toolbar>
-    <div class="d-flex flex-row align-items-center gap-2 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
+    <div class="selector-title">
+      <span class="selector-logo">
+        <img [src]="brand.assets.favicon" alt="" />
+      </span>
 
-      <ion-title>Vendedores</ion-title>
+      <div>
+        <small>Selecionar</small>
+        <ion-title>Vendedores</ion-title>
+      </div>
     </div>
 
     <ion-buttons slot="end">
-      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+      <ion-button class="close-button" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
-
-  <!-- <div
-    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
-  >
-    <ion-searchbar
-      [debounce]="1000"
-      (ionInput)="searchClients($event)"
-      animated="true"
-      placeholder="Pesquisar Cliente"
-      show-clear-button="always"
-    ></ion-searchbar>
-  </div> -->
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
+<ion-content [fullscreen]="true" class="selector-content">
+  <div class="selector-list">
     @if (sellers.length <= 0) {
-    <div
-      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <img
-        style="
-          border-radius: 50%;
-          justify-content: center;
-          border: 2px #f1622b solid;
-          padding: 2px;
-        "
-        src="../../../../assets/icon/cliente.png"
-        height="40px"
-        alt=""
-      />
-      <p class="mb-0 text-center w-100 fw-bold fw-italic">
-        Nenhum registro encontrado...
-      </p>
-    </div>
-    } @for (xseller of sellers; track $index) {
-    <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center gap-3">
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-          "
-          src="../../../../assets/icon/cliente.png"
-          width="40px"
-          alt=""
-        />
+      <div class="selector-empty">
+        <img src="../../../../assets/icon/cliente.png" alt="" />
+        <p>Nenhum registro encontrado...</p>
+      </div>
+    }
 
-        <div class="box-pulse" (click)="confirm(xseller)">
-          <a class="botao-pulse">Selecionar</a>
+    @for (xseller of sellers; track $index) {
+      <div class="selector-card seller-card">
+        <div class="selector-side">
+          <span class="item-avatar">
+            <img src="../../../../assets/icon/cliente.png" alt="" />
+          </span>
+
+          <button type="button" class="select-action" (click)="confirm(xseller)">
+            Selecionar
+          </button>
+        </div>
+
+        <div class="selector-info">
+          <strong>({{ xseller.CODVEN }}) - {{ xseller.NOME }}</strong>
+
+          @if (xseller.TELVEND1 || xseller.TELVEND2) {
+            <small>Telefone</small>
+            <p>{{ xseller.TELVEND1 || "N/A" }} / {{ xseller.TELVEND2 || "N/A" }}</p>
+          }
+
+          @if (xseller.EMAIL) {
+            <small>Email</small>
+            <p>{{ xseller.EMAIL }}</p>
+          }
+
+          @if (xseller.CARGO) {
+            <small>Cargo</small>
+            <p>{{ xseller.CARGO || "N/A" }}</p>
+          }
         </div>
       </div>
-
-      <div class="d-flex flex-column w-100">
-        <!-- <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Condição Pagamento
-        </p> -->
-
-        <p
-          class="text-primary mb-2 w-100 fw-bold"
-          style="font-size: 0.8rem; white-space: pre-wrap"
-        >
-          ({{ xseller.CODVEN }}) - {{ xseller.NOME }}
-        </p>
-
-        @if (xseller.TELVEND1 || xseller.TELVEND2 ) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Telefone
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xseller?.TELVEND1 || "N/A" }} / {{ xseller?.TELVEND2 || "N/A" }}
-        </p>
-        } @if (xseller.EMAIL) {
-        <p
-          class="text-black small mb-0 w-100"
-          style="font-size: 0.7rem;"
-        >
-          Email
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem; white-space: pre-wrap"
-        >
-          {{ xseller.EMAIL }}
-        </p>
-        } @if (xseller.CARGO) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Cargo
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xseller.CARGO || "N/A" }}
-        </p>
-        }
-      </div>
-
-      <!-- <div class="d-flex float-end text-success">
-        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
-      </div> -->
-    </div>
     }
   </div>
 </ion-content>

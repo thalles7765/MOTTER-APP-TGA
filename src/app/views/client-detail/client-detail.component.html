@@ -1,13 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <!-- <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons> -->
-
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
-
-      <ion-title> Detalhe </ion-title>
+    <div class="d-flex flex-row detail-toolbar">
+      <img class="px-2" [src]="brand.assets.favicon" alt="" />
+      <ion-title>Detalhes</ion-title>
     </div>
 
     <ion-buttons slot="end">
@@ -17,100 +12,86 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
-    <!-- *ngFor="let xtest of [1,2,3,4,5,6,7,8,9,10]" -->
+  @let clientStatus = status();
 
-    <div
-      class="d-flex p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center w-100 gap-2">
-        <!-- <i class="material-icons" style="font-size: 55px;">qr_code</i> -->
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-            margin-bottom: 5px;
-          "
-          [src]="brand.assets.menuLogo"
-          height="75px"
-          width="75px"
-          alt=""
-        />
-
-        <div class="d-flex flex-column">
-          @if (client.CD_LEGENDA === 6) {
-          <div
-            class="p-1 justify-content-center d-flex flex-row bg-primary shadow-sm rounded w-100"
-          >
-            <p class="text-white fw-bold small mb-0 w-100 text-center">
-              Produto em Promoção
-            </p>
-          </div>
-          } @if (client.CD_LEGENDA === 2) {
-          <div
-            class="p-1 justify-content-center d-flex flex-row bg-success shadow-sm rounded w-100"
-          >
-            <p class="text-white fw-bold small mb-0 w-100 text-center">
-              Fora de Linha
-            </p>
-          </div>
-          }
-
-          <p class="mb-2 fw-bold">{{ client?.NOMEFANTASIA }}</p>
-          <p class="mb-0 small">
-            Razão Social: <b>{{ client?.RAZAOSOCIAL }}</b>
-          </p>
-          <p class="mb-0 small">
-            Código: <b>{{ client?.CODCFO || "N/A" }}</b>
-          </p>
-          <p class="mb-0 small">
-            CPF/CCNPJ: <b>{{ client?.CGCCFO || "N/A" }}</b>
-          </p>
-          <p class="mb-0 small">
-            Telefone: <b>{{ client?.TELEFONE || "N/A" }}</b>
-          </p>
-          <p class="mb-3 small">
-            Email: <b>{{ client?.EMAIL || "N/A" }}</b>
-          </p>
-
-          <p class="mb-1 small">
-            Limite Crédito:
-            <b class="text-primary">{{
-              client?.LIMITECREDITO | currency : "BRL"
-            }}</b>
-          </p>
-          <p class="mb-1 small">
-            Valor Vencido:
-            <b class="text-danger">{{
-              client?.VALOR_VENCIDO | currency : "BRL"
-            }}</b>
-          </p>
-
-          <p class="mb-3 small">
-            Valor Aberto:
-            <b class="text-success">{{
-              client?.VALOR_ABERTO | currency : "BRL"
-            }}</b>
-          </p>
-
-          <p class="mb-1 small">
-            Última Alteração:
-            <b class="text-black">{{
-              client?.DATAULTALTERACAO | date : "dd/MM/yyyy"
-            }}</b>
-          </p>
-
-          <p class="mb-2 small">
-            Último Movimento:
-            <b class="text-black">{{
-              client?.DATAULTMOVIMENTO | date : "dd/MM/yyyy"
-            }}</b>
-          </p>
-        </div>
+  <main class="detail-shell">
+    <section class="detail-hero" [ngClass]="clientStatus.className">
+      <img [src]="brand.assets.menuLogo" alt="" />
+      <div>
+        <span [ngClass]="clientStatus.className">{{ clientStatus.label }}</span>
+        <h1>{{ clientName() }}</h1>
+        <p>{{ clientStatus.text }}</p>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section class="concept-card" [ngClass]="conceptClass()">
+      <span>Conceito comercial</span>
+      <strong>{{ client?.DESC_CONCEITO || 'Sem conceito' }}</strong>
+    </section>
+
+    <section class="money-grid">
+      <div class="limit">
+        <span>Limite credito</span>
+        <strong>{{ client?.LIMITECREDITO || 0 | currency : 'BRL' }}</strong>
+      </div>
+      <div class="available">
+        <span>Disponivel</span>
+        <strong>{{ availableLimit() | currency : 'BRL' }}</strong>
+      </div>
+      <div class="open">
+        <span>A vencer</span>
+        <strong>{{ client?.VALOR_ABERTO || 0 | currency : 'BRL' }}</strong>
+      </div>
+      <div class="overdue">
+        <span>Vencido</span>
+        <strong>{{ client?.VALOR_VENCIDO || 0 | currency : 'BRL' }}</strong>
+      </div>
+    </section>
+
+    <section class="info-card">
+      <h2>Cadastro</h2>
+      <dl>
+        <div>
+          <dt>Razao social</dt>
+          <dd>{{ client?.RAZAOSOCIAL || 'N/A' }}</dd>
+        </div>
+        <div>
+          <dt>Codigo</dt>
+          <dd>{{ client?.CODCFO || 'N/A' }}</dd>
+        </div>
+        <div>
+          <dt>CPF/CNPJ</dt>
+          <dd>{{ client?.CGCCFO || 'N/A' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="info-card">
+      <h2>Contato</h2>
+      <dl>
+        <div>
+          <dt>Telefone</dt>
+          <dd>{{ client?.TELEFONE || 'N/A' }}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>{{ client?.EMAIL || 'N/A' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="info-card">
+      <h2>Movimentacao</h2>
+      <dl>
+        <div>
+          <dt>Ultima alteracao</dt>
+          <dd>{{ client?.DATAULTALTERACAO | date : 'dd/MM/yyyy' }}</dd>
+        </div>
+        <div>
+          <dt>Ultimo movimento</dt>
+          <dd>{{ client?.DATAULTMOVIMENTO | date : 'dd/MM/yyyy' }}</dd>
+        </div>
+      </dl>
+    </section>
+  </main>
 </ion-content>

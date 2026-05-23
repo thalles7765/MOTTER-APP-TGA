@@ -1,0 +1,15 @@
+.detail-shell{display:grid;gap:.85rem;padding:1rem;background:var(--app-page-bg)}
+.detail-hero,.concept-card,.money-grid div,.info-card{border-radius:8px}
+.detail-hero{display:flex;align-items:center;gap:.85rem;padding:1rem;color:#fff;background:linear-gradient(135deg,var(--ion-color-primary),var(--ion-color-secondary))}
+.detail-hero.danger{background:linear-gradient(135deg,#ef4444,#f97316)}.detail-hero.warning{background:linear-gradient(135deg,#f59e0b,#22c55e)}
+.detail-hero img{width:74px;padding:.35rem;border-radius:20px;background:#fff}
+.detail-hero span,.concept-card span,.money-grid span,dt{font-size:.68rem;font-weight:900}
+.detail-hero span{display:inline-block;margin-bottom:.3rem;padding:.25rem .5rem;border-radius:999px;background:rgba(255,255,255,.22)}
+.detail-hero h1,.detail-hero p,dl,dd{margin:0}.detail-hero h1{font-size:1.18rem;font-weight:900}.detail-hero p{font-size:.8rem;opacity:.92}
+.concept-card{display:flex;justify-content:space-between;gap:.75rem;padding:.85rem;background:var(--app-card-bg);color:var(--app-card-text);box-shadow:0 8px 18px rgba(15,23,42,.08)}
+.concept-card strong{color:var(--ion-color-primary)}
+.money-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem}.money-grid div{padding:.8rem;color:#fff;background:linear-gradient(135deg,#64748b,#334155)}
+.money-grid .limit{background:linear-gradient(135deg,#2563eb,#06b6d4)}.money-grid .available{background:linear-gradient(135deg,#16a34a,#22c55e)}.money-grid .open{background:linear-gradient(135deg,#f59e0b,#f97316)}.money-grid .overdue{background:linear-gradient(135deg,#dc2626,#fb7185)}
+.money-grid strong{display:block;margin-top:.25rem;font-size:.88rem}.info-card{padding:.9rem;background:var(--app-card-bg);color:var(--app-card-text);box-shadow:0 8px 18px rgba(15,23,42,.08)}
+.info-card h2{margin:0 0 .65rem;color:var(--ion-color-primary);font-size:.95rem;font-weight:900}.info-card dl{display:grid;gap:.55rem}.info-card div{padding-bottom:.5rem;border-bottom:1px solid #e5e7eb}
+dt{color:#64748b}dd{color:#111827;font-size:.85rem;font-weight:800}

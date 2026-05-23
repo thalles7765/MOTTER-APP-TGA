@@ -1,134 +1,67 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="selector-header">
   <ion-toolbar>
-    <div class="d-flex flex-row align-items-center gap-2 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
+    <div class="selector-title">
+      <span class="selector-logo">
+        <img [src]="brand.assets.favicon" alt="" />
+      </span>
 
-      <ion-title>Condição Pagamento</ion-title>
+      <div>
+        <small>Selecionar</small>
+        <ion-title>Condicao Pagamento</ion-title>
+      </div>
     </div>
 
     <ion-buttons slot="end">
-      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+      <ion-button class="close-button" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
-
-  <!-- <div
-    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
-  >
-    <ion-searchbar
-      [debounce]="1000"
-      (ionInput)="searchClients($event)"
-      animated="true"
-      placeholder="Pesquisar Cliente"
-      show-clear-button="always"
-    ></ion-searchbar>
-  </div> -->
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
+<ion-content [fullscreen]="true" class="selector-content">
+  <div class="selector-list">
     @if (payments.length <= 0) {
-    <div
-      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <img
-        style="
-          border-radius: 50%;
-          justify-content: center;
-          border: 2px #f1622b solid;
-          padding: 2px;
-        "
-        src="../../../../assets/icon/pag_money.png"
-        height="40px"
-        alt=""
-      />
-      <p class="mb-0 text-center w-100 fw-bold fw-italic">
-        Nenhum registro encontrado...
-      </p>
-    </div>
-    } @for (xpay of payments; track $index) {
-    <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center gap-3">
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-          "
-          src="../../../../assets/icon/pag_money.png"
-          width="40px"
-          alt=""
-        />
+      <div class="selector-empty">
+        <img src="../../../../assets/icon/pag_money.png" alt="" />
+        <p>Nenhum registro encontrado...</p>
+      </div>
+    }
 
-        <div class="box-pulse" (click)="confirm(xpay)">
-          <a class="botao-pulse">Selecionar</a>
+    @for (xpay of payments; track $index) {
+      <div class="selector-card payment-card">
+        <div class="selector-side">
+          <span class="item-avatar">
+            <img src="../../../../assets/icon/pag_money.png" alt="" />
+          </span>
+
+          <button type="button" class="select-action" (click)="confirm(xpay)">
+            Selecionar
+          </button>
+        </div>
+
+        <div class="selector-info">
+          <strong>({{ xpay.CODCONDPGTO }}) - {{ xpay.NOME }}</strong>
+
+          @if (xpay.CODCCUSTO || xpay.CODCCUSTOAVISTA) {
+            <small>Centro de Custo Avista / Prazo</small>
+            <p>{{ xpay.CODCCUSTOAVISTA || "N/A" }} / {{ xpay.CODCCUSTO || "N/A" }}</p>
+          }
+
+          @if (xpay.CODTIPODOC) {
+            <small>Tipo Documento</small>
+            <p>{{ xpay.CODTIPODOC }}</p>
+          }
+
+          @if (xpay.BUSCADESCONTOCLIENTE) {
+            <small>Desconto do Cliente</small>
+            <p>{{ xpay.BUSCADESCONTOCLIENTE === "T" ? "Sim" : "Nao" }}</p>
+          }
+
+          @if (xpay.EXPORTAPALM) {
+            <small>Exporta Palm</small>
+            <p>{{ xpay.EXPORTAPALM === "T" ? "Sim" : "Nao" }}</p>
+          }
         </div>
       </div>
-
-      <div class="d-flex flex-column w-100">
-        <!-- <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Condição Pagamento
-        </p> -->
-
-        <p class="text-primary mb-2 w-100 fw-bold" style="font-size: 0.8rem">
-          ({{ xpay.CODCONDPGTO }}) - {{ xpay.NOME }}
-        </p>
-
-        @if (xpay.CODCCUSTO || xpay.CODCCUSTOAVISTA) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Centro de Custo Avista / Prazo
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xpay.CODCCUSTOAVISTA }} / {{ xpay.CODCCUSTO }}
-        </p>
-        } @if (xpay.CODTIPODOC) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Tipo Documento
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xpay.CODTIPODOC }}
-        </p>
-        } @if (xpay.BUSCADESCONTOCLIENTE) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Desconto do Cliente
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xpay.BUSCADESCONTOCLIENTE === "T" ? "Sim" : "Não" }}
-        </p>
-        } @if (xpay.EXPORTAPALM) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Exporta Palm
-        </p>
-
-        <p
-          class="text-black small mb-2 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xpay.EXPORTAPALM === "T" ? "Sim" : "Não" }}
-        </p>
-        }
-      </div>
-
-      <!-- <div class="d-flex float-end text-success">
-        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
-      </div> -->
-    </div>
     }
   </div>
 </ion-content>

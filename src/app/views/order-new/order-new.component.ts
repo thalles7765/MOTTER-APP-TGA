@@ -24,6 +24,8 @@ import { SellersComponent } from '../modals/sellers/sellers.component';
 import { sellers } from 'src/app/interfaces/sellers';
 import { ConfigService } from 'src/app/services/config/config.service';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { app_user } from 'src/app/interfaces/app-user';
 
 @Component({
   selector: 'app-order-new',
@@ -38,6 +40,7 @@ export class OrderNewComponent implements OnInit {
   protected typeModal = 1; //1 = QUANTIDADE; 2 = DESCONTO;
   protected qtdOpt: boolean = false;
   private config;
+  private currentUser: app_user | null = null;
   protected order = {} as order;
   protected sellers: sellers[] = [];
   protected pays_type: payments_type[] = [];
@@ -50,7 +53,7 @@ export class OrderNewComponent implements OnInit {
 
   protected product_selected!: order_item | null;
 
-  constructor(private cfgSvc: ConfigService, private toastC: ToastController, private loadingController: LoadingController, private orderSvc: OrdersService, private alertController: AlertController, private clientSvc: ClientService, private utilSvc: UtilsService, private modalCtrl: ModalController) {
+  constructor(private cfgSvc: ConfigService, private authSvc: AuthService, private toastC: ToastController, private loadingController: LoadingController, private orderSvc: OrdersService, private alertController: AlertController, private clientSvc: ClientService, private utilSvc: UtilsService, private modalCtrl: ModalController) {
     addIcons({ add, checkmark, eye })
   }
 
@@ -58,6 +61,7 @@ export class OrderNewComponent implements OnInit {
     const loading = await this.loadingController.create({ message: 'Carregando informações...' });
     try {
       await loading.present();
+      this.currentUser = await this.authSvc.getCurrentUser();
 
       await this.clientSvc.getData({ codcfo: 'C00001' }).then((data) => {
         console.log('select client')
@@ -119,10 +123,13 @@ export class OrderNewComponent implements OnInit {
   }
 
   createMov() {
+    const defaultMovement = this.currentUser?.default_movement || '2.1.01';
+    const defaultSeller = this.currentUser?.default_seller || this.config?.codven;
+
     this.order.CODEMPRESA = 1;
     this.order.CODFILIAL = 2;
     this.order.CODLOC = '001'; // LOCAL PADRAO
-    this.order.CODTMV = '2.1.01'; // ORÇAMENTO
+    this.order.CODTMV = defaultMovement; // ORCAMENTO
     this.order.CODCFO = 'C00001'; // CONSUMIDOR
     this.order.CODCPG = '00'; // 00 = AVISTA
     this.order.DATAEMISSAO = new Date();
@@ -136,12 +143,12 @@ export class OrderNewComponent implements OnInit {
     this.order.VALORTOTALPRODUTO = 0;
     this.order.VALORBRUTO = 0;
     this.order.VALORLIQUIDO = 0;
-    this.order.CODVEN1 = this.config?.codven;
+    this.order.CODVEN1 = defaultSeller;
     // this.order.ITEMS = [];
     this.order.CLIENTE = this.client_selected;
-    this.order.VENDEDOR = this.searchByField(this.sellers, 'CODVEN', this.config?.codven);
-    this.order.MOVIMENTO = this.searchByField(this.mov_type, 'CODTIPOMOV', '2.1.01');
-    this.order.PAGAMENTO = this.searchByField(this.pays_type, 'CODCONDPGTO', '00');
+    this.order.VENDEDOR = this.searchByField(this.sellers, 'CODVEN', defaultSeller) || this.sellers[0] || null;
+    this.order.MOVIMENTO = this.searchByField(this.mov_type, 'CODTIPOMOV', defaultMovement) || this.searchByField(this.mov_type, 'CODTIPOMOV', '2.1.01') || this.mov_type[0] || null;
+    this.order.PAGAMENTO = this.searchByField(this.pays_type, 'CODCONDPGTO', '00') || this.pays_type[0] || null;
 
   }
 
@@ -253,7 +260,33 @@ export class OrderNewComponent implements OnInit {
     this.order.VALORLIQUIDO += xProduct.PRECO2;
   }
 
-  removeProduct(xProduct: order_item) {
+  async removeProduct(xProduct: order_item) {
+    const alert = await this.alertController.create({
+      header: 'Remover produto?',
+      cssClass: 'order-remove-alert',
+      message: [
+        `<strong>${xProduct.CODPRD} - ${xProduct.NOMEFANTASIA}</strong>`,
+        `Quantidade: <strong>${Number(xProduct.QUANTIDADE || 0).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>`,
+        `Unitario: <strong>${Number(xProduct.PRECO2 || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>`,
+        `Total: <strong>${Number(xProduct.VALORTOTALITEM || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>`,
+      ].join('<br>'),
+      buttons: [
+        {
+          text: 'Manter produto',
+          role: 'cancel',
+        },
+        {
+          text: 'Remover da venda',
+          role: 'destructive',
+          handler: () => this.confirmRemoveProduct(xProduct),
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  private confirmRemoveProduct(xProduct: order_item) {
     this.order.ITEMS.splice(this.order.ITEMS.indexOf(xProduct), 1);
     this.showToast('bottom', 'Produto removido!');
 

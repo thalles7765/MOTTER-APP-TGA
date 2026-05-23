@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Liberação de Acesso</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadRequests()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <section class="security-hero">
+    <div>
+      <p>{{ branchScope === 'all' ? 'Todas filiais' : selectedBranch?.NOMEFANTASIA || brand.companyName }}</p>
+      <h1>Solicitações de acesso</h1>
+      <span>{{ waitingCount }} aguardando liberação</span>
+    </div>
+    <ion-icon name="shield-checkmark"></ion-icon>
+  </section>
+
+  <section class="branch-scope-bar">
+    <button type="button" class="scope-chip" [class.active]="isBranchScopeActive('selected')" (click)="setBranchScope('selected')">
+      Filial selecionada
+    </button>
+    <button type="button" class="scope-chip" [class.active]="isBranchScopeActive('all')" (click)="setBranchScope('all')">
+      Todas filiais
+    </button>
+  </section>
+
+  <section class="filter-bar">
+    @for (filter of filterOptions; track filter.key) {
+      <button
+        type="button"
+        class="filter-chip"
+        [class.active]="isFilterActive(filter.key)"
+        (click)="setFilter(filter.key)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+  </section>
+
+  <section class="request-list">
+    @if (filteredRequests.length <= 0) {
+      <div class="empty-state">
+        Nenhuma solicitação encontrada para o filtro selecionado.
+      </div>
+    }
+
+    @for (request of filteredRequests; track request.IDSOLICITA) {
+      <article class="request-card" [ngClass]="statusClass(request.STATUS)">
+        <button type="button" class="request-main" (click)="openRequest(request)">
+          <div>
+            <div class="request-topline">
+              <strong>#{{ request.IDSOLICITA }}</strong>
+              <span>{{ statusText(request.STATUS) }}</span>
+            </div>
+            <small>Filial {{ request.CODFILIAL }}</small>
+            <h2>{{ request.OPCAO || 'Solicitação de acesso' }}</h2>
+            <p>{{ request.TEXTO || 'Sem descrição informada.' }}</p>
+          </div>
+        </button>
+
+        <div class="request-meta">
+          <span>
+            <ion-icon name="desktop"></ion-icon>
+            {{ request.COMPUTADOR || 'Nao informado' }}
+          </span>
+          <span>
+            <ion-icon name="time"></ion-icon>
+            {{ request.DATA | date : 'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+
+        <div class="request-actions">
+          <ion-button fill="clear" size="small" (click)="openRequest(request)">
+            <ion-icon name="eye" slot="start"></ion-icon>
+            Detalhes
+          </ion-button>
+
+          @if (request.STATUS === 'A') {
+            <ion-button fill="clear" size="small" class="block-action" (click)="updateRequest(request, 'B', 'Bloqueado')">
+              <ion-icon name="close-circle" slot="start"></ion-icon>
+              Bloquear
+            </ion-button>
+            <ion-button fill="clear" size="small" class="release-action" (click)="updateRequest(request, 'L', 'Liberado')">
+              <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+              Liberar
+            </ion-button>
+          }
+        </div>
+      </article>
+    }
+  </section>
+</ion-content>

@@ -24,6 +24,7 @@ export function applyBrandTheme(brand: BrandConfig) {
 
   document.title = brand.appName;
   updateFavicon(brand.assets.favicon);
+  applySystemThemeClass();
 
   const root = document.documentElement;
   const theme = {
@@ -34,6 +35,32 @@ export function applyBrandTheme(brand: BrandConfig) {
   };
 
   Object.entries(theme).forEach(([key, value]) => root.style.setProperty(key, value));
+}
+
+function applySystemThemeClass() {
+  if (typeof window === "undefined") {
+    document.body.classList.add("app-theme-light");
+    return;
+  }
+
+  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
+
+  if (!mediaQuery) {
+    document.body.classList.add("app-theme-light");
+    return;
+  }
+
+  const setThemeClass = () => {
+    document.body.classList.toggle("app-theme-dark", mediaQuery.matches);
+    document.body.classList.toggle("app-theme-light", !mediaQuery.matches);
+  };
+
+  setThemeClass();
+  if (mediaQuery.addEventListener) {
+    mediaQuery.addEventListener("change", setThemeClass);
+  } else {
+    mediaQuery.addListener?.(setThemeClass);
+  }
 }
 
 function updateFavicon(href: string) {
