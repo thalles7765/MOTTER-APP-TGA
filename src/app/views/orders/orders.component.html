@@ -1,10 +1,10 @@
-<ion-header [translucent]="true" class="mb-2">
+<ion-header [translucent]="true" class="mb-2 orders-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
+    <div class="orders-toolbar-title d-flex flex-row align-items-center gap-1 p-2">
       <img [src]="brand.assets.favicon" height="60px" alt="" />
 
       <ion-title>Movimentos</ion-title>
@@ -12,7 +12,7 @@
   </ion-toolbar>
 
   <div
-    class="d-flex flex-column w-100 gap-1 justify-content-between align-items-center p-1 mb-1"
+    class="orders-filter-panel d-flex flex-column w-100 gap-1 justify-content-between align-items-center p-1 mb-1"
   >
     <div
       class="d-flex flex-row w-100 gap-1 justify-content-between align-items-center p-1"
@@ -68,7 +68,7 @@
   </div>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="orders-content">
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button class="botao-pulse" (click)="openNewOrder()">
       <ion-icon name="add"></ion-icon>
@@ -87,11 +87,10 @@
 
   <!-- <p class="mb-1 fw-bold w-100 text-center mt-3">Clientes</p> -->
 
-  <div class="d-flex flex-column align-items-center px-3 mb-3 gap-3">
+  <div class="orders-list d-flex flex-column align-items-center px-3 mb-3 gap-3">
     @if (orders.length <= 0) {
     <div
-      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
+      class="empty-orders-card d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
     >
       <img
         style="
@@ -111,8 +110,7 @@
 
     } @for (xOrders of orders; track $index) {
     <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
+      class="order-card d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
     >
       <div class="gap-3 d-flex flex-column">
         <img
@@ -181,7 +179,7 @@
         </div>
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="order-value-box w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-gray"
@@ -196,7 +194,7 @@
             </p>
           </div>
 
-          <div class="w-50 rounded shadow p-1 d-flex flex-column">
+          <div class="order-value-box total w-50 rounded shadow p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-gray"
@@ -214,7 +212,7 @@
 
         @if (xOrders.STATUSPEDIDO === 'A' ) {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
+          class="status-pill status-success w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
         >
           <i class="material-icons text-white">verified</i>
 
@@ -227,7 +225,7 @@
         </div>
         } @else if (xOrders.STATUSPEDIDO === 'P' ) {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
+          class="status-pill status-warning w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
         >
           <i class="material-icons text-white">unpublished</i>
 
@@ -240,7 +238,7 @@
         </div>
         } @else {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
+          class="status-pill status-pending w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
         >
           <i class="material-icons text-white">radio_button_unchecked</i>
           <p

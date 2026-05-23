@@ -2,7 +2,7 @@
   display: grid;
   gap: 0.9rem;
   padding: 1rem;
-  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.1), #f8fafc 45%, #fff);
+  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.1), var(--app-page-bg) 45%, var(--app-card-bg));
 }
 
 .home-hero,
@@ -11,7 +11,8 @@
 .menu-card {
   overflow: hidden;
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
 }
 
 .home-hero {
@@ -58,12 +59,12 @@
 }
 
 .branch-detail strong { color: var(--ion-color-primary); }
-.branch-detail span { color: #475569; font-size: 0.82rem; }
+.branch-detail span { color: var(--app-muted-text); font-size: 0.82rem; }
 
 .branch-warning {
   padding: 0.85rem 1rem;
   background: #fffbeb;
-  color: #475569;
+  color: var(--app-muted-text);
   font-weight: 800;
 }
 
@@ -102,8 +103,8 @@
 
 .menu-icon img { width: 34px; height: 34px; object-fit: contain; }
 .menu-text { display: grid; flex: 1; }
-.menu-text strong { color: #111827; font-size: 1rem; }
-.menu-text small { color: #64748b; font-size: 0.74rem; }
+.menu-text strong { color: var(--app-card-text); font-size: 1rem; }
+.menu-text small { color: var(--app-muted-text); font-size: 0.74rem; }
 .menu-arrow { color: var(--ion-color-primary); font-size: 2rem; }
 
 @keyframes home-carousel {

@@ -37,22 +37,14 @@ export class AuthService {
   }
 
   async logoutUser() {
-    // console.log(environment.url_api)
-    console.log('logout');
-    await this.branchSvc.clearSelectedBranch();
-    await this.branchSvc.clearBranchPolicy();
-    await this.clearCurrentUser();
-
-    return await axios
-      .post(`${environment.url_api}/auth/logout`, {}, { withCredentials: true })
-      .then((data) => {
-        // this.ROUTES = data.data.data;
-        // console.log('@@###')
-        console.log(data.data)
-        // this._router.navigate(['/app/login']);
-
-        return data
-      });
+    try {
+      return await axios.post(`${environment.url_api}/auth/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.log('Falha ao solicitar logout remoto. Limpando sessao local.', error);
+      return null;
+    } finally {
+      await this.clearAppSession();
+    }
   }
 
   async checkUserLogged() {
@@ -115,6 +107,31 @@ export class AuthService {
     await this.setCurrentUser(null);
   }
 
+  private async clearAppSession() {
+    await Promise.allSettled([
+      this.branchSvc.clearSelectedBranch(),
+      this.branchSvc.clearBranchPolicy(),
+      this.clearCurrentUser(),
+      Preferences.clear()
+    ]);
+
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (error) {
+      console.log('Nao foi possivel limpar storage do navegador.', error);
+    }
+
+    try {
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+      }
+    } catch (error) {
+      console.log('Nao foi possivel limpar CacheStorage.', error);
+    }
+  }
+
   private async hydrateCurrentUser() {
     await this.getCurrentUser();
   }
@@ -133,6 +150,10 @@ export class AuthService {
       active: user.active === undefined ? true : this.toBoolean(user.active),
       default_branch: user.default_branch,
       select_branch: this.toBoolean(user.select_branch),
+      default_seller: user.default_seller || user.DEFAULT_SELLER || user.codven || user.CODVEN || null,
+      default_seller_name: user.default_seller_name || user.DEFAULT_SELLER_NAME || user.seller_name || user.SELLER_NAME || null,
+      default_movement: user.default_movement || user.DEFAULT_MOVEMENT || user.codtmv || user.CODTMV || null,
+      default_movement_name: user.default_movement_name || user.DEFAULT_MOVEMENT_NAME || user.movement_name || user.MOVEMENT_NAME || null,
     };
   }
 

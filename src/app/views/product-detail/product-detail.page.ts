@@ -51,6 +51,43 @@ export class ProductDetailPage implements OnInit {
     return this.modalCtrl.dismiss(null, 'confirm');
   }
 
+  protected productName() {
+    return this.product?.NOMEFANTASIA || this.product?.DESCRICAO || 'Produto sem nome';
+  }
+
+  protected curveClass() {
+    const curve = String(this.product?.DESC_CURVA || '').toUpperCase();
+
+    if (curve.includes('A')) {
+      return 'curve-a';
+    }
+
+    if (curve.includes('B')) {
+      return 'curve-b';
+    }
+
+    return 'curve-c';
+  }
+
+  protected curveLetter() {
+    return String(this.product?.DESC_CURVA || '')
+      .toUpperCase()
+      .replace('CURVA', '')
+      .replace(/\s/g, '') || '-';
+  }
+
+  protected productFlag() {
+    if (this.product?.CD_LEGENDA === 6) {
+      return { label: 'Promocao', className: 'promo' };
+    }
+
+    if (this.product?.CD_LEGENDA === 2) {
+      return { label: 'Fora de linha', className: 'inactive' };
+    }
+
+    return null;
+  }
+
   async ngOnInit() {
     await this.loadBranchContext();
     await this.getConfig();

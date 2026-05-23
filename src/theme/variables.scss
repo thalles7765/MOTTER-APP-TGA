@@ -6,4 +6,54 @@
   --ion-color-tertiary: #252525;
   --app-header-background: #ffffff;
   --app-border-color: #f2612a;
+  --app-page-bg: #f8fafc;
+  --app-card-bg: #ffffff;
+  --app-card-text: #0f172a;
+  --app-muted-text: #64748b;
+  --app-soft-bg: #f1f5f9;
+  --app-soft-border: #e2e8f0;
+  --app-gradient-text: #ffffff;
+  --app-light-surface: #1e293b;
+  --app-light-surface-text: #f8fafc;
+  --app-menu-bg: linear-gradient(180deg, #ffffff, #f8fafc 50%, rgba(var(--ion-color-primary-rgb), 0.1));
+  --app-menu-item-bg: rgba(255, 255, 255, 0.86);
+  --app-menu-item-text: #0f172a;
+}
+
+body.app-theme-light {
+  color-scheme: light;
+  --ion-background-color: #f8fafc;
+  --ion-text-color: #0f172a;
+  --ion-item-background: #ffffff;
+  --app-page-bg: #f8fafc;
+  --app-card-bg: #ffffff;
+  --app-card-text: #0f172a;
+  --app-muted-text: #64748b;
+  --app-soft-bg: #f1f5f9;
+  --app-soft-border: #e2e8f0;
+  --app-gradient-text: #ffffff;
+  --app-light-surface: #ffffff;
+  --app-light-surface-text: #0f172a;
+  --app-menu-bg: linear-gradient(180deg, #ffffff, #f8fafc 50%, rgba(var(--ion-color-primary-rgb), 0.1));
+  --app-menu-item-bg: rgba(255, 255, 255, 0.9);
+  --app-menu-item-text: #0f172a;
+}
+
+body.app-theme-dark {
+  color-scheme: dark;
+  --ion-background-color: #0f172a;
+  --ion-text-color: #e5e7eb;
+  --ion-item-background: #1e293b;
+  --app-page-bg: #0f172a;
+  --app-card-bg: #1e293b;
+  --app-card-text: #f8fafc;
+  --app-muted-text: #cbd5e1;
+  --app-soft-bg: #334155;
+  --app-soft-border: #475569;
+  --app-gradient-text: #ffffff;
+  --app-light-surface: #ffffff;
+  --app-light-surface-text: #0f172a;
+  --app-menu-bg: linear-gradient(180deg, #0f172a, #111827 52%, rgba(var(--ion-color-primary-rgb), 0.22));
+  --app-menu-item-bg: rgba(30, 41, 59, 0.94);
+  --app-menu-item-text: #f8fafc;
 }

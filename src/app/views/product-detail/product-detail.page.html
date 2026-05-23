@@ -1,13 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <!-- <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons> -->
-
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
-
-      <ion-title> Detalhe </ion-title>
+    <div class="d-flex align-items-center gap-2 px-2 py-1 overflow-hidden">
+      <img [src]="brand.assets.favicon" width="34" height="34" style="object-fit: contain; flex: 0 0 auto;" alt="" />
+      <ion-title>Detalhe</ion-title>
     </div>
 
     <ion-buttons slot="end">
@@ -17,144 +12,84 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
-    <!-- *ngFor="let xtest of [1,2,3,4,5,6,7,8,9,10]" -->
+  @let flag = productFlag();
 
-    <div
-      class="d-flex p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center w-100 gap-2">
-        <!-- <i class="material-icons" style="font-size: 55px;">qr_code</i> -->
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-            margin-bottom: 5px;
-          "
-          [src]="brand.assets.menuLogo"
-          height="75px"
-          width="75px"
-          alt=""
-        />
-
-        <div class="d-flex flex-column">
-          @if (product.CD_LEGENDA === 6) {
-          <div
-            class="p-1 justify-content-center d-flex flex-row bg-primary shadow-sm rounded w-100"
-          >
-            <p class="text-white fw-bold small mb-0 w-100 text-center">
-              Produto em Promoção
-            </p>
-          </div>
-          } @if (product.CD_LEGENDA === 2) {
-          <div
-            class="p-1 justify-content-center d-flex flex-row bg-success shadow-sm rounded w-100"
-          >
-            <p class="text-white fw-bold small mb-0 w-100 text-center">
-              Fora de Linha
-            </p>
-          </div>
-          }
-
-          <p class="mb-2 fw-bold">{{product?.NOMEFANTASIA}}</p>
-          @if (product.DESC_CURVA === 'CURVA A') {
-          <p
-            style="font-size: 0.7rem"
-            class="text-white mb-2 p-1 rounded bg-primary shadow-sm fw-bold"
-          >
-            {{product.DESC_CURVA}}
-          </p>
-          } @else if (product.DESC_CURVA === 'CURVA B') {
-          <p
-            style="font-size: 0.7rem"
-            class="text-white mb-2 p-1 rounded bg-info shadow-sm fw-bold"
-          >
-            {{product.DESC_CURVA}}
-          </p>
-          }@else {
-          <p
-            style="font-size: 0.7rem"
-            class="text-white mb-2 p-1 rounded bg-secondary shadow-sm fw-bold"
-          >
-            {{product.DESC_CURVA}}
-          </p>
-          }
-
-          <p class="mb-0 small">Código: <b>{{product?.CODPRD}}</b></p>
-          <p class="mb-2 small">
-            Cód. Barras: <b>{{product?.CODBARRAS || 'N/A'}}</b>
-          </p>
-          <p class="mb-0 small">
-            Grupo: <b>{{product?.DESC_GRUPO || 'N/A'}}</b>
-          </p>
-          <p class="mb-2 small">
-            Fabricante: <b>{{product?.DESC_FABRICANTE || 'N/A'}}</b>
-          </p>
-
-          <p class="mb-0 small">
-            Depósito: <b>{{product?.DEPOSITO || 'N/A'}}</b>
-          </p>
-          <p class="mb-2 small">
-            Prateleira: <b>{{product?.PRATELEIRA || 'N/A'}}</b>
-          </p>
-
-          <p class="mb-0 small">NCM: <b>{{product?.CODCLAS || 'N/A'}}</b></p>
-          <p class="mb-2 small">CEST: <b>{{product?.CEST || 'N/A'}}</b></p>
-
-          <!-- <p
-            [class]="xtest <= 5? 'mb-0 text-gray small' : 'mb-0 text-gray small text-decoration-line-through'"
-          >
-            Preço: <b>R$1,48</b>
-          </p> -->
-
-            <button
-              type="button"
-              class="stock-detail"
-              [ngClass]="stockStatusClass()"
-              [class.has-other-stock]="hasOtherBranchBalance()"
-              [disabled]="!canSelectBranch || !product?.saldos?.length"
-              (click)="openStockBranches($event)"
-          >
-            <span>Saldo da filial selecionada</span>
-            <b>{{ selectedBranchBalance() }}</b>
-            @if (selectedBranchStock()?.CODLOC) {
-              <small>Local {{ selectedBranchStock()?.CODLOC }}</small>
-            }
-            @if (hasOtherBranchBalance()) {
-              <small>Possui saldo em outra filial</small>
-            }
-          </button>
-          <!-- <p class="mb-2 text-gray small">
-            Saldo 2: <b>{{product?.SALDOGERALFISICO2 || 0}}</b>
-          </p> -->
-
-          <!-- @if (xtest > 5) {
-          <p class="mb-0 text-danger small">Em Promoção</p>
-          } -->
-
-          @if(xConfig?.admin){
-          <p class="mb-0 small">
-            Custo Unitário:
-            <b class="text-primary"
-              >{{product?.CUSTOUNITARIO | currency : 'BRL'}}</b
-            >
-          </p>
-          <p class="mb-2 small">
-            Ponto Equilibrio:
-            <b class="text-primary">{{product?.PONTOEQ | currency : 'BRL'}}</b>
-          </p>
-          }
-
-          <!-- <p class="mb-0 small">Preço 1: <b class="text-success ">{{product?.PRECO1 | currency : 'BRL'}}</b></p> -->
-          <p class="mb-2 small">
-            Preço :
-            <b class="text-success">{{product?.PRECO2 | currency : 'BRL'}}</b>
-          </p>
-        </div>
+  <main class="detail-shell">
+    <section class="detail-hero">
+      <img [src]="brand.assets.menuLogo" alt="" />
+      <div>
+        @if (flag) {
+          <span [ngClass]="flag.className">{{ flag.label }}</span>
+        }
+        <h1>{{ productName() }}</h1>
+        <p>{{ product?.CODBARRAS || product?.CODPRD || 'Sem codigo' }}</p>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section class="money-grid">
+      <div class="price-box">
+        <span>Preco venda</span>
+        <strong>{{ product?.PRECO2 || 0 | currency : 'BRL' }}</strong>
+      </div>
+      <button
+        type="button"
+        class="stock-detail"
+        [ngClass]="stockStatusClass()"
+        [class.has-other-stock]="hasOtherBranchBalance()"
+        [disabled]="!canSelectBranch || !product?.saldos?.length"
+        (click)="openStockBranches($event)"
+      >
+        <span>Saldo filial</span>
+        <strong>{{ selectedBranchBalance() }}</strong>
+        @if (selectedBranchStock()?.CODLOC) {
+          <small>Local {{ selectedBranchStock()?.CODLOC }}</small>
+        }
+      </button>
+    </section>
+
+    <section class="tag-row">
+      @if (curveLetter() !== '-') {
+        <span class="curve-badge" [ngClass]="curveClass()">{{ curveLetter() }}</span>
+      }
+      @if (hasOtherBranchBalance()) {
+        <span class="other-stock">Saldo em outra filial</span>
+      }
+    </section>
+
+    <section class="info-card">
+      <h2>Cadastro</h2>
+      <dl>
+        <div><dt>Codigo</dt><dd>{{ product?.CODPRD || 'N/A' }}</dd></div>
+        <div><dt>Grupo</dt><dd>{{ product?.DESC_GRUPO || 'N/A' }}</dd></div>
+        <div><dt>Fabricante</dt><dd>{{ product?.DESC_FABRICANTE || 'N/A' }}</dd></div>
+        <div><dt>Unidade</dt><dd>{{ product?.UNIDADE || 'N/A' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="info-card">
+      <h2>Localizacao</h2>
+      <dl>
+        <div><dt>Deposito</dt><dd>{{ product?.DEPOSITO || 'N/A' }}</dd></div>
+        <div><dt>Prateleira</dt><dd>{{ product?.PRATELEIRA || 'N/A' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="info-card">
+      <h2>Fiscal</h2>
+      <dl>
+        <div><dt>NCM</dt><dd>{{ product?.CODCLAS || 'N/A' }}</dd></div>
+        <div><dt>CEST</dt><dd>{{ product?.CEST || 'N/A' }}</dd></div>
+      </dl>
+    </section>
+
+    @if (xConfig?.admin) {
+      <section class="info-card">
+        <h2>Custos</h2>
+        <dl>
+          <div><dt>Custo unitario</dt><dd>{{ product?.CUSTOUNITARIO | currency : 'BRL' }}</dd></div>
+          <div><dt>Ponto equilibrio</dt><dd>{{ product?.PONTOEQ | currency : 'BRL' }}</dd></div>
+        </dl>
+      </section>
+    }
+  </main>
 </ion-content>

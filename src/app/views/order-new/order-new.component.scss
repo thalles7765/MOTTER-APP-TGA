@@ -1,137 +1,181 @@
-
-.botao-pulse-add {
-  // padding: 20px 30px;
-  color: #fff;
-  // background-color: #d20000;
-  // border-radius:3px;
-  -webkit-animation: pulse 1s ease infinite;
-  -moz-animation: pulse 1s ease infinite;
-  -ms-animation: pulse 1s ease infinite;
-  -o-animation: pulse 1s ease infinite;
-  animation: pulse 1s ease infinite;
+ion-toolbar {
+  --background: var(--app-card-bg);
+  --color: var(--app-card-text);
+  --border-color: var(--app-soft-border);
 }
-.botao-pulse-add:hover {
-  color: #fff;
+
+.order-toolbar-title img {
+  width: 46px;
+  height: 46px;
+  padding: 0.25rem;
+  border-radius: 14px;
+  background: var(--app-light-surface);
+  object-fit: contain;
+}
+
+.order-toolbar-title ion-title {
+  padding-inline: 0;
+  color: var(--app-card-text);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.order-workspace {
+  --background: var(--app-page-bg);
+  --color: var(--app-card-text);
+}
+
+.order-page {
+  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.08), var(--app-page-bg) 180px);
+}
+
+.order-summary-card,
+.order-section-card,
+.order-empty,
+.order-product-card {
+  border: 1px solid var(--app-soft-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.order-product-card {
+  padding: 0.75rem;
+}
+
+.order-summary-card img,
+.order-section-title img,
+.order-empty img {
+  border-color: var(--ion-color-primary) !important;
+  border-radius: 14px !important;
+  background: var(--app-light-surface);
+  box-shadow: inset 0 0 0 1px rgba(var(--ion-color-primary-rgb), 0.18);
+}
+
+.order-summary-card img {
+  width: 34px;
+  height: 34px;
+  padding: 0.3rem !important;
+}
+
+.order-section-title img,
+.order-empty img {
+  border-color: var(--ion-color-primary) !important;
+  border-radius: 14px !important;
+  padding: 0.35rem !important;
+}
+
+.order-summary-card p,
+.order-section-card p,
+.order-product-card p,
+.order-section-title p {
+  color: var(--app-card-text);
+}
+
+.order-section-title {
+  padding: 0.25rem 0;
+  color: var(--app-card-text);
+}
+
+.metric-box {
+  border: 1px solid var(--app-soft-border);
+  background: var(--app-soft-bg);
+  color: var(--app-card-text);
+}
+
+.metric-box.highlight {
+  background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.12), rgba(var(--ion-color-secondary-rgb), 0.08));
+}
+
+.metric-box.success {
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(14, 165, 233, 0.08));
+}
+
+.metric-box p,
+.metric-box .text-black {
+  color: var(--app-card-text) !important;
+}
+
+.metric-box.highlight p {
+  color: var(--ion-color-primary) !important;
+}
+
+.metric-box.success p {
+  color: #16a34a !important;
+}
+
+.order-collapse-toggle,
+.botao-pulse {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
 }
 
 .box-pulse {
-    width: 100%;
-    // width:250px;
-    margin: 0 auto;
-    padding: 0 20px;
-    // padding: 5px;
-  }
-  .box-pulse a {
-    text-decoration: none;
-    display: inline-block;
-    font-size: 0.8rem;
-    font-family: Verdana, Geneva, sans-serif;
-    -webkit-transition: all 0.4s;
-    -moz-transition: all 0.4s;
-    -o-transition: all 0.4s;
-    transition: all 0.4s;
-  }
-  .botao-pulse {
-    // padding: 20px 30px;
-    padding: 8px;
-    width: 100%;
-    text-align: center;
-    color: #fff;
-    background-color: #df6b0d;
-    border-radius:5px;
-    -webkit-animation: pulse 1s ease infinite;
-    -moz-animation: pulse 1s ease infinite;
-    -ms-animation: pulse 1s ease infinite;
-    -o-animation: pulse 1s ease infinite;
-    animation: pulse 1s ease infinite;
-  }
-  .botao-pulse:hover {
-    color: #fff;
-  }
-  @-webkit-keyframes pulse {
-    0% {
-      -webkit-transform: scale(1);
-    }
-    25% {
-      -webkit-transform: scale(1.1);
-    }
-    50% {
-      -webkit-transform: scale(1);
-    }
-    100% {
-      -webkit-transform: scale(1);
-    }
-  }
-  @-moz-keyframes pulse {
-    0% {
-      -moz-transform: scale(1);
-    }
-    25% {
-      -moz-transform: scale(1.1);
-    }
-    50% {
-      -moz-transform: scale(1);
-    }
-    100% {
-      -moz-transform: scale(1);
-    }
-  }
-  @-ms-keyframes pulse {
-    0% {
-      -ms-transform: scale(1);
-    }
-    25% {
-      -ms-transform: scale(1.1);
-    }
-    50% {
-      -ms-transform: scale(1);
-    }
-    100% {
-      -ms-transform: scale(1);
-    }
-  }
-  @-o-keyframes pulse {
-    0% {
-      -o-transform: scale(1);
-    }
-    25% {
-      -o-transform: scale(1.1);
-    }
-    50% {
-      -o-transform: scale(1);
-    }
-    100% {
-      -o-transform: scale(1);
-    }
-  }
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  /*Botão Pulsa*/
-  
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0.35rem;
+}
 
-  .block {
-    width: 100%;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  ion-modal {
-    --height: auto;
+.box-pulse a {
+  display: inline-block;
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.botao-pulse,
+.botao-pulse-add {
+  animation: pulse 1.5s ease infinite;
+}
+
+ion-modal {
+  --height: auto;
+  --background: var(--app-card-bg);
+}
+
+ion-modal ion-item {
+  --background: var(--app-card-bg);
+  --color: var(--app-card-text);
+}
+
+.counter__section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--app-card-text);
+}
+
+ul {
+  background-color: var(--app-soft-border) !important;
+  opacity: 0.6;
+}
+
+ion-fab-button {
+  --box-shadow: 0 10px 24px rgba(var(--ion-color-primary-rgb), 0.28);
+}
+
+ion-fab-button:not([color="danger"]) {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: #ffffff;
+}
+
+ion-fab-button[color="danger"] {
+  --background: linear-gradient(135deg, #ef4444, #be123c);
+  --color: #ffffff;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
   }
 
-  .counter__section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  50% {
+    transform: scale(1.035);
   }
+}

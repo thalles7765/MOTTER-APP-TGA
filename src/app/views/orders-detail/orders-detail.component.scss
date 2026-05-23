@@ -1,104 +1,140 @@
+ion-toolbar {
+  --background: var(--app-card-bg);
+  --color: var(--app-card-text);
+  --border-color: var(--app-soft-border);
+}
+
+.order-toolbar-title img {
+  width: 46px;
+  height: 46px;
+  padding: 0.25rem;
+  border-radius: 14px;
+  background: var(--app-light-surface);
+  object-fit: contain;
+}
+
+.order-toolbar-title ion-title {
+  padding-inline: 0;
+  color: var(--app-card-text);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.order-workspace {
+  --background: var(--app-page-bg);
+  --color: var(--app-card-text);
+}
+
+.order-page {
+  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.08), var(--app-page-bg) 180px);
+}
+
+.order-summary-card,
+.order-section-card,
+.order-product-card {
+  border: 1px solid var(--app-soft-border);
+  border-radius: 8px;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.order-product-card {
+  padding: 0.75rem;
+}
+
+.order-summary-card p,
+.order-section-card p,
+.order-product-card p,
+.order-section-title p {
+  color: var(--app-card-text);
+}
+
+.order-section-title {
+  padding: 0.25rem 0;
+  color: var(--app-card-text);
+}
+
+.order-section-title img {
+  background: var(--app-light-surface);
+  box-shadow: inset 0 0 0 1px rgba(var(--ion-color-primary-rgb), 0.18);
+}
+
+.metric-box {
+  border: 1px solid var(--app-soft-border);
+  background: var(--app-soft-bg);
+  color: var(--app-card-text);
+}
+
+.metric-box.highlight {
+  background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.12), rgba(var(--ion-color-secondary-rgb), 0.08));
+}
+
+.metric-box.success {
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(14, 165, 233, 0.08));
+}
+
+.metric-box p,
+.metric-box .text-black {
+  color: var(--app-card-text) !important;
+}
+
+.metric-box.highlight p {
+  color: var(--ion-color-primary) !important;
+}
+
+.metric-box.success p {
+  color: #16a34a !important;
+}
+
+.status-pill {
+  border: 0;
+  color: #ffffff;
+}
+
+.status-success {
+  background: linear-gradient(135deg, #16a34a, #0f766e) !important;
+}
+
+.status-warning {
+  background: linear-gradient(135deg, #f59e0b, #ea580c) !important;
+}
+
+.status-pending,
+.botao-pulse {
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary)) !important;
+}
 
 .box-pulse {
-    width: 100%;
-    // width:250px;
-    margin: 0 auto;
-    padding: 0 20px;
-    // padding: 5px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0.35rem;
+}
+
+.box-pulse a {
+  display: inline-block;
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  border-radius: 8px;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 950;
+  animation: pulse 1.5s ease infinite;
+}
+
+ul {
+  opacity: 0.6;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
   }
-  .box-pulse a {
-    text-decoration: none;
-    display: inline-block;
-    font-size: 0.8rem;
-    font-family: Verdana, Geneva, sans-serif;
-    -webkit-transition: all 0.4s;
-    -moz-transition: all 0.4s;
-    -o-transition: all 0.4s;
-    transition: all 0.4s;
+
+  50% {
+    transform: scale(1.035);
   }
-  .botao-pulse {
-    // padding: 20px 30px;
-    padding: 8px;
-    width: 100%;
-    text-align: center;
-    color: #fff;
-    background-color: #df6b0d;
-    border-radius:5px;
-    -webkit-animation: pulse 1s ease infinite;
-    -moz-animation: pulse 1s ease infinite;
-    -ms-animation: pulse 1s ease infinite;
-    -o-animation: pulse 1s ease infinite;
-    animation: pulse 1s ease infinite;
-  }
-  .botao-pulse:hover {
-    color: #fff;
-  }
-  @-webkit-keyframes pulse {
-    0% {
-      -webkit-transform: scale(1);
-    }
-    25% {
-      -webkit-transform: scale(1.1);
-    }
-    50% {
-      -webkit-transform: scale(1);
-    }
-    100% {
-      -webkit-transform: scale(1);
-    }
-  }
-  @-moz-keyframes pulse {
-    0% {
-      -moz-transform: scale(1);
-    }
-    25% {
-      -moz-transform: scale(1.1);
-    }
-    50% {
-      -moz-transform: scale(1);
-    }
-    100% {
-      -moz-transform: scale(1);
-    }
-  }
-  @-ms-keyframes pulse {
-    0% {
-      -ms-transform: scale(1);
-    }
-    25% {
-      -ms-transform: scale(1.1);
-    }
-    50% {
-      -ms-transform: scale(1);
-    }
-    100% {
-      -ms-transform: scale(1);
-    }
-  }
-  @-o-keyframes pulse {
-    0% {
-      -o-transform: scale(1);
-    }
-    25% {
-      -o-transform: scale(1.1);
-    }
-    50% {
-      -o-transform: scale(1);
-    }
-    100% {
-      -o-transform: scale(1);
-    }
-  }
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  /*Botão Pulsa*/
-  
+}

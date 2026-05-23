@@ -1,6 +1,6 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="order-editor-header">
   <ion-toolbar>
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
+    <div class="order-toolbar-title d-flex flex-row align-items-center gap-1 p-2">
       <img [src]="brand.assets.favicon" height="60px" alt="" />
 
       <ion-title> Movimento </ion-title>
@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="order-workspace">
   <ion-modal
     [isOpen]="isOpenModal"
     [initialBreakpoint]="1"
@@ -106,7 +106,7 @@
           <ion-item>
             <ion-input
               #descInput2
-              [ngModel]="order?.PERCENTUALDESC?.toFixed(2)"
+              [ngModel]="order.PERCENTUALDESC.toFixed(2)"
               (ionChange)="incrementDiscount(descInput2.value)"
               class="text-center"
               type="number"
@@ -131,10 +131,9 @@
   </ion-fab>
   }
 
-  <div class="d-flex flex-column align-items-center p-3 gap-2">
+  <div class="order-page d-flex flex-column align-items-center p-3 gap-2">
     <div
-      class="d-flex flex-row p-2 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
+      class="order-summary-card d-flex flex-row p-2 shadow-sm rounded align-items-center flex-row w-100 gap-2"
     >
       <div class="d-flex flex-column gap-1 w-100 align-items-center">
         @if (showDate) {
@@ -165,7 +164,7 @@
             style="font-size: 0.7rem"
             class="mb-0 fw-bold w-100 text-center small"
           >
-            {{ order?.VENDEDOR?.CODVEN }} - {{ order?.VENDEDOR?.NOME }}
+            {{ $any(order.VENDEDOR)?.CODVEN }} - {{ $any(order.VENDEDOR)?.NOME }}
           </p>
         </div>
 
@@ -193,7 +192,7 @@
               style="font-size: 0.7rem"
               class="mb-0 fw-bold w-100 text-center small"
             >
-              {{ order?.DATAEMISSAO | date : "dd/MM/yyyy" }}
+              {{ order.DATAEMISSAO | date : "dd/MM/yyyy" }}
             </p>
           </div>
 
@@ -218,14 +217,14 @@
               style="font-size: 0.7rem"
               class="mb-0 fw-bold w-100 text-center small"
             >
-              {{ order?.CODTMV }} - {{ order?.MOVIMENTO?.NOME }}
+              {{ order.CODTMV }} - {{ $any(order.MOVIMENTO)?.NOME || 'Movimento nao encontrado' }}
             </p>
           </div>
         </div>
         } @else {
         <div
           (click)="(showHeader = !showHeader) && (hiddenHeader = !hiddenHeader)"
-          class="d-flex flex-row bg-primary w-100 text-white align-items-center shadow-sm rounded p-2 gap-2"
+          class="order-collapse-toggle d-flex flex-row w-100 text-white align-items-center shadow-sm rounded p-2 gap-2"
         >
           <ion-icon name="eye"></ion-icon>
           <p class="small mb-0 text-white fw-bold text-center w-100">
@@ -263,7 +262,7 @@
               style="font-size: 0.7rem"
               class="mb-0 fw-bold w-100 text-center small"
             >
-              {{ order?.CODCPG }} - {{ order?.PAGAMENTO?.NOME }}
+              {{ order.CODCPG }} - {{ $any(order.PAGAMENTO)?.NOME }}
             </p>
           </div>
 
@@ -288,7 +287,7 @@
               style="font-size: 0.7rem"
               class="lh-0 mb-0 fw-bold w-100 text-center small"
             >
-              {{ order?.CODCFO }} - {{ order?.CLIENTE?.NOMEFANTASIA }}
+              {{ order.CODCFO }} - {{ $any(order.CLIENTE)?.NOMEFANTASIA }}
             </p>
           </div>
         </div>
@@ -299,7 +298,7 @@
         ></ul>
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
@@ -310,12 +309,12 @@
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
             >
-              <b>{{ order?.VALORBRUTO || 0 | currency : "BRL" }}</b>
+              <b>{{ order.VALORBRUTO || 0 | currency : "BRL" }}</b>
             </p>
           </div>
 
           <div
-            class="w-50 rounded shadow-sm p-1 d-flex flex-column"
+            class="metric-box highlight w-50 rounded shadow-sm p-1 d-flex flex-column"
             (click)="openModalQtdDesc(null, 2)"
           >
             <p
@@ -328,11 +327,11 @@
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-primary"
             >
-              <b>{{ order?.VALORDESC || 0 | currency : "BRL" }}</b>
+              <b>{{ order.VALORDESC || 0 | currency : "BRL" }}</b>
             </p>
           </div>
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box success w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-success"
@@ -343,7 +342,7 @@
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-success"
             >
-              <b>{{ order?.VALORLIQUIDO || 0 | currency : "BRL" }}</b>
+              <b>{{ order.VALORLIQUIDO || 0 | currency : "BRL" }}</b>
             </p>
           </div>
         </div>
@@ -372,7 +371,7 @@
     </div> -->
 
     <div
-      class="d-flex flex-row gap-2 align-items-center justify-content-between w-100"
+      class="order-section-title d-flex flex-row gap-2 align-items-center justify-content-between w-100"
     >
       <img
         style="
@@ -398,13 +397,11 @@
     </div>
 
     <div
-      class="d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2"
-      style="background-color: whitesmoke"
+      class="order-section-card d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2"
     >
-      @if (!order?.ITEMS) {
+      @if (!order.ITEMS) {
       <div
-        class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-        style="background-color: whitesmoke"
+        class="order-empty d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
       >
         <img
           style="
@@ -421,7 +418,7 @@
       </div>
 
       } @for (product of order.ITEMS; track $index) {
-      <div class="d-flex flex-column w-100 gap-2 align-items-center">
+      <div class="order-product-card d-flex flex-column w-100 gap-2 align-items-center">
         <div
           class="w-100 d-flex flex-row align-items-center justify-content-between gap-2"
         >
@@ -449,7 +446,7 @@
         </p>
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
@@ -465,7 +462,7 @@
           </div>
 
           <div
-            class="w-50 rounded shadow-sm p-1 d-flex flex-column"
+            class="metric-box highlight w-50 rounded shadow-sm p-1 d-flex flex-column"
             (click)="openModalQtdDesc(product, 1)"
           >
             <p
@@ -484,7 +481,7 @@
 
           <!-- <ion-button id="open-modal" expand="block">{{ product?.QUANTIDADE || 0 }}</ion-button> -->
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box success w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-success"

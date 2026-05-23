@@ -1,145 +1,72 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="selector-header">
   <ion-toolbar>
-    <div class="d-flex flex-row align-items-center gap-2 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
+    <div class="selector-title">
+      <span class="selector-logo">
+        <img [src]="brand.assets.favicon" alt="" />
+      </span>
 
-      <ion-title>Tipo Movimento</ion-title>
+      <div>
+        <small>Selecionar</small>
+        <ion-title>Tipo Movimento</ion-title>
+      </div>
     </div>
 
     <ion-buttons slot="end">
-      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+      <ion-button class="close-button" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
-
-  <!-- <div
-    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
-  >
-    <ion-searchbar
-      [debounce]="1000"
-      (ionInput)="searchClients($event)"
-      animated="true"
-      placeholder="Pesquisar Cliente"
-      show-clear-button="always"
-    ></ion-searchbar>
-  </div> -->
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
+<ion-content [fullscreen]="true" class="selector-content">
+  <div class="selector-list">
     @if (movements.length <= 0) {
-    <div
-      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <img
-        style="
-          border-radius: 50%;
-          justify-content: center;
-          border: 2px #f1622b solid;
-          padding: 2px;
-        "
-        src="../../../../assets/icon/venda.png"
-        height="40px"
-        alt=""
-      />
-      <p class="mb-0 text-center w-100 fw-bold fw-italic">
-        Nenhum registro encontrado...
-      </p>
-    </div>
-    } @for (xmov of movements; track $index) {
-    <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center gap-3">
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-          "
-          src="../../../../assets/icon/venda.png"
-          width="40px"
-          alt=""
-        />
+      <div class="selector-empty">
+        <img src="../../../../assets/icon/venda.png" alt="" />
+        <p>Nenhum registro encontrado...</p>
+      </div>
+    }
 
-        <div class="box-pulse" (click)="confirm(xmov)">
-          <a class="botao-pulse">Selecionar</a>
+    @for (xmov of movements; track $index) {
+      <div class="selector-card movement-card">
+        <div class="selector-side">
+          <span class="item-avatar">
+            <img src="../../../../assets/icon/venda.png" alt="" />
+          </span>
+
+          <button type="button" class="select-action" (click)="confirm(xmov)">
+            Selecionar
+          </button>
+        </div>
+
+        <div class="selector-info">
+          <strong>({{ xmov.CODTIPOMOV }}) - {{ xmov.NOME }}</strong>
+
+          @if (xmov.CODCPG) {
+            <small>Condicao Pgto</small>
+            <p>{{ xmov.CODCPG }}</p>
+          }
+
+          @if (xmov.CODCCUSTO) {
+            <small>Centro de Custo</small>
+            <p>{{ xmov.CODCCUSTO }}</p>
+          }
+
+          @if (xmov.CODTIPODOCLAN) {
+            <small>Tipo Documento</small>
+            <p>{{ xmov.CODTIPODOCLAN }}</p>
+          }
+
+          @if (xmov.TIPOOPERACAO) {
+            <small>Tipo Operacao</small>
+            <p>{{ xmov.TIPOOPERACAO }}</p>
+          }
+
+          @if (xmov.CODNAT) {
+            <small>Natureza</small>
+            <p>{{ xmov.CODNAT }}</p>
+          }
         </div>
       </div>
-
-      <div class="d-flex flex-column w-100">
-        <!-- <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Tipo Movimento
-        </p> -->
-
-        <p class="text-primary mb-2 w-100 fw-bold" style="font-size: 0.8rem">
-          ({{ xmov.CODTIPOMOV }}) - {{ xmov.NOME }}
-        </p>
-
-        @if (xmov.CODCPG) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Condição Pgto
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xmov.CODCPG }}
-        </p>
-        } @if (xmov.CODCCUSTO) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Centro de Custo
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xmov.CODCCUSTO }}
-        </p>
-        } @if (xmov.CODTIPODOCLAN) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Tipo Documento
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xmov.CODTIPODOCLAN }}
-        </p>
-        } @if (xmov.TIPOOPERACAO) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Tipo Operação
-        </p>
-
-        <p
-          class="text-black small mb-1 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xmov.TIPOOPERACAO }}
-        </p>
-        } @if (xmov.CODNAT) {
-        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
-          Natureza
-        </p>
-
-        <p
-          class="text-black small mb-2 w-100 fw-bold"
-          style="font-size: 0.8rem"
-        >
-          {{ xmov.CODNAT }}
-        </p>
-        }
-      </div>
-
-      <!-- <div class="d-flex float-end text-success">
-        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
-      </div> -->
-    </div>
     }
   </div>
 </ion-content>

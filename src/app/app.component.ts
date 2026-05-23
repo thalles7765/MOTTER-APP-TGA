@@ -1,13 +1,14 @@
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AlertController, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
+import { AlertController, MenuController, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
 import { AuthService } from './services/auth/auth.service';
 import { applyBrandTheme } from './branding/apply-brand-theme';
 import { brandConfig } from './branding/brand-config';
 import { SecurityService } from './services/security/security.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +16,13 @@ import { SecurityService } from './services/security/security.service';
   styleUrls: ['app.component.scss'],
   imports: [RouterLink, RouterLinkActive, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterLink, IonRouterOutlet],
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   public brand = brandConfig;
   public isAdmin = false;
+  public currentUserName = '';
   public pendingSecurityRequests = 0;
+  private securityRefreshInterval?: number;
+  private securityRequestsChangedSub?: Subscription;
 
   public appPages = [
     { title: 'Início', url: '/app/home', icon: 'home' },
@@ -44,11 +48,13 @@ export class AppComponent {
     private alertController: AlertController,
     private authSvc: AuthService,
     private securitySvc: SecurityService,
-    private router: Router
+    private router: Router,
+    private menuCtrl: MenuController
   ) {
     applyBrandTheme(this.brand);
     this.authSvc.currentUser$.subscribe((user) => {
       this.isAdmin = this.toBoolean(user?.admin);
+      this.currentUserName = this.getUserDisplayName(user);
 
       if (this.isAdmin) {
         this.loadPendingSecurityRequests();
@@ -57,19 +63,27 @@ export class AppComponent {
       }
     });
     this.authSvc.getCurrentUser();
-    setInterval(() => this.loadPendingSecurityRequests(), 60000);
+    this.securityRequestsChangedSub = this.securitySvc.requestsChanged$.subscribe(() => {
+      this.loadPendingSecurityRequests();
+    });
+    this.securityRefreshInterval = window.setInterval(() => this.loadPendingSecurityRequests(), 20000);
   }
 
   get visibleAppPages() {
     return this.appPages.filter((page) => !page.adminOnly || this.isAdmin);
   }
 
-  async logout(event) {
-    // console.log(event)
-    if (event.url === '/app/login') {
-      await this.authSvc.logoutUser();
-    }
+  async handleMenuClick(page: any) {
+    await this.menuCtrl.close('menuOpt');
 
+    if (page.url === '/app/login') {
+      await this.logout();
+    }
+  }
+
+  async logout() {
+    await this.authSvc.logoutUser();
+    await this.router.navigateByUrl('/app/login', { replaceUrl: true });
   }
 
   async funcEmpty() {
@@ -87,6 +101,10 @@ export class AppComponent {
     return value === true || value === 1 || value === '1' || value === 'true';
   }
 
+  private getUserDisplayName(user: any) {
+    return String(user?.name || user?.NOME || user?.user || user?.USER || user?.username || user?.USERNAME || user?.email || user?.EMAIL || '').trim();
+  }
+
   async openSecurityRequests() {
     this.pendingSecurityRequests = 0;
     await this.router.navigate(['/app/security-requests'], { queryParams: { allBranches: '1' } });
@@ -94,6 +112,7 @@ export class AppComponent {
 
   private async loadPendingSecurityRequests() {
     if (!this.isAdmin) {
+      this.pendingSecurityRequests = 0;
       return;
     }
 
@@ -102,6 +121,14 @@ export class AppComponent {
       this.pendingSecurityRequests = requests.filter((request) => request.STATUS === 'A').length;
     } catch (error) {
       this.pendingSecurityRequests = 0;
+    }
+  }
+
+  ngOnDestroy() {
+    this.securityRequestsChangedSub?.unsubscribe();
+
+    if (this.securityRefreshInterval) {
+      window.clearInterval(this.securityRefreshInterval);
     }
   }
 

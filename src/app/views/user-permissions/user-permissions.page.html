@@ -73,6 +73,50 @@
 
         @if (isExpanded(user)) {
           <div class="permission-grid">
+            <div class="default-selectors">
+              <button type="button" class="default-selector" (click)="selectDefaultBranch(user)">
+                <span class="default-selector-icon branch">
+                  <ion-icon name="business"></ion-icon>
+                </span>
+                <span>
+                  <small>Filial padrao</small>
+                  <b>{{ defaultBranchLabel(user) }}</b>
+                </span>
+              </button>
+
+              <button type="button" class="default-selector" (click)="selectDefaultMovement(user)">
+                <span class="default-selector-icon">
+                  <ion-icon name="bag-check"></ion-icon>
+                </span>
+                <span>
+                  <small>Movimento padrao</small>
+                  <b>{{ defaultMovementLabel(user) }}</b>
+                </span>
+              </button>
+
+              <button type="button" class="default-selector" (click)="selectDefaultSeller(user)">
+                <span class="default-selector-icon seller">
+                  <ion-icon name="person-circle"></ion-icon>
+                </span>
+                <span>
+                  <small>Vendedor padrao</small>
+                  <b>{{ defaultSellerLabel(user) }}</b>
+                </span>
+              </button>
+
+              <div class="permission-row branch-permission-row">
+                <div>
+                  <p>Selecionar filial</p>
+                  <span>Permite escolher outra filial ao acessar o app</span>
+                </div>
+
+                <ion-toggle
+                  [checked]="user.select_branch"
+                  (ionChange)="updateSelectBranch(user, $event)"
+                ></ion-toggle>
+              </div>
+            </div>
+
             @for (permission of permissionOptions; track permission.key) {
               <div class="permission-row">
                 <div>

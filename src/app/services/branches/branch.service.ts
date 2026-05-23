@@ -39,10 +39,19 @@ export class BranchService {
     return branches;
   }
 
-  async updateDefaultBranch(defaultBranch: number) {
+  async updateDefaultBranch(defaultBranch: number, user?: any) {
+    const codven = user?.default_seller || user?.DEFAULT_SELLER || user?.codven || user?.CODVEN || null;
+
     return axios.put(
       `${environment.url_api}/users/branch`,
-      { default_branch: defaultBranch },
+      {
+        id: Number(user?.id || user?.ID || 0),
+        codven,
+        default_branch: defaultBranch,
+        select_branch: Boolean(user?.select_branch || user?.SELECT_BRANCH),
+        default_seller: codven,
+        default_movement: user?.default_movement || user?.DEFAULT_MOVEMENT || user?.codtmv || user?.CODTMV || null,
+      },
       { withCredentials: true }
     );
   }

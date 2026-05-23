@@ -68,6 +68,43 @@ export class ProductsPage implements OnInit {
     this.modalCtrl.dismiss(product, 'confirm');
   }
 
+  protected productName(product: any) {
+    return product?.NOMEFANTASIA || product?.DESCRICAO || 'Produto sem nome';
+  }
+
+  protected curveClass(product: any) {
+    const curve = String(product?.DESC_CURVA || '').toUpperCase();
+
+    if (curve.includes('A')) {
+      return 'curve-a';
+    }
+
+    if (curve.includes('B')) {
+      return 'curve-b';
+    }
+
+    return 'curve-c';
+  }
+
+  protected curveLetter(product: any) {
+    return String(product?.DESC_CURVA || '')
+      .toUpperCase()
+      .replace('CURVA', '')
+      .replace(/\s/g, '') || '-';
+  }
+
+  protected productFlag(product: any) {
+    if (product?.CD_LEGENDA === 6) {
+      return { label: 'Promocao', className: 'promo' };
+    }
+
+    if (product?.CD_LEGENDA === 2) {
+      return { label: 'Fora de linha', className: 'inactive' };
+    }
+
+    return null;
+  }
+
   get filteredProducts() {
     return this.products.filter((product) =>
       this.matchesStockFilters(product) &&
@@ -102,8 +139,8 @@ export class ProductsPage implements OnInit {
     }, 1800);
   }
 
-  async searchProduct(event: any, typeSearch = 1) {
-    if (typeSearch === 1) {
+  async searchProduct(event?: any, typeSearch = 1) {
+    if (typeSearch === 1 && event?.target) {
       const target = event.target as HTMLIonSearchbarElement;
       const query = target.value?.toUpperCase() || '';
       this.searchText = query;
@@ -145,7 +182,7 @@ export class ProductsPage implements OnInit {
       // console.log(res.ScanResult);
       if (res.ScanResult) {
         this.searchText = res.ScanResult;
-        this.searchProduct(1, 2)
+        this.searchProduct(undefined, 2)
       } else {
         this.alertMsg('Nenhum código foi identificado...');
       }

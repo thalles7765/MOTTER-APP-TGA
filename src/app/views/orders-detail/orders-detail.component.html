@@ -1,6 +1,6 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="order-detail-header">
   <ion-toolbar>
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
+    <div class="order-toolbar-title d-flex flex-row align-items-center gap-1 p-2">
       <img [src]="brand.assets.favicon" height="60px" alt="" />
 
       <ion-title> Movimento - Detalhe </ion-title>
@@ -12,10 +12,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-2">
+<ion-content [fullscreen]="true" class="order-workspace">
+  <div class="order-page d-flex flex-column align-items-center p-3 gap-2">
     <div
-      class="d-flex flex-row gap-2 align-items-center justify-content-between w-100"
+      class="order-section-title d-flex flex-row gap-2 align-items-center justify-content-between w-100"
     >
       <img
         style="
@@ -38,8 +38,7 @@
     </div>
 
     <div
-      class="d-flex flex-row p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
+      class="order-summary-card d-flex flex-row p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
     >
       <div class="d-flex flex-column gap-1 w-100 align-items-center">
         <p
@@ -103,7 +102,7 @@
         </p>
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
@@ -118,7 +117,7 @@
             </p>
           </div>
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box highlight w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-primary"
@@ -133,7 +132,7 @@
             </p>
           </div>
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box success w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-success"
@@ -155,7 +154,7 @@
 
         @if (order.STATUSPEDIDO === 'A' ) {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
+          class="status-pill status-success w-100 rounded shadow-sm p-1 bg-success d-flex align-items-center"
         >
           <i class="material-icons text-white">verified</i>
 
@@ -168,7 +167,7 @@
         </div>
         } @else if (order.STATUSPEDIDO === 'P' ) {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
+          class="status-pill status-warning w-100 rounded shadow-sm p-1 bg-warning d-flex align-items-center"
         >
           <i class="material-icons text-white">unpublished</i>
 
@@ -181,7 +180,7 @@
         </div>
         } @else {
         <div
-          class="w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
+          class="status-pill status-pending w-100 rounded shadow-sm p-1 bg-primary d-flex align-items-center"
         >
           <i class="material-icons text-white">radio_button_unchecked</i>
           <p
@@ -197,7 +196,7 @@
 
     <!-- ### LISTA DE PRODUTOS ### -->
 
-    <div class="d-flex flex-row gap-2 align-items-center w-100">
+    <div class="order-section-title d-flex flex-row gap-2 align-items-center w-100">
       <img
         style="
           border-radius: 50%;
@@ -216,12 +215,9 @@
       </p>
     </div>
 
-    <div
-      class="d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
+    <div class="order-section-card d-flex flex-column p-3 shadow-sm rounded align-items-center w-100 gap-2">
       @for (product of products; track $index) {
-      <div class="d-flex flex-column w-100 gap-2 align-items-center">
+      <div class="order-product-card d-flex flex-column w-100 gap-2 align-items-center">
         <p class="text-black small mb-1 w-100" style="font-size: 0.7rem">
           (<b>{{ product.CODPRD }}</b
           >) - {{ product?.NOMEFANTASIA }}
@@ -244,7 +240,7 @@
          </p> -->
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
@@ -259,7 +255,7 @@
             </p>
           </div>
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box highlight w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-primary"
@@ -274,7 +270,7 @@
             </p>
           </div>
 
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div class="metric-box success w-50 rounded shadow-sm p-1 d-flex flex-column">
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-success"

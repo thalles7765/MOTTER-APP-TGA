@@ -1,56 +1,45 @@
 <ion-app>
   <ion-split-pane contentId="menuOpt">
-    <ion-menu contentId="menuOpt" type="overlay">
+    <ion-menu contentId="menuOpt" type="overlay" class="app-menu">
       <ion-content>
-        <ion-list id="inbox-list">
-          <div class="d-flex flex-row p-2 gap-2 align-items-center">
-            <img
-              [src]="brand.assets.menuLogo"
-              style="
-                border-radius: 10px;
-                border-radius: 50%;
-                border-style: 2px solid #fff;
-              "
-              height="60px"
-              alt=""
-            />
-
-            <div class="d-flex flex-column p-1">
-              <p class="mb-0">Olá,</p>
-              <h3 class="m-0 fw-bold">{{ brand.companyName }}</h3>
-            </div>
+        <section class="menu-hero">
+          <span class="menu-logo-ring">
+            <img [src]="brand.assets.menuLogo" alt="" />
+          </span>
+          <div class="menu-identity">
+            <small>Ola{{ currentUserName ? ',' : '' }}</small>
+            <h2>{{ currentUserName || 'Usuario' }}</h2>
+            <!-- <p>{{ brand.companyName }}</p> -->
           </div>
-          <!-- <ion-list-header>Olá,</ion-list-header>
-          <ion-note>Thalles Henrique</ion-note> -->
+        </section>
 
-          <!-- <p>teste</p> -->
-          <!-- *ngFor="let p of appPages; let i = index" -->
-
+        <ion-list id="inbox-list" class="menu-list">
           @for (p of visibleAppPages; track $index) {
-            <ion-item
-            routerDirection="root"
-            [routerLink]="p.url"
-            lines="none"
-            detail="false"
-            routerLinkActive="selected"
-            (click)="logout(p)"
-          >
-            <ion-icon
-              aria-hidden="true"
-              slot="start"
-              [ios]="p.icon + '-outline'"
-              [md]="p.icon + '-sharp'"
-            ></ion-icon>
-            <ion-label>{{p.title}}</ion-label>
-          </ion-item>
+            <ion-menu-toggle auto-hide="true">
+              <ion-item
+                routerDirection="root"
+                [routerLink]="p.url === '/app/login' ? null : p.url"
+                lines="none"
+                detail="false"
+                routerLinkActive="selected"
+                [class.logout-item]="p.url === '/app/login'"
+                (click)="handleMenuClick(p)"
+              >
+                <ion-icon
+                  aria-hidden="true"
+                  slot="start"
+                  [ios]="p.icon + '-outline'"
+                  [md]="p.icon + '-sharp'"
+                ></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
           }
-         
         </ion-list>
 
-        <div
-          class="d-flex flex-row w-100 p-2 overflow-hidden align-items-center justify-content-center"
-        >
+        <div class="menu-footer">
           <img [src]="brand.assets.favicon" alt="" />
+          <span>{{ brand.website || brand.companyName }}</span>
         </div>
       </ion-content>
     </ion-menu>
@@ -67,7 +56,7 @@
       <span class="d-grid bg-white" style="place-items: center; min-width: 1.35rem; height: 1.35rem; border-radius: 999px; color: var(--ion-color-primary);">
         {{ pendingSecurityRequests }}
       </span>
-      Liberações pendentes
+      Liberacoes pendentes
     </button>
   }
 </ion-app>

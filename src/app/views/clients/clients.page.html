@@ -1,180 +1,122 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     @if (status_modal !== 1) {
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
     }
 
-    <div class="d-flex flex-row align-items-center gap-2 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
-
+    <div class="d-flex align-items-center gap-2 px-2 py-1 overflow-hidden">
+      <img [src]="brand.assets.favicon" width="34" height="34" style="object-fit: contain; flex: 0 0 auto;" alt="" />
       <ion-title>Clientes</ion-title>
     </div>
 
     @if (status_modal === 1) {
-    <ion-buttons slot="end">
-      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
-    </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+      </ion-buttons>
     }
   </ion-toolbar>
 
-  <div
-    class="d-flex flex-row w-100 gap-2 justify-content-between align-items-center p-1"
-  >
+  <div class="d-flex align-items-center gap-1 px-2 pb-2">
     <ion-searchbar
-      [debounce]="1000"
-      (ionInput)="searchClients($event)"
+      [(ngModel)]="searchQuery"
       animated="true"
-      placeholder="Pesquisar Cliente"
+      placeholder="Pesquisar cliente"
       show-clear-button="always"
+      (keyup.enter)="searchClients()"
     ></ion-searchbar>
+    <button type="button" class="search-icon-button" (click)="searchClients()" aria-label="Pesquisar cliente"></button>
   </div>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
-    @if (clients.length <= 0) {
-    <div
-      class="d-flex justify-content-center p-3 shadow-sm rounded align-items-center flex-row w-100 gap-2"
-      style="background-color: whitesmoke"
-    >
-      <img
-        style="
-          border-radius: 50%;
-          justify-content: center;
-          border: 2px #f1622b solid;
-          padding: 2px;
-        "
-        src="../../../assets/icon/cliente.png"
-        height="40px"
-        alt=""
-      />
-      <p class="mb-0 text-center w-100 fw-bold fw-italic">
-        Nenhum registro encontrado...
-      </p>
-    </div>
-    } @for (xClient of clients; track $index) {
-    <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
-    >
-      <div class="d-flex flex-column align-items-center gap-3">
-        <img
-          style="
-            border-radius: 50%;
-            justify-content: center;
-            border: 2px #f1622b solid;
-            padding: 2px;
-          "
-          src="../../../assets/icon/cliente.png"
-          width="40px"
-          alt=""
-        />
-
-        @if (status_modal === 1) {
-        <div class="box-pulse" (click)="confirm(xClient)">
-          <a class="botao-pulse">Selecionar</a>
-        </div>
-        }
+  <main class="clients-shell">
+    <!-- <section class="clients-hero">
+      <div>
+        <span>Carteira comercial</span>
+        <h1>{{ filteredClients.length }} de {{ clients.length }}</h1>
       </div>
+      <img [src]="brand.assets.menuLogo" alt="" />
+    </section> -->
 
-      <div class="d-flex flex-column w-100" (click)="openModal(xClient)">
-        @if (xClient.NOMEFANTASIA) {
-        <p class="mb-1 fw-bold small">{{xClient.NOMEFANTASIA}}</p>
-        } @else {
-        <p class="mb-1 fw-bold small">{{xClient.RAZAOSOCIAL}}</p>
-        }
+    <section class="d-flex gap-1 overflow-auto pb-1">
+      @for (filter of filterOptions; track filter.key) {
+        <button
+          type="button"
+          class="btn btn-sm rounded-pill fw-bold text-nowrap"
+          [class.btn-primary]="activeFilter === filter.key"
+          [class.btn-light]="activeFilter !== filter.key"
+          (click)="setFilter(filter.key)"
+        >
+          {{ filter.label }}
+        </button>
+      }
+    </section>
 
-        <p class="mb-1 fw-bold small">{{xClient.CODCFO}}</p>
-
-        @if (xClient.CGCCFO) {
-        <p class="mb-0 text-gray small">{{xClient.CGCCFO}}</p>
-        } @if (xClient.TELEFONE) {
-        <p class="mb-0 text-gray small">
-          Telefone: <b>{{xClient.TELEFONE}}</b>
-        </p>
-        } @if (xClient.DATAULTMOVIMENTO) {
-        <p class="mb-2 text-gray small">
-          Últ. Compra: <b>{{xClient.DATAULTMOVIMENTO | date: 'dd/MM/yyyy'}}</b>
-        </p>
-        } @if (xClient.LIMITECREDITO > 1) {
-        <p class="mb-0 text-gray small">
-          Limite Créd.:
-          <b>{{xClient.LIMITECREDITO | currency: 'BRL'}}</b>
-        </p>
-        }
-
-        <div class="w-100 d-flex flex-row mb-2 gap-2">
-          @if (xClient.VALOR_ABERTO > 1) {
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-success"
-            >
-              <b>À vencer</b>
-            </p>
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-black"
-            >
-              <b>{{xClient.VALOR_ABERTO | currency: 'BRL'}}</b>
-            </p>
-          </div>
-          } @if (xClient.VALOR_VENCIDO > 1) {
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-danger"
-            >
-              <b>Vencido</b>
-            </p>
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-black"
-            >
-              <b>{{xClient.VALOR_VENCIDO | currency: 'BRL'}}</b>
-            </p>
-          </div>
-          }
-        </div>
-
-        @if (xClient.DESC_CONCEITO) { @if (xClient.DESC_CONCEITO === 'OTIMO' ||
-        xClient.DESC_CONCEITO === 'BOM' ) {
-        <div class="w-100 rounded shadow-sm p-1 bg-success d-flex">
-          <p
-            style="font-size: 0.7rem"
-            class="w-100 text-center mb-0 text-white"
-          >
-            <b>{{xClient.DESC_CONCEITO}}</b>
-          </p>
-        </div>
-        } @else if (xClient.DESC_CONCEITO === 'REGULAR' || xClient.DESC_CONCEITO
-        === 'RUIM' ) {
-        <div class="w-100 rounded shadow-sm p-1 bg-warning d-flex">
-          <p
-            style="font-size: 0.7rem"
-            class="w-100 text-center mb-0 text-white"
-          >
-            <b>{{xClient.DESC_CONCEITO}}</b>
-          </p>
-        </div>
-        } @else {
-        <div class="w-100 rounded shadow-sm p-1 bg-danger d-flex">
-          <p
-            style="font-size: 0.7rem"
-            class="w-100 text-center mb-0 text-white"
-          >
-            <b>{{xClient.DESC_CONCEITO}}</b>
-          </p>
-        </div>
-        } }
-      </div>
-
-      <!-- <div class="d-flex float-end text-success">
-        <i class="material-icons" style="font-size: 40px;">how_to_reg</i>
-      </div> -->
-    </div>
+    @if (filteredClients.length <= 0) {
+      <section class="d-flex align-items-center flex-column empty-state">
+        <img src="assets/icon/cliente.png" width="50" alt="" />
+        <strong>Nenhum registro encontrado</strong>
+        <span>Tente pesquisar por nome, documento ou codigo.</span>
+      </section>
     }
-  </div>
+
+    <section class="client-list">
+      @for (xClient of filteredClients; track xClient.CODCFO || $index) {
+        @let status = clientStatus(xClient);
+
+        <article class="client-card" [ngClass]="status.className">
+          <div class="client-row">
+            <button type="button" class="client-avatar" (click)="copyClientWhatsapp(xClient, $event)">
+              <img src="assets/icon/cliente.png" alt="" />
+            </button>
+
+          <button type="button" class="client-main" (click)="openModal(xClient)">
+            <span class="client-info">
+              <span class="client-topline">
+                <strong>{{ clientName(xClient) }}</strong>
+                <em [ngClass]="status.className">{{ status.label }}</em>
+              </span>
+              <span>{{ xClient.CODCFO }} | {{ xClient.CGCCFO || 'Documento nao informado' }}</span>
+              <span>{{ xClient.TELEFONE || 'Telefone nao informado' }}</span>
+              @if (xClient.DATAULTMOVIMENTO) {
+                <small>Ult. compra {{ xClient.DATAULTMOVIMENTO | date: 'dd/MM/yyyy' }}</small>
+              }
+            </span>
+          </button>
+          </div>
+
+          <div class="finance-grid">
+            <div>
+              <span>Limite</span>
+              <strong>{{ xClient.LIMITECREDITO || 0 | currency: 'BRL' }}</strong>
+            </div>
+            <div>
+              <span>Disponivel</span>
+              <strong>{{ availableLimit(xClient) | currency: 'BRL' }}</strong>
+            </div>
+            <div>
+              <span>A vencer</span>
+              <strong>{{ xClient.VALOR_ABERTO || 0 | currency: 'BRL' }}</strong>
+            </div>
+            <div>
+              <span>Vencido</span>
+              <strong>{{ xClient.VALOR_VENCIDO || 0 | currency: 'BRL' }}</strong>
+            </div>
+          </div>
+
+          <div class="client-footer">
+            <span class="concept" [ngClass]="conceptClass(xClient)">
+              {{ xClient.DESC_CONCEITO || status.note }}
+            </span>
+
+            @if (status_modal === 1) {
+              <button type="button" class="select-client" (click)="confirm(xClient)">Selecionar cliente</button>
+            }
+          </div>
+        </article>
+      }
+    </section>
+  </main>
 </ion-content>

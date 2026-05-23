@@ -29,5 +29,5 @@ export const environment = {
     "--app-header-background": "#ffffff",
     "--app-border-color": "#1f6f5b"
   },
-  url_api: "http://localhost:5120/api/v1"
+  url_api: "http://localhost:5130/api/v1"
 };

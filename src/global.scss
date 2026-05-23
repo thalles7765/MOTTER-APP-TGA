@@ -35,3 +35,109 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 // @import '@ionic/angular/css/palettes/dark.system.css';
+
+body {
+  background: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+ion-content {
+  --background: var(--app-page-bg);
+  --color: var(--ion-text-color);
+}
+
+ion-item {
+  --background: var(--ion-item-background);
+  --color: var(--ion-text-color);
+  --border-color: var(--app-soft-border);
+}
+
+.bg-white,
+.card,
+.modal-content {
+  background-color: var(--app-card-bg) !important;
+  color: var(--app-card-text) !important;
+}
+
+.bg-light,
+.list-group-item,
+.dropdown-menu,
+ion-card {
+  background-color: var(--app-card-bg) !important;
+  color: var(--app-card-text) !important;
+}
+
+.text-black,
+.text-dark {
+  color: var(--app-card-text) !important;
+}
+
+.text-secondary,
+.text-gray {
+  color: var(--app-muted-text) !important;
+}
+
+[style*="background-color: whitesmoke"] {
+  background-color: var(--app-card-bg) !important;
+  color: var(--app-card-text) !important;
+}
+
+[style*="background-color: white"],
+[style*="background:#fff"],
+[style*="background: #fff"],
+[style*="background-color: #fff"],
+[style*="background-color:#fff"],
+[style*="background-color: #ffffff"],
+[style*="background-color:#ffffff"] {
+  background-color: var(--app-card-bg) !important;
+  color: var(--app-card-text) !important;
+}
+
+.bg-white .text-white,
+.bg-light .text-white,
+.card .text-white,
+.modal-content .text-white,
+ion-card .text-white {
+  color: var(--app-card-text) !important;
+}
+
+.bg-primary .text-white,
+.bg-success .text-white,
+.bg-danger .text-white,
+.bg-warning .text-white,
+.bg-info .text-white,
+[style*="linear-gradient"] .text-white {
+  color: #ffffff !important;
+}
+
+ion-input,
+ion-textarea,
+ion-select,
+input,
+textarea,
+select {
+  color: var(--app-card-text);
+}
+
+.order-remove-alert .alert-wrapper {
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
+  border-radius: 12px;
+}
+
+.order-remove-alert .alert-head {
+  color: var(--app-card-text);
+}
+
+.order-remove-alert .alert-message {
+  color: var(--app-muted-text);
+}
+
+.order-remove-alert .alert-button {
+  color: var(--ion-color-primary);
+  font-weight: 900;
+}
+
+.order-remove-alert .alert-button-role-destructive {
+  color: #dc2626;
+}

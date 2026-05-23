@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { NavController, MenuController, IonInputPasswordToggle, AlertController, LoadingController, ModalController, IonInput, IonItem, IonContent, IonButton, IonHeader, IonIcon } from '@ionic/angular/standalone';
+import { NavController, MenuController, IonInputPasswordToggle, AlertController, LoadingController, ModalController, IonInput, IonItem, IonContent, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { addIcons } from 'ionicons';
@@ -17,7 +17,7 @@ import { branch } from 'src/app/interfaces/branch';
 	templateUrl: './login.page.html',
 	styleUrls: ['./login.page.scss'],
 	standalone: true,
-	imports: [IonIcon, IonInputPasswordToggle, IonItem, IonButton, IonInput, IonContent, IonHeader, CommonModule, FormsModule, ReactiveFormsModule]
+	imports: [IonIcon, IonInputPasswordToggle, IonItem, IonButton, IonInput, IonContent, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class LoginPage implements OnInit {
 
@@ -150,7 +150,7 @@ export class LoginPage implements OnInit {
 
 			if (selectedBranchResult) {
 				if (selectedBranchResult.saveAsDefault) {
-					await this.branchSvc.updateDefaultBranch(selectedBranchResult.branch.CODFILIAL);
+					await this.branchSvc.updateDefaultBranch(selectedBranchResult.branch.CODFILIAL, userData);
 					await this.branchSvc.setBranchPolicy({
 						defaultBranch: selectedBranchResult.branch.CODFILIAL,
 						canSelectBranch

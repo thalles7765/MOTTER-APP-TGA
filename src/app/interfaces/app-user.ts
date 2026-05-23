@@ -16,4 +16,8 @@ export interface app_user {
   active: boolean;
   default_branch?: number;
   select_branch?: boolean;
+  default_seller?: string | null;
+  default_seller_name?: string | null;
+  default_movement?: string | null;
+  default_movement_name?: string | null;
 }
