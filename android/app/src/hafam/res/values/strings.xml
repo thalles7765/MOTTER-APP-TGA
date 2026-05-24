@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Hafam App</string>
+    <string name="title_activity_main">Hafam App</string>
+    <string name="package_name">hafam.appsell.store</string>
+    <string name="custom_url_scheme">hafam.appsell.store</string>
+</resources>

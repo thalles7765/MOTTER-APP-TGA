@@ -36,6 +36,14 @@ android {
             dimension "client"
             applicationId "mercandressa.appsell.store"
         }
+        hafam {
+            dimension "client"
+            applicationId "hafam.appsell.store"
+        }
+        eletroheloy {
+            dimension "client"
+            applicationId "eletroheloy.appsell.store"
+        }
     }
 }
 

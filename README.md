@@ -41,6 +41,18 @@ Mercandressa:
 npm run start:mercandressa
 ```
 
+Hafam:
+
+```powershell
+npm run start:hafam
+```
+
+Eletro Heloy:
+
+```powershell
+npm run start:eletroheloy
+```
+
 Para escolher uma porta especifica:
 
 ```powershell
@@ -65,6 +77,18 @@ Mercandressa:
 
 ```powershell
 npm run build:mercandressa
+```
+
+Hafam:
+
+```powershell
+npm run build:hafam
+```
+
+Eletro Heloy:
+
+```powershell
+npm run build:eletroheloy
 ```
 
 ## Sync Android
@@ -121,6 +145,30 @@ APK gerado em:
 android/app/build/outputs/apk/mercandressa/debug/app-mercandressa-debug.apk
 ```
 
+Hafam:
+
+```powershell
+npm run android:hafam
+```
+
+APK gerado em:
+
+```text
+android/app/build/outputs/apk/hafam/debug/app-hafam-debug.apk
+```
+
+Eletro Heloy:
+
+```powershell
+npm run android:eletroheloy
+```
+
+APK gerado em:
+
+```text
+android/app/build/outputs/apk/eletroheloy/debug/app-eletroheloy-debug.apk
+```
+
 ## Build Android Manual
 
 Quando precisar rodar passo a passo:
@@ -137,6 +185,8 @@ Troque `RobertopfDebug` por:
 - `MedianeiraDebug`
 - `RobertopfDebug`
 - `MercandressaDebug`
+- `HafamDebug`
+- `EletroheloyDebug`
 
 ## Flavors
 
@@ -149,6 +199,10 @@ src/environments/environment.robertopf.ts
 src/environments/environment.robertopf.prod.ts
 src/environments/environment.mercandressa.ts
 src/environments/environment.mercandressa.prod.ts
+src/environments/environment.hafam.ts
+src/environments/environment.hafam.prod.ts
+src/environments/environment.eletroheloy.ts
+src/environments/environment.eletroheloy.prod.ts
 ```
 
 Assets por empresa ficam em:
@@ -157,6 +211,8 @@ Assets por empresa ficam em:
 src/assets/brands/medianeira
 src/assets/brands/robertopf
 src/assets/brands/mercandressa
+src/assets/brands/hafam
+src/assets/brands/eletroheloy
 ```
 
 Arquivos Android por flavor ficam em:
@@ -165,6 +221,8 @@ Arquivos Android por flavor ficam em:
 android/app/src/medianeira
 android/app/src/robertopf
 android/app/src/mercandressa
+android/app/src/hafam
+android/app/src/eletroheloy
 ```
 
 ## Firebase Push
@@ -175,6 +233,8 @@ Quando usar push notifications, cada flavor deve ter seu arquivo:
 android/app/src/medianeira/google-services.json
 android/app/src/robertopf/google-services.json
 android/app/src/mercandressa/google-services.json
+android/app/src/hafam/google-services.json
+android/app/src/eletroheloy/google-services.json
 ```
 
 Sem esse arquivo, o build do flavor pode falhar ou o push pode nao registrar corretamente.

@@ -158,6 +158,8 @@ export class NotificationService {
       medianeira: 'med.appsell.store',
       robertopf: 'robertopf.appsell.store',
       mercandressa: 'mercandressa.appsell.store',
+      hafam: 'hafam.appsell.store',
+      eletroheloy: 'eletroheloy.appsell.store',
     };
 
     return appIds[environment.flavor as keyof typeof appIds] || appIds.medianeira;

@@ -99,6 +99,38 @@
                 }
               ]
             },
+            "hafam": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hafam.ts"
+                }
+              ]
+            },
+            "hafam-production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hafam.prod.ts"
+                }
+              ]
+            },
+            "eletroheloy": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.eletroheloy.ts"
+                }
+              ]
+            },
+            "eletroheloy-production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.eletroheloy.prod.ts"
+                }
+              ]
+            },
             "ci": {
               "progress": false
             }
@@ -122,6 +154,12 @@
             },
             "mercandressa": {
               "buildTarget": "app:build:development,mercandressa"
+            },
+            "hafam": {
+              "buildTarget": "app:build:development,hafam"
+            },
+            "eletroheloy": {
+              "buildTarget": "app:build:development,eletroheloy"
             },
             "ci": {
               "progress": false
