@@ -40,17 +40,18 @@ export class BranchService {
   }
 
   async updateDefaultBranch(defaultBranch: number, user?: any) {
-    const codven = user?.default_seller || user?.DEFAULT_SELLER || user?.codven || user?.CODVEN || null;
+    const sourceUser = user?.data || user?.DATA || user || {};
+    const codven = sourceUser.default_seller || sourceUser.DEFAULT_SELLER || sourceUser.codven || sourceUser.CODVEN || null;
 
     return axios.put(
       `${environment.url_api}/users/branch`,
       {
-        id: Number(user?.id || user?.ID || 0),
+        id: Number(sourceUser.id || sourceUser.ID || 0),
         codven,
         default_branch: defaultBranch,
-        select_branch: Boolean(user?.select_branch || user?.SELECT_BRANCH),
+        select_branch: Boolean(sourceUser.select_branch || sourceUser.SELECT_BRANCH),
         default_seller: codven,
-        default_movement: user?.default_movement || user?.DEFAULT_MOVEMENT || user?.codtmv || user?.CODTMV || null,
+        default_movement: sourceUser.default_movement || sourceUser.DEFAULT_MOVEMENT || sourceUser.codtmv || sourceUser.CODTMV || null,
       },
       { withCredentials: true }
     );
@@ -74,7 +75,20 @@ export class BranchService {
       return null;
     }
 
-    const selectedBranch = JSON.parse(storedBranch.value) as branch;
+    let selectedBranch: branch | null = null;
+
+    try {
+      selectedBranch = JSON.parse(storedBranch.value) as branch;
+    } catch (error) {
+      await Preferences.remove({ key: selectedBranchKey });
+      return null;
+    }
+
+    if (!selectedBranch?.CODEMPRESA || !selectedBranch?.CODFILIAL) {
+      await Preferences.remove({ key: selectedBranchKey });
+      return null;
+    }
+
     this.selectedBranchSubject.next(selectedBranch);
 
     return selectedBranch;
@@ -96,7 +110,12 @@ export class BranchService {
       return { defaultBranch: null, canSelectBranch: false };
     }
 
-    return JSON.parse(storedPolicy.value) as BranchPolicy;
+    try {
+      return JSON.parse(storedPolicy.value) as BranchPolicy;
+    } catch (error) {
+      await Preferences.remove({ key: branchPolicyKey });
+      return { defaultBranch: null, canSelectBranch: false };
+    }
   }
 
   async clearBranchPolicy() {

@@ -27,10 +27,16 @@
     </section>
 
     <section class="money-grid">
-      <div class="price-box">
+      <button
+        type="button"
+        class="price-box"
+        [class.has-branch-prices]="hasBranchPrices()"
+        (pointerdown)="$event.stopPropagation()"
+        (click)="openPriceBranches($event)"
+      >
         <span>Preco venda</span>
-        <strong>{{ product?.PRECO2 || 0 | currency : 'BRL' }}</strong>
-      </div>
+        <strong>{{ effectivePrice() | currency : 'BRL' }}</strong>
+      </button>
       <button
         type="button"
         class="stock-detail"

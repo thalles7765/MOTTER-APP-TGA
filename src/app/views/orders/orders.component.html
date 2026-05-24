@@ -19,6 +19,7 @@
     >
       <ion-searchbar
         [debounce]="1000"
+        [(ngModel)]="searchText"
         (ionInput)="searchOrders()"
         animated="true"
         placeholder="Pesquisar Movimento"
@@ -38,22 +39,25 @@
         <div class="mb-2 w-100" slot="content">
           <ion-datetime
             #dateGroup
+            [(ngModel)]="selectedDate"
             (ionChange)="changeDate($event)"
             class="mb-2"
             presentation="date"
             [preferWheel]="true"
           ></ion-datetime>
 
-          <ion-list>
+          <ion-list class="orders-filter-list">
             <ion-item>
               <ion-select
+                class="orders-compact-select"
                 cancel-text="Fechar"
                 ok-text="Confirmar"
                 #selectGroup
                 aria-label="Status"
                 placeholder="Selecione Status"
+                [selectedText]="statusFilterLabel()"
                 [multiple]="true"
-                value="D"
+                [(ngModel)]="selectedStatuses"
                 (ionChange)="changeDate($event)"
               >
                 <ion-select-option value="A">Atendido</ion-select-option>
@@ -61,7 +65,56 @@
                 <ion-select-option value="P">Parcial</ion-select-option>
               </ion-select>
             </ion-item>
+
+            <ion-item>
+              <ion-select
+                class="orders-compact-select"
+                cancel-text="Fechar"
+                ok-text="Confirmar"
+                aria-label="Movimentos"
+                placeholder="Selecione movimentos"
+                [selectedText]="movementFilterLabel()"
+                [multiple]="true"
+                [(ngModel)]="selectedMovements"
+                (ionChange)="changeDate($event)"
+              >
+                @for (movement of movementsTypes; track movement.CODTIPOMOV) {
+                  <ion-select-option [value]="movement.CODTIPOMOV">
+                    {{ movementOptionLabel(movement) }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-select
+                class="orders-compact-select"
+                cancel-text="Fechar"
+                ok-text="Confirmar"
+                aria-label="Filiais"
+                placeholder="Selecione filiais"
+                [selectedText]="branchFilterLabel()"
+                [multiple]="true"
+                [(ngModel)]="selectedBranches"
+                (ionChange)="changeDate($event)"
+              >
+                @for (branch of branches; track branch.CODFILIAL) {
+                  <ion-select-option [value]="branch.CODFILIAL.toString()">
+                    {{ branchOptionLabel(branch) }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
           </ion-list>
+
+          <div class="orders-filter-actions">
+            <ion-button size="small" fill="solid" (click)="saveFilters()">
+              Salvar filtros
+            </ion-button>
+            <ion-button size="small" fill="clear" (click)="clearSavedFilters()">
+              Limpar salvos
+            </ion-button>
+          </div>
         </div>
       </ion-accordion>
     </ion-accordion-group>
@@ -150,6 +203,10 @@
 
         <p style="font-size: 0.8rem" class="mb-0 fw-bold small">
           {{ xOrders.NOME }} ( {{ xOrders.CODTMV }} )
+        </p>
+        <p style="font-size: 0.7rem" class="mb-1 small">
+          Filial:
+          <b>{{ orderBranchLabel(xOrders) }}</b>
         </p>
         <!-- <p class="mb-0 fw-bold small">{{ xOrders.CODTMV }}</p> -->
         <p style="font-size: 0.7rem" class="mb-1 small">

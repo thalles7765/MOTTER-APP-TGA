@@ -66,8 +66,65 @@ ion-item {
   --width: 100%;
 }
 
+.orders-filter-list {
+  overflow: hidden;
+  border: 1px solid var(--app-soft-border);
+  border-radius: 12px;
+  background: var(--app-card-bg);
+}
+
+.orders-filter-list ion-item {
+  --background: var(--app-card-bg);
+  --color: var(--app-card-text);
+  --border-color: var(--app-soft-border);
+  --min-height: 48px;
+  min-width: 0;
+}
+
+.orders-filter-list ion-select {
+  --placeholder-color: var(--app-muted-text);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--app-card-text);
+}
+
+.orders-compact-select::part(container),
+.orders-compact-select::part(text),
+.orders-compact-select::part(placeholder) {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orders-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.55rem 0.25rem 0;
+}
+
+.orders-filter-actions ion-button {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
 .orders-content {
   --background: var(--app-page-bg);
+}
+
+:host .text-black,
+:host .text-dark {
+  color: var(--app-card-text) !important;
+}
+
+:host .text-secondary,
+:host .text-muted,
+:host .text-gray {
+  color: var(--app-muted-text) !important;
 }
 
 .orders-list {

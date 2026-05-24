@@ -42,9 +42,10 @@
 .detail-grid article,
 .text-panel,
 .message-panel {
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--app-soft-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
 }
 
 .detail-grid article {
@@ -62,20 +63,20 @@
 
 .detail-grid span {
   display: block;
-  color: #64748b;
+  color: var(--app-muted-text);
   font-size: 0.72rem;
   font-weight: 800;
 }
 
 .detail-grid small {
   display: block;
-  color: #64748b;
+  color: var(--app-muted-text);
   font-size: 0.74rem;
   line-height: 1.25;
 }
 
 .detail-grid strong {
-  color: #111827;
+  color: var(--app-card-text);
   font-size: 0.9rem;
 }
 
@@ -98,7 +99,7 @@
 }
 
 .text-panel p {
-  color: #475569;
+  color: var(--app-card-text);
   font-size: 0.88rem;
 }
 

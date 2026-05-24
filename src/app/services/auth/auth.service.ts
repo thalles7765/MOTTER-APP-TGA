@@ -93,7 +93,15 @@ export class AuthService {
       return null;
     }
 
-    const parsedUser = JSON.parse(storedUser.value) as app_user;
+    let parsedUser: app_user | null = null;
+
+    try {
+      parsedUser = JSON.parse(storedUser.value) as app_user;
+    } catch (error) {
+      await Preferences.remove({ key: currentUserKey });
+      return null;
+    }
+
     const completedUser = await this.completeUserPermissions(parsedUser, this.normalizeUser(parsedUser));
 
     this.currentUserSubject.next(completedUser);

@@ -23,11 +23,11 @@ export const environment = {
     ]
   },
   theme: {
-    "--ion-color-primary": "#0f766e",
-    "--ion-color-secondary": "#334155",
-    "--ion-color-tertiary": "#f59e0b",
+    "--ion-color-primary": "#c65a2e",
+    "--ion-color-secondary": "#0f345f",
+    "--ion-color-tertiary": "#0f6b48",
     "--app-header-background": "#ffffff",
-    "--app-border-color": "#0f766e"
+    "--app-border-color": "#c65a2e"
   },
   url_api: "http://85.31.63.163:5120/api/v1"
 };

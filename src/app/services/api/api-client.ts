@@ -19,7 +19,18 @@ apiClient.interceptors.request.use(async (config) => {
     return config;
   }
 
-  const selectedBranch = JSON.parse(storedBranch.value) as branch;
+  let selectedBranch: branch | null = null;
+
+  try {
+    selectedBranch = JSON.parse(storedBranch.value) as branch;
+  } catch (error) {
+    await Preferences.remove({ key: selectedBranchKey });
+    return config;
+  }
+
+  if (!selectedBranch?.CODEMPRESA || !selectedBranch?.CODFILIAL) {
+    return config;
+  }
 
   config.headers = {
     ...config.headers,
@@ -28,9 +39,9 @@ apiClient.interceptors.request.use(async (config) => {
   } as any;
 
   config.params = {
-    ...(config.params || {}),
     codempresa: selectedBranch.CODEMPRESA,
     codfilial: selectedBranch.CODFILIAL,
+    ...(config.params || {}),
   };
 
   return config;

@@ -18,26 +18,27 @@
     }
   </ion-toolbar>
 
-  <div class="d-flex align-items-center gap-1 px-2 pb-2">
+  <div class="product-search-row d-flex align-items-center gap-1 px-2 pb-2">
     <button
       type="button"
       class="camera-search border-0"
       (click)="openCamera()"
       aria-label="Ler codigo de barras"
     >
-      <img src="assets/icon/camera.png" width="30" alt="" />
+      <img src="assets/icon/camera.png" width="24" alt="" />
     </button>
 
     <ion-searchbar
       class="product-searchbar flex-grow-1 p-0"
       [(ngModel)]="searchText"
       animated="true"
-      [searchIcon]="''"
-      placeholder="Pesquisar produto"
+      
+      placeholder="Digite aqui.."
       show-clear-button="always"
       (keyup.enter)="searchProduct()"
     ></ion-searchbar>
 
+    <button type="button" class="filter-icon-button" (click)="showFilters = !showFilters" aria-label="Filtros"></button>
     <button type="button" class="search-icon-button" (click)="searchProduct()" aria-label="Pesquisar produto"></button>
   </div>
 
@@ -58,12 +59,37 @@
       <button type="button" class="btn btn-sm rounded-pill fw-bold btn-outline-secondary text-nowrap" (click)="clearFilters()">Limpar</button>
     }
   </div>
+
+  @if (showFilters) {
+    <div class="product-filter-panel mx-2 mb-2">
+      <div>
+        <span>Tipo de pesquisa</span>
+        <div class="d-flex gap-1 overflow-auto">
+          @for (mode of searchModeOptions; track mode.key) {
+            <button
+              type="button"
+              class="btn btn-sm rounded-pill fw-bold text-nowrap"
+              [class.btn-primary]="searchMode === mode.key"
+              [class.btn-light]="searchMode !== mode.key"
+              (click)="setSearchMode(mode.key)"
+            >
+              {{ mode.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="product-filter-actions">
+        <button type="button" class="save-filter-button" (click)="saveSearchMode()">Salvar filtros</button>
+      </div>
+    </div>
+  }
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <main class="products-shell">
     @if (filteredProducts.length <= 0) {
-      <section class="p-3 rounded bg-white text-center text-secondary">
+      <section class="d-flex flex-column align-items-center product-empty">
         <img src="assets/icon/produto.png" width="50" alt="" />
         <strong>Nenhum produto encontrado</strong>
         <span>Revise a pesquisa ou filtros aplicados.</span>
@@ -118,12 +144,22 @@
           <div class="product-footer">
             @if (flag) {
               <span class="flag" [ngClass]="flag.className">{{ flag.label }}</span>
+            } @else {
+              <span class="product-footer-spacer"></span>
             }
 
-            <strong class="price">{{ xProduct.PRECO2 || 0 | currency : 'BRL' }}</strong>
+            <button
+              type="button"
+              class="price"
+              [class.has-branch-prices]="hasBranchPrices(xProduct)"
+              (pointerdown)="$event.stopPropagation()"
+              (click)="openPriceBranches(xProduct, $event)"
+            >
+              {{ effectivePrice(xProduct) | currency : 'BRL' }}
+            </button>
 
             @if (status_modal === 1) {
-              <button type="button" class="add-product" (click)="confirm(xProduct)">Adicionar</button>
+              <button type="button" class="add-product" (click)="$event.stopPropagation(); confirm(xProduct)">Adicionar</button>
             }
           </div>
         </article>

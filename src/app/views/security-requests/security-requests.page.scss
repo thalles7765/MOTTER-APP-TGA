@@ -44,7 +44,7 @@
   border: 1px solid rgba(var(--ion-color-primary-rgb), 0.22);
   border-radius: 999px;
   color: var(--ion-color-primary);
-  background: #fff;
+  background: var(--app-card-bg);
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -64,7 +64,8 @@
 .request-card {
   overflow: hidden;
   border-left: 4px solid #f59e0b;
-  background: #fff;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
 }
 
 .request-card.released { border-left-color: #16a34a; }
@@ -91,7 +92,7 @@
 
 .request-main small {
   display: inline-block;
-  color: #64748b;
+  color: var(--app-muted-text);
   font-size: 0.7rem;
 }
 
@@ -122,7 +123,7 @@
 
 .request-meta {
   flex-wrap: wrap;
-  color: #475569;
+  color: var(--app-muted-text);
   font-size: 0.72rem;
 }
 
@@ -133,6 +134,7 @@
 
 .empty-state {
   padding: 1rem;
-  background: #f8fafc;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
   text-align: center;
 }

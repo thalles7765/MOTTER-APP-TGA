@@ -1,0 +1,153 @@
+.price-summary {
+  padding: 1.1rem 1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 800;
+    opacity: 0.9;
+  }
+
+  h2 {
+    margin: 0.25rem 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  strong {
+    font-size: 0.9rem;
+  }
+}
+
+.price-list {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem;
+}
+
+.price-card {
+  border: 1px solid var(--app-soft-border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.price-card.selected {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 12px 24px rgba(var(--ion-color-primary-rgb), 0.18);
+}
+
+.price-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  .branch-label {
+    margin: 0;
+    color: var(--ion-color-primary);
+    font-size: 0.64rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.2rem 0 0;
+    color: var(--app-card-text);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+}
+
+.price-badge {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  font-size: 0.82rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.price-info {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--app-muted-text);
+    font-size: 0.76rem;
+  }
+
+  ion-icon {
+    color: var(--ion-color-secondary);
+    font-size: 1rem;
+  }
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+
+  div {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.45rem;
+    border: 1px solid var(--app-soft-border);
+    border-radius: 8px;
+    background: var(--app-soft-bg);
+  }
+
+  span {
+    color: var(--app-muted-text);
+    font-size: 0.58rem;
+    font-weight: 900;
+  }
+
+  strong {
+    color: var(--app-card-text);
+    font-size: 0.72rem;
+  }
+}
+
+.difference {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.55rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.difference span {
+  color: inherit;
+  opacity: 0.84;
+}
+
+.price-higher {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.price-lower {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.price-equal {
+  color: #334155;
+  background: #e2e8f0;
+}

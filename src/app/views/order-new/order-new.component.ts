@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastController, LoadingController, AlertController, ModalController, IonModal, IonIcon, IonFab, IonFabButton, IonButton, IonContent, IonHeader, IonTitle, IonButtons, IonDatetime, IonToolbar, IonInput, IonItem } from '@ionic/angular/standalone';
@@ -17,7 +17,8 @@ import { addIcons } from 'ionicons';
 import {
   add,
   checkmark,
-  eye
+  eye,
+  trash
 } from 'ionicons/icons';
 import { OrdersService } from 'src/app/services/orders/orders.service';
 import { SellersComponent } from '../modals/sellers/sellers.component';
@@ -26,6 +27,8 @@ import { ConfigService } from 'src/app/services/config/config.service';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { app_user } from 'src/app/interfaces/app-user';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { branch } from 'src/app/interfaces/branch';
 
 @Component({
   selector: 'app-order-new',
@@ -34,6 +37,8 @@ import { app_user } from 'src/app/interfaces/app-user';
   imports: [IonItem, IonInput, IonModal, IonButton, IonDatetime, IonIcon, IonContent, IonHeader, IonTitle, IonFab, IonFabButton, IonToolbar, IonButtons, CommonModule, FormsModule]
 })
 export class OrderNewComponent implements OnInit {
+  @Input() editOrderData: order | null = null;
+  @Input() editOrderItems: order_item[] | null = null;
   @ViewChild('modalQtd', { static: true }) modalQtd!: IonModal;
   protected brand = brandConfig;
   protected isOpenModal: boolean = false;
@@ -41,6 +46,7 @@ export class OrderNewComponent implements OnInit {
   protected qtdOpt: boolean = false;
   private config;
   private currentUser: app_user | null = null;
+  protected selectedBranch: branch | null = null;
   protected order = {} as order;
   protected sellers: sellers[] = [];
   protected pays_type: payments_type[] = [];
@@ -49,12 +55,13 @@ export class OrderNewComponent implements OnInit {
   protected showDate: boolean = false;
   protected showHeader: boolean = true;
   protected hiddenHeader: boolean = false;
+  protected isEditMode = false;
 
 
   protected product_selected!: order_item | null;
 
-  constructor(private cfgSvc: ConfigService, private authSvc: AuthService, private toastC: ToastController, private loadingController: LoadingController, private orderSvc: OrdersService, private alertController: AlertController, private clientSvc: ClientService, private utilSvc: UtilsService, private modalCtrl: ModalController) {
-    addIcons({ add, checkmark, eye })
+  constructor(private cfgSvc: ConfigService, private authSvc: AuthService, private branchSvc: BranchService, private toastC: ToastController, private loadingController: LoadingController, private orderSvc: OrdersService, private alertController: AlertController, private clientSvc: ClientService, private utilSvc: UtilsService, private modalCtrl: ModalController) {
+    addIcons({ add, checkmark, eye, trash })
   }
 
   async ngOnInit() {
@@ -62,6 +69,7 @@ export class OrderNewComponent implements OnInit {
     try {
       await loading.present();
       this.currentUser = await this.authSvc.getCurrentUser();
+      this.selectedBranch = await this.branchSvc.getSelectedBranch();
 
       await this.clientSvc.getData({ codcfo: 'C00001' }).then((data) => {
         console.log('select client')
@@ -96,7 +104,11 @@ export class OrderNewComponent implements OnInit {
       })
 
 
-      this.createMov();
+      if (this.editOrderData) {
+        this.hydrateEditOrder(this.editOrderData, this.editOrderItems || []);
+      } else {
+        this.createMov();
+      }
       await loading.dismiss();
 
       // console.log(this.searchByField(this.pays_type, 'CODCONDPGTO', '00'))
@@ -126,8 +138,8 @@ export class OrderNewComponent implements OnInit {
     const defaultMovement = this.currentUser?.default_movement || '2.1.01';
     const defaultSeller = this.currentUser?.default_seller || this.config?.codven;
 
-    this.order.CODEMPRESA = 1;
-    this.order.CODFILIAL = 2;
+    this.order.CODEMPRESA = Number(this.selectedBranch?.CODEMPRESA || 1);
+    this.order.CODFILIAL = Number(this.selectedBranch?.CODFILIAL || this.currentUser?.default_branch || 1);
     this.order.CODLOC = '001'; // LOCAL PADRAO
     this.order.CODTMV = defaultMovement; // ORCAMENTO
     this.order.CODCFO = 'C00001'; // CONSUMIDOR
@@ -150,6 +162,101 @@ export class OrderNewComponent implements OnInit {
     this.order.MOVIMENTO = this.searchByField(this.mov_type, 'CODTIPOMOV', defaultMovement) || this.searchByField(this.mov_type, 'CODTIPOMOV', '2.1.01') || this.mov_type[0] || null;
     this.order.PAGAMENTO = this.searchByField(this.pays_type, 'CODCONDPGTO', '00') || this.pays_type[0] || null;
 
+  }
+
+  protected branchLabel() {
+    const codfilial = this.order?.CODFILIAL || this.selectedBranch?.CODFILIAL;
+    const branchName = this.selectedBranch?.NOMEFANTASIA;
+    const branchCity = this.selectedBranch?.CIDADE;
+
+    if (branchName) {
+      return `${codfilial} - ${branchName}`;
+      // return `${codfilial} - ${branchName}${branchCity ? ` / ${branchCity}` : ''}`;
+    }
+
+    return codfilial ? `Filial ${codfilial}` : 'Filial nao definida';
+  }
+
+  private hydrateEditOrder(orderData: any, orderItems: any[]) {
+    this.isEditMode = true;
+    this.order = {
+      ...orderData,
+      CODEMPRESA: Number(orderData.CODEMPRESA || 1),
+      IDMOV: Number(orderData.IDMOV),
+      CODFILIAL: Number(orderData.CODFILIAL || 0),
+      CODLOC: orderData.CODLOC || '001',
+      CODTMV: orderData.CODTMV,
+      CODCFO: orderData.CODCFO,
+      CODCPG: orderData.CODCPG,
+      CODVEN1: orderData.CODVEN1,
+      STATUSPEDIDO: orderData.STATUSPEDIDO || 'D',
+      VALORDESC: Number(orderData.VALORDESC || 0),
+      PERCENTUALDESC: Number(orderData.PERCENTUALDESC || 0),
+      VALOROUTROS: Number(orderData.VALOROUTROS || orderData.VALORBRUTO || 0),
+      VALORTOTALPRODUTO: Number(orderData.VALORTOTALPRODUTO || orderData.VALORBRUTO || 0),
+      VALORBRUTO: Number(orderData.VALORBRUTO || 0),
+      VALORLIQUIDO: Number(orderData.VALORLIQUIDO || 0),
+      OBSERVACAO: orderData.OBSERVACAO || '',
+      CLIENTE: this.searchByField(this.client_selected ? [this.client_selected] : [], 'CODCFO', orderData.CODCFO) || {
+        CODCFO: orderData.CODCFO,
+        NOMEFANTASIA: orderData.NOMECONSUMIDOR || orderData.NOMEFANTASIA,
+      } as any,
+      VENDEDOR: this.searchByField(this.sellers, 'CODVEN', orderData.CODVEN1) || {
+        CODVEN: orderData.CODVEN1,
+        NOME: orderData.VENDEDOR,
+      } as any,
+      MOVIMENTO: this.searchByField(this.mov_type, 'CODTIPOMOV', orderData.CODTMV) || {
+        CODTIPOMOV: orderData.CODTMV,
+        NOME: orderData.NOME,
+        DESCMAXIMOMOV: 100,
+      } as any,
+      PAGAMENTO: this.searchByField(this.pays_type, 'CODCONDPGTO', orderData.CODCPG) || {
+        CODCONDPGTO: orderData.CODCPG,
+        NOME: orderData.DESC_CONDPGTO,
+      } as any,
+      ITEMS: this.normalizeEditItems(orderItems),
+    } as order;
+
+    if (this.order.ITEMS?.length) {
+      this.showHeader = false;
+      this.hiddenHeader = true;
+    }
+
+    this.recalcValueTotal(this.order.ITEMS);
+  }
+
+  private normalizeEditItems(items: any[]) {
+    return (items || [])
+      .map((item, index) => this.normalizeOrderItem(item, Number(item.NSEQ || index + 1)))
+      .sort((a, b) => Number(a.NSEQ || 0) - Number(b.NSEQ || 0));
+  }
+
+  private normalizeOrderItem(item: any, nseq: number) {
+    const unitPrice = Number(item.PRECOUNITARIO ?? item.PRECO2 ?? item.VALORUNITARIO ?? item.PRECOBASE ?? 0);
+    const quantity = Number(item.QUANTIDADE || 1);
+    const total = Number(item.VALORTOTALITEM ?? (quantity * unitPrice));
+
+    return {
+      ...item,
+      CODEMPRESA: Number(item.CODEMPRESA || this.order?.CODEMPRESA || 1),
+      IDMOV: Number(item.IDMOV || this.order?.IDMOV || 0),
+      NSEQ: nseq,
+      QUANTIDADE: quantity,
+      PRECO2: unitPrice,
+      PRECOUNITARIO: unitPrice,
+      VALORUNITARIO: Number(item.VALORUNITARIO ?? unitPrice),
+      PRECOBASE: Number(item.PRECOBASE ?? unitPrice),
+      PRECOTABELA: Number(item.PRECOTABELA ?? unitPrice),
+      VALORTOTALITEM: total,
+      VALORFINANCEIRO: Number(item.VALORFINANCEIRO ?? total),
+      VALORDESC: Number(item.VALORDESC || 0),
+      CODUND: item.CODUND || item.CODUND_ECM || item.UNIDADE || 'UN',
+      UNIDADE: item.UNIDADE || item.CODUND || item.CODUND_ECM || 'UN',
+      CODSIT: item.CODSIT || '01',
+      STATUS: item.STATUS || 'D',
+      CUSTOMEDIO: Number(item.CUSTOMEDIO || 0),
+      CUSTOUNITARIO: Number(item.CUSTOUNITARIO || item.CUSTOMEDIO || 0),
+    } as order_item;
   }
 
   searchByField(array, field = '', value = ''): any {
@@ -225,8 +332,12 @@ export class OrderNewComponent implements OnInit {
 
     if (Items)
       Items.map((item: order_item) => {
-        xTotal += item.VALORTOTALITEM;
-        xTotalDesc += item.VALORDESC;
+        item.PRECOUNITARIO = Number(item.PRECOUNITARIO ?? item.PRECO2 ?? item.VALORUNITARIO ?? 0);
+        item.PRECO2 = Number(item.PRECO2 ?? item.PRECOUNITARIO ?? 0);
+        item.VALORUNITARIO = Number(item.VALORUNITARIO ?? item.PRECOUNITARIO ?? item.PRECO2 ?? 0);
+        item.VALORTOTALITEM = Number(item.QUANTIDADE || 0) * Number(item.PRECOUNITARIO || item.PRECO2 || 0);
+        xTotal += Number(item.VALORTOTALITEM || 0);
+        xTotalDesc += Number(item.VALORDESC || 0);
       })
 
     // this.order.VALORDESC += xTotalDesc;
@@ -251,13 +362,36 @@ export class OrderNewComponent implements OnInit {
       this.hiddenHeader = !this.hiddenHeader;
     }
 
-    this.order.ITEMS.push({ ...xProduct, QUANTIDADE: 1, VALORTOTALITEM: xProduct.PRECO2, VALORFINANCEIRO: xProduct.PRECO2, VALORUNITARIO: xProduct.PRECO2 });
+    const nextNseq = this.nextItemSequence();
+    const newItem = this.normalizeOrderItem({ ...xProduct, QUANTIDADE: 1 }, nextNseq);
+    this.order.ITEMS.push(newItem);
     this.showToast('bottom', 'Produto adicionado!');
 
-    this.order.VALOROUTROS += xProduct.PRECO2;
-    this.order.VALORBRUTO += xProduct.PRECO2;
-    this.order.VALORTOTALPRODUTO += xProduct.PRECO2;
-    this.order.VALORLIQUIDO += xProduct.PRECO2;
+    this.recalcValueTotal(this.order.ITEMS);
+  }
+
+  private nextItemSequence() {
+    const items = this.order.ITEMS || [];
+    const maxSequence = items.reduce((max, item) => Math.max(max, Number(item.NSEQ || 0)), 0);
+    return maxSequence + 1;
+  }
+
+    async alertFilial() {
+    const alert = await this.alertController.create({
+      header: 'Trocar Filial?',
+      cssClass: 'order-remove-alert',
+      message: [
+        `Para alterar a filial do movimento é necessário ir até a tela inicial e selecionar outra.`,
+      ].join('\n'),
+      buttons: [
+        {
+          text: 'Fechar',
+          role: 'cancel',
+        }
+      ],
+    });
+
+    await alert.present();
   }
 
   async removeProduct(xProduct: order_item) {
@@ -265,11 +399,11 @@ export class OrderNewComponent implements OnInit {
       header: 'Remover produto?',
       cssClass: 'order-remove-alert',
       message: [
-        `<strong>${xProduct.CODPRD} - ${xProduct.NOMEFANTASIA}</strong>`,
-        `Quantidade: <strong>${Number(xProduct.QUANTIDADE || 0).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>`,
-        `Unitario: <strong>${Number(xProduct.PRECO2 || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>`,
-        `Total: <strong>${Number(xProduct.VALORTOTALITEM || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>`,
-      ].join('<br>'),
+        `${xProduct.CODPRD} - ${xProduct.NOMEFANTASIA}\n`,
+        `Quantidade: ${Number(xProduct.QUANTIDADE || 0).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}\n`,
+        `Unitario: ${Number(xProduct.PRECOUNITARIO || xProduct.PRECO2 || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}\n`,
+        `Total: ${Number(xProduct.VALORTOTALITEM || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`,
+      ].join('\n'),
       buttons: [
         {
           text: 'Manter produto',
@@ -294,14 +428,28 @@ export class OrderNewComponent implements OnInit {
   }
 
   async confirmOrder() {
-    const loading = await this.loadingController.create({ message: 'Gerando Movimento...' });
+    if (this.isEditMode && this.order.STATUSPEDIDO !== 'D') {
+      this.showToast('top', 'Apenas movimentos pendentes podem ser editados.', 'warning');
+      return;
+    }
+
+    if (!this.order.ITEMS?.length) {
+      this.showToast('top', 'Adicione ao menos um produto.', 'warning');
+      return;
+    }
+
+    this.recalcValueTotal(this.order.ITEMS);
+    this.order.ITEMS = this.order.ITEMS.map((item, index) => this.prepareItemPayload(item, index + 1));
+
+    const loading = await this.loadingController.create({ message: this.isEditMode ? 'Atualizando Movimento...' : 'Gerando Movimento...' });
     try {
       await loading.present();
-      this.orderSvc.createOrder(this.order).then(async (result) => {
+      const request = this.isEditMode ? this.orderSvc.updateOrder(this.buildUpdatePayload()) : this.orderSvc.createOrder(this.order);
+      request.then(async (result) => {
         console.log(result);
 
         if (result.status === 200) {
-          this.showToast('bottom', 'Movimento gerado com sucesso!', 'success');
+          this.showToast('bottom', this.isEditMode ? 'Movimento atualizado com sucesso!' : 'Movimento gerado com sucesso!', 'success');
           this.confirm();
         }
         await loading.dismiss();
@@ -309,6 +457,43 @@ export class OrderNewComponent implements OnInit {
     } catch {
       await loading.dismiss();
     }
+  }
+
+  private prepareItemPayload(item: order_item, sequence: number) {
+    const normalizedItem = this.normalizeOrderItem(item, Number(item.NSEQ || sequence));
+
+    return {
+      ...normalizedItem,
+      CODEMPRESA: Number(this.order.CODEMPRESA || normalizedItem.CODEMPRESA || 1),
+      IDMOV: Number(this.order.IDMOV || normalizedItem.IDMOV || 0),
+      NSEQ: Number(normalizedItem.NSEQ || sequence),
+      CODPRD: normalizedItem.CODPRD,
+      QUANTIDADE: Number(normalizedItem.QUANTIDADE || 0),
+      PRECOUNITARIO: Number(normalizedItem.PRECOUNITARIO || normalizedItem.PRECO2 || 0),
+      VALORTOTALITEM: Number(normalizedItem.VALORTOTALITEM || 0),
+      VALORUNITARIO: Number(normalizedItem.VALORUNITARIO || normalizedItem.PRECOUNITARIO || normalizedItem.PRECO2 || 0),
+      PRECOBASE: Number(normalizedItem.PRECOBASE || normalizedItem.PRECOUNITARIO || normalizedItem.PRECO2 || 0),
+      PRECOTABELA: Number(normalizedItem.PRECOTABELA || normalizedItem.PRECOUNITARIO || normalizedItem.PRECO2 || 0),
+      CUSTOMEDIO: Number(normalizedItem.CUSTOMEDIO || 0),
+      CUSTOUNITARIO: Number(normalizedItem.CUSTOUNITARIO || normalizedItem.CUSTOMEDIO || 0),
+      CODUND: normalizedItem.CODUND || normalizedItem.UNIDADE || 'UN',
+      CODSIT: normalizedItem.CODSIT || '01',
+      STATUS: (normalizedItem as any).STATUS || 'D',
+    } as order_item;
+  }
+
+  private buildUpdatePayload() {
+    return {
+      CODEMPRESA: Number(this.order.CODEMPRESA || 1),
+      IDMOV: Number(this.order.IDMOV),
+      CODTMV: this.order.CODTMV,
+      STATUSPEDIDO: this.order.STATUSPEDIDO || 'D',
+      VALORBRUTO: Number(this.order.VALORBRUTO || 0),
+      VALORLIQUIDO: Number(this.order.VALORLIQUIDO || 0),
+      VALORDESC: Number(this.order.VALORDESC || 0),
+      OBSERVACAO: this.order.OBSERVACAO || '',
+      ITEMS: this.order.ITEMS,
+    } as order;
   }
 
   async openAddProduct() {

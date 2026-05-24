@@ -32,7 +32,7 @@ export class AppComponent implements OnDestroy {
     { title: 'Clientes', url: '/app/clients', icon: 'people' },
     { title: 'Movimentos', url: '/app/orders', icon: 'bag' },
     // { title: 'Antrisia (I.A)', url: '/app/antrisia', icon: 'bulb' },
-    { title: 'Configurações', url: '/app/config', icon: 'settings' },
+    // { title: 'Configurações', url: '/app/config', icon: 'settings' },
     { title: 'Permissões', url: '/app/user-permissions', icon: 'shield-checkmark', adminOnly: true },
     { title: 'Liberações', url: '/app/security-requests', icon: 'lock-open', adminOnly: true },
     { title: 'Sair', url: '/app/login', icon: 'log-in' },
@@ -60,10 +60,14 @@ export class AppComponent implements OnDestroy {
 
       if (this.isAdmin) {
         this.loadPendingSecurityRequests();
-        this.notificationSvc.registerAdminDevice(user);
+        this.notificationSvc.registerAdminDevice(user).catch((error) => {
+          console.log('Nao foi possivel registrar notificacao do administrador.', error);
+        });
       } else {
         this.pendingSecurityRequests = 0;
-        this.notificationSvc.unregisterCurrentToken();
+        this.notificationSvc.unregisterCurrentToken().catch((error) => {
+          console.log('Nao foi possivel remover notificacao local.', error);
+        });
       }
     });
     this.authSvc.getCurrentUser();

@@ -39,6 +39,8 @@ export class NotificationService {
 
       await Preferences.set({ key: 'push_notification_user', value: JSON.stringify(this.userPayload(user)) });
       await PushNotifications.register();
+    } catch (error) {
+      console.log('Push notification indisponivel neste aparelho.', error);
     } finally {
       this.registrationInProgress = false;
     }
@@ -49,7 +51,7 @@ export class NotificationService {
       return;
     }
 
-    const storedToken = await Preferences.get({ key: notificationTokenKey });
+    let storedToken = await Preferences.get({ key: notificationTokenKey });
 
     if (!storedToken.value) {
       return;
@@ -101,7 +103,14 @@ export class NotificationService {
       return;
     }
 
-    const user = JSON.parse(storedUser.value);
+    let user: any = null;
+
+    try {
+      user = JSON.parse(storedUser.value);
+    } catch (error) {
+      await Preferences.remove({ key: 'push_notification_user' });
+      return;
+    }
 
     await axios.post(`${environment.url_api}/notifications/device-token`, {
       user_id: user.user_id,

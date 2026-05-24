@@ -34,7 +34,8 @@ export class ProductStockBranchesComponent {
   }
 
   get stocks(): ProductStock[] {
-    return this.product?.saldos || [];
+    const stocks = this.product?.saldos || [];
+    return Array.isArray(stocks) ? stocks.filter((stock) => this.resolveBranch(stock)) : [];
   }
 
   branchName(stock: ProductStock) {
