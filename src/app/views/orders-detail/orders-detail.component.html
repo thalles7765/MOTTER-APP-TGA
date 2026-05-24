@@ -35,6 +35,10 @@
           <a class="botao-pulse">Compartilhar PDF</a>
         </div>
       </div>
+
+      @if (canEditOrder()) {
+        <ion-button size="small" (click)="editOrder()">Editar</ion-button>
+      }
     </div>
 
     <div
@@ -46,6 +50,17 @@
           style="font-size: 0.8rem"
         >
           ({{ order.CODTMV }}) - {{ order.NOME }}
+        </p>
+
+        <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">
+          Filial da venda
+        </p>
+
+        <p
+          class="text-black small mb-1 w-100 fw-bold"
+          style="font-size: 0.8rem"
+        >
+          {{ branchLabel() }}
         </p>
 
         <p class="text-black small mb-0 w-100" style="font-size: 0.7rem">

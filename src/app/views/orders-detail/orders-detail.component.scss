@@ -39,6 +39,16 @@ ion-toolbar {
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
+:host .text-black,
+:host .text-dark {
+  color: var(--app-card-text) !important;
+}
+
+:host .text-secondary,
+:host .text-muted {
+  color: var(--app-muted-text) !important;
+}
+
 .order-product-card {
   padding: 0.75rem;
 }
@@ -47,7 +57,12 @@ ion-toolbar {
 .order-section-card p,
 .order-product-card p,
 .order-section-title p {
-  color: var(--app-card-text);
+  color: var(--app-card-text) !important;
+}
+
+.order-summary-card p:not(.fw-bold),
+.order-product-card p:not(.fw-bold) {
+  color: var(--app-muted-text) !important;
 }
 
 .order-section-title {
@@ -89,7 +104,24 @@ ion-toolbar {
 
 .status-pill {
   border: 0;
-  color: #ffffff;
+  color: #ffffff !important;
+}
+
+.status-pill p,
+.status-pill b,
+.status-pill i {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.22);
+}
+
+.order-summary-card .status-pill p,
+.order-summary-card .status-pill p:not(.fw-bold),
+.order-summary-card .status-pill b,
+.order-summary-card .status-pill i,
+.order-summary-card .status-pill .material-icons {
+  color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .status-success {

@@ -6,3 +6,8 @@ ion-content {
 	--background: url('../../../assets/banners/background-ferr.jpg') no-repeat;
     // --background-size: contain !important;
 }
+
+:host .text-black,
+:host .text-dark {
+	color: var(--app-card-text) !important;
+}

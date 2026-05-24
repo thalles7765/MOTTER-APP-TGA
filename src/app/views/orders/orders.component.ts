@@ -25,6 +25,21 @@ import { OrdersDetailComponent } from '../orders-detail/orders-detail.component'
 import { OrderNewComponent } from '../order-new/order-new.component';
 import { order } from 'src/app/interfaces/order';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { UtilsService } from 'src/app/services/utils/utils.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { app_user } from 'src/app/interfaces/app-user';
+import { movements_type } from 'src/app/interfaces/movements_type';
+import { Preferences } from '@capacitor/preferences';
+import { BranchService } from 'src/app/services/branches/branch.service';
+import { branch } from 'src/app/interfaces/branch';
+
+const orderFiltersKeyPrefix = 'orders_filters';
+
+type SavedOrderFilters = {
+  status?: string[];
+  codtmv?: string[];
+  codfilial?: string[];
+};
 
 @Component({
   selector: 'app-orders',
@@ -41,14 +56,33 @@ export class OrdersComponent implements OnInit {
 
   private pdfObj: any;
   private orderSvc = inject(OrdersService);
+  private utilsSvc = inject(UtilsService);
+  private authSvc = inject(AuthService);
+  private branchSvc = inject(BranchService);
   protected brand = brandConfig;
   protected orders: any[] = [];
+  protected movementsTypes: movements_type[] = [];
+  protected branches: branch[] = [];
+  protected selectedStatuses: string[] = ['D'];
+  protected selectedMovements: string[] = [];
+  protected selectedBranches: string[] = [];
+  protected selectedBranch: branch | null = null;
+  protected selectedDate = this.todayParam();
+  protected searchText = '';
+  protected currentUser: app_user | null = null;
 
   constructor(private modalCtrl: ModalController, private alertController: AlertController, private loadingController: LoadingController, public platform: Platform) {
     addIcons({ add });
   }
 
   async ngOnInit() {
+    this.currentUser = await this.authSvc.getCurrentUser();
+    this.selectedBranch = await this.branchSvc.getSelectedBranch();
+    await Promise.all([
+      this.loadMovementsTypes(),
+      this.loadBranches(),
+      this.restoreSavedFilters(),
+    ]);
     await this.searchOrders();
   }
 
@@ -62,49 +96,248 @@ export class OrdersComponent implements OnInit {
     }
   };
 
-  changeDate(eventPc) {
-    console.log('changed')
-    // console.log(eventPc.detail.value)
-
-    const nativeElDate = this.dateGroup;
-    const nativeElSelect = this.selectGroup;
-    const nativeElSearch = this.searchGroup;
-
-    console.log('search')
-    console.log(nativeElSearch.value)
-
+  changeDate(eventPc?) {
     this.searchOrders();
   }
 
   async searchOrders() {
-
-    // const target = event.target as HTMLIonSearchbarElement;
-    // const query = target.value?.toUpperCase() || '';
-    const ntElDate = this.dateGroup;
-    const ntElSelect = this.selectGroup;
-    const ntElSearch = this.searchGroup;
     await this.showLoading();
-    // this.searchText = query;
-    // console.log(ntElSelect?.value)
 
+    const dateSelect = this.normalizeDateParam(this.selectedDate);
     await this.orderSvc.getData({
-      search: ntElSearch.value?.toUpperCase(),
-      status: ntElSelect?.value === 'D' ? Array(ntElSelect?.value) : ntElSelect.value,
-      date_select: ntElDate.value || new Date()
-    }).then((data) => {
-
+      search: this.searchText?.toUpperCase(),
+      status: this.normalizeMultiParam(this.selectedStatuses),
+      date_select: dateSelect,
+      codtmv: this.normalizeMultiParam(this.selectedMovements),
+      codfilial: this.normalizeMultiParam(this.selectedBranches)
+    }).then((data) => {      
       if (data.status === 200) {
-        this.orders = data.data.data;
+        this.orders = this.filterOrdersBySelectedDate(data.data.data || [], dateSelect);
       } else {
-        console.log('Erro na requisiÃ§Ã£o')
+        console.log('Erro na requisição')
         console.log(data)
       }
     })
     // this.results = this.data.filter((d) => d.toLowerCase().includes(query));
   }
 
+  async saveFilters() {
+    await Preferences.set({
+      key: this.orderFiltersKey(),
+      value: JSON.stringify({
+        status: this.selectedStatuses,
+        codtmv: this.selectedMovements,
+        codfilial: this.selectedBranches,
+      } as SavedOrderFilters)
+    });
+
+    const alert = await this.alertController.create({
+      header: 'Filtros salvos',
+      message: 'Os filtros de status e movimento serao aplicados nas proximas consultas.',
+      buttons: ['Fechar'],
+    });
+
+    await alert.present();
+    this.accordionGroup.value = undefined;
+  }
+
+  async clearSavedFilters() {
+    await Preferences.remove({ key: this.orderFiltersKey() });
+    this.selectedStatuses = ['D'];
+    this.selectedMovements = this.defaultMovementCodes();
+    this.selectedBranches = this.defaultBranchCodes();
+    await this.searchOrders();
+  }
+
+  movementOptionLabel(movement: movements_type) {
+    return `${movement.CODTIPOMOV} - ${movement.NOME}`;
+  }
+
+  statusFilterLabel() {
+    const total = this.selectedStatuses?.length || 0;
+
+    if (total === 0) {
+      return '';
+    }
+
+    if (total === 1) {
+      return this.statusLabel(this.selectedStatuses[0]);
+    }
+
+    return `${total} status selecionados`;
+  }
+
+  movementFilterLabel() {
+    const total = this.selectedMovements?.length || 0;
+
+    if (total === 0) {
+      return '';
+    }
+
+    if (total === 1) {
+      const movementCode = this.selectedMovements[0];
+      const movement = this.movementsTypes.find((item) => item.CODTIPOMOV === movementCode);
+      return movement ? this.movementOptionLabel(movement) : movementCode;
+    }
+
+    return `${total} movimentos selecionados`;
+  }
+
+  branchFilterLabel() {
+    const total = this.selectedBranches?.length || 0;
+
+    if (total === 0) {
+      return '';
+    }
+
+    if (total === 1) {
+      const branchCode = Number(this.selectedBranches[0]);
+      const selectedBranch = this.branches.find((item) => Number(item.CODFILIAL) === branchCode);
+      return selectedBranch ? this.branchOptionLabel(selectedBranch) : `Filial ${branchCode}`;
+    }
+
+    return `${total} filiais selecionadas`;
+  }
+
+  branchOptionLabel(item: branch) {
+    return `${item.CODFILIAL} - ${item.NOMEFANTASIA}`;
+  }
+
+  orderBranchLabel(orderData: any) {
+    const codfilial = Number(orderData?.CODFILIAL || 0);
+    const selectedBranch = this.branches.find((item) => Number(item.CODFILIAL) === codfilial);
+
+    if (!codfilial) {
+      return 'N/A';
+    }
+
+    return selectedBranch ? this.branchOptionLabel(selectedBranch) : `Filial ${codfilial}`;
+  }
+
+  private statusLabel(status: string) {
+    const labels: Record<string, string> = {
+      A: 'Atendido',
+      D: 'Pendente',
+      P: 'Parcial',
+    };
+
+    return labels[status] || status;
+  }
+
+  private async loadMovementsTypes() {
+    try {
+      const response = await this.utilsSvc.getMovementsType('');
+      this.movementsTypes = response.data?.data || [];
+    } catch (error) {
+      this.movementsTypes = [];
+    }
+  }
+
+  private async loadBranches() {
+    try {
+      this.branches = await this.branchSvc.getBranches();
+    } catch (error) {
+      this.branches = [];
+    }
+  }
+
+  private async restoreSavedFilters() {
+    const savedFilters = await Preferences.get({ key: this.orderFiltersKey() });
+
+    if (savedFilters.value) {
+      try {
+        const parsedFilters = JSON.parse(savedFilters.value) as SavedOrderFilters;
+        this.selectedStatuses = this.normalizeStringArray(parsedFilters.status, ['D']);
+        this.selectedMovements = this.normalizeStringArray(parsedFilters.codtmv, this.defaultMovementCodes());
+        this.selectedBranches = this.normalizeStringArray(parsedFilters.codfilial, this.defaultBranchCodes());
+        return;
+      } catch (error) {
+        await Preferences.remove({ key: this.orderFiltersKey() });
+      }
+    }
+
+    this.selectedStatuses = ['D'];
+    this.selectedMovements = this.defaultMovementCodes();
+    this.selectedBranches = this.defaultBranchCodes();
+  }
+
+  private defaultMovementCodes() {
+    return this.normalizeStringArray([this.currentUser?.default_movement], []);
+  }
+
+  private defaultBranchCodes() {
+    return this.normalizeStringArray([this.selectedBranch?.CODFILIAL], []);
+  }
+
+  private normalizeStringArray(value: any, fallback: string[]) {
+    const values = Array.isArray(value) ? value : value ? [value] : [];
+    const normalized = values
+      .map((item) => String(item || '').trim())
+      .filter(Boolean);
+
+    return normalized.length > 0 ? normalized : fallback;
+  }
+
+  private normalizeMultiParam(value: string[]) {
+    const normalized = this.normalizeStringArray(value, []);
+    return normalized.length > 0 ? normalized.join(',') : undefined;
+  }
+
+  private normalizeDateParam(value: any) {
+    if (!value) {
+      return this.todayParam();
+    }
+
+    if (value instanceof Date) {
+      return this.dateToParam(value);
+    }
+
+    const dateMatch = String(value).match(/\d{4}-\d{2}-\d{2}/);
+    return dateMatch ? dateMatch[0] : String(value).slice(0, 10);
+  }
+
+  private filterOrdersBySelectedDate(orders: any[], dateSelect: string) {
+    if (!dateSelect) {
+      return orders;
+    }
+
+    return orders.filter((item) => this.orderDateKey(item) === dateSelect);
+  }
+
+  private orderDateKey(orderData: any) {
+    const rawDate = orderData?.DATAEMISSAO || orderData?.DATAMOVIMENTO || orderData?.DATA;
+    const dateMatch = String(rawDate || '').match(/\d{4}-\d{2}-\d{2}/);
+
+    if (dateMatch) {
+      return dateMatch[0];
+    }
+
+    if (rawDate instanceof Date) {
+      return this.dateToParam(rawDate);
+    }
+
+    return '';
+  }
+
+  private todayParam() {
+    return this.dateToParam(new Date());
+  }
+
+  private dateToParam(value: Date) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  private orderFiltersKey() {
+    const userId = this.currentUser?.id || this.currentUser?.user || 'default';
+    return `${orderFiltersKeyPrefix}_${userId}`;
+  }
+
   async showLoading() {
-    const loading = await this.loadingController.create({ message: 'Carregando informaÃ§Ãµes...' });
+    const loading = await this.loadingController.create({ message: 'Carregando Informações...' });
     await loading.present();
 
     setTimeout(async () => {
@@ -160,14 +393,14 @@ export class OrdersComponent implements OnInit {
     console.log(xOrder);
     let xItens: any[] = [[
       {
-        "text": 'CÃ³digo',
+        "text": 'Código',
         "bold": true,
         "fontSize": 8,
         "color": "white",
         "fillColor": pdfPrimary
       },
       {
-        "text": 'DescriÃ§Ã£o',
+        "text": 'Descrição',
         "bold": true,
         "fontSize": 8,
         "color": "white",
@@ -377,7 +610,7 @@ export class OrdersComponent implements OnInit {
               width: '*'
             },
             {
-              text: 'EmissÃ£o',
+              text: 'Emissão',
               fontSize: 8
             },
             // {
@@ -550,12 +783,12 @@ export class OrdersComponent implements OnInit {
           bold: true,
         },
         {
-          text: `O VALOR DESSE ORÃ‡AMENTO ESTARÃ SUJEITO A\nALTERAÃ‡Ã•ES EM DECORRÃŠNCIA DE ATUALIZAÃ‡ÃƒO DE PREÃ‡O DO FORNECEDOR.`,
+          text: `O VALOR DESSE ORÇAMENTO ESTARÁ SUJEITO A\nALTERAÇÕES EM DECORRÊNCIA DE ATUALIZAÇÃO DE PREÇO DO FORNECEDOR.`,
           style: 'notesText',
           fontSize: 8
         },
         {
-          text: `VALIDADE DO ORÃ‡AMENTO PRA 10 DIAS A CONTAR DA DATA DE EMISSÃƒO`,
+          text: `VALIDADE DO ORÇAMENTO PRA 10 DIAS A CONTAR DA DATA DE EMISSÃO`,
           style: 'notesText',
           marginTop: 4,
           fontSize: 8
@@ -617,9 +850,9 @@ export class OrdersComponent implements OnInit {
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
-    // if (role === 'confirm') {
-    //   this.message = `Hello, ${data}!`;
-    // }
+    if (role === 'confirm') {
+      await this.searchOrders();
+    }
   }
 
 
@@ -677,7 +910,7 @@ export class OrdersComponent implements OnInit {
 
   async funcEmpty() {
     const alert = await this.alertController.create({
-      header: 'FunÃ§Ã£o IndisponÃ­vel',
+      header: 'Função Indisponível',
       //subHeader: 'A Sub Header Is Optional',
       message: 'Este recurso deve ser disponibilizado em breve, por favor aguarde!',
       buttons: ['Fechar'],

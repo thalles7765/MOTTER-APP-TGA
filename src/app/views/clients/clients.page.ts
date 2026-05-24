@@ -5,6 +5,11 @@ import { LoadingController, ModalController, ToastController, IonSearchbar, IonH
 import { ClientService } from 'src/app/services/clients/client.service';
 import { ClientDetailComponent } from '../client-detail/client-detail.component';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { Preferences } from '@capacitor/preferences';
+
+type SearchMode = 'contains' | 'starts' | 'equals';
+
+const clientSearchModeKey = 'clients_search_mode';
 
 @Component({
   selector: 'app-clients',
@@ -19,7 +24,14 @@ export class ClientsPage implements OnInit {
   protected brand = brandConfig;
   protected clients: any[] = [];
   protected searchQuery = '';
+  protected searchMode: SearchMode = 'contains';
+  protected showFilters = false;
   protected activeFilter: 'all' | 'debtor' | 'open' | 'goodLimit' | 'noLimit' = 'all';
+  protected searchModeOptions: { key: SearchMode; label: string }[] = [
+    { key: 'starts', label: 'Inicia' },
+    { key: 'contains', label: 'Contem' },
+    { key: 'equals', label: 'Igual' },
+  ];
   protected filterOptions = [
     { key: 'all', label: 'Todos' },
     { key: 'debtor', label: 'Devedores' },
@@ -31,6 +43,7 @@ export class ClientsPage implements OnInit {
   constructor(private loadingController: LoadingController, private modalCtrl: ModalController, private toastController: ToastController) { }
 
   async ngOnInit() {
+    await this.loadSavedSearchMode();
     await this.getClients();
   }
 
@@ -144,13 +157,23 @@ export class ClientsPage implements OnInit {
     this.activeFilter = filter;
   }
 
+  setSearchMode(mode: SearchMode) {
+    this.searchMode = mode;
+  }
+
+  async saveSearchMode() {
+    await Preferences.set({ key: clientSearchModeKey, value: this.searchMode });
+    this.showFilters = false;
+    await this.showToast('Tipo de pesquisa salvo.');
+  }
+
   async searchClients() {
     const query = this.searchQuery.toUpperCase();
     const loading = await this.loadingController.create({ message: 'Carregando informações...' });
 
     try {
       await loading.present();
-      await this.clientSvc.getData({ search: query }).then(async (data) => {
+      await this.clientSvc.getData({ search: query, search_type: this.searchMode }).then(async (data) => {
 
         if (data.status === 200) {
           this.clients = data.data.data;
@@ -194,7 +217,7 @@ export class ClientsPage implements OnInit {
     const loading = await this.loadingController.create({ message: 'Carregando informações...' });
     try {
       await loading.present();
-      await this.clientSvc.getData({}).then(async (data) => {
+      await this.clientSvc.getData({ search_type: this.searchMode }).then(async (data) => {
         if (data.status === 200) {
           this.clients = data.data.data;
         } else {
@@ -226,6 +249,15 @@ export class ClientsPage implements OnInit {
     });
 
     await toast.present();
+  }
+
+  private async loadSavedSearchMode() {
+    const saved = await Preferences.get({ key: clientSearchModeKey });
+    const value = saved.value as SearchMode | null;
+
+    if (value === 'starts' || value === 'contains' || value === 'equals') {
+      this.searchMode = value;
+    }
   }
 
 }

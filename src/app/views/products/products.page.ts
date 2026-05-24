@@ -10,6 +10,8 @@ import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
 import { branch } from 'src/app/interfaces/branch';
 import { ProductStockBranchesComponent } from '../product-stock-branches/product-stock-branches.component';
+import { Preferences } from '@capacitor/preferences';
+import { ProductPriceBranchesComponent } from '../product-price-branches/product-price-branches.component';
 
 type ProductStock = {
   CODEMPRESA: number;
@@ -21,7 +23,30 @@ type ProductStock = {
   ESTOQUEMAXIMO?: number;
 };
 
+type ProductBranchPrice = {
+  CODEMPRESA: number;
+  CODFILIAL: number;
+  PRECO?: number;
+  CUSTOUNITARIO?: number;
+  CUSTOMEDIO?: number;
+  CUSTOREPOSICAOA?: number;
+  CUSTOREPOSICAOB?: number;
+  MARGEMLUCRO?: number;
+  ESTOQUEMINIMO?: number;
+  ESTOQUEMAXIMO?: number;
+  PONTOPEDIDO?: number;
+  DTULTIMAVENDA?: string | null;
+  DTULTIMACOMPRA?: string | null;
+  ULTPRECOCOMPRA?: number;
+  QTDULTIMACOMPRA?: number;
+  NUMDOCULTCOMPRA?: string | null;
+  ULTPRECOVENDA?: number;
+};
+
 type ProductFilter = 'withStock' | 'withoutStock' | 'withoutPrice' | 'withPrice' | 'withPromotion' | 'withoutPromotion';
+type SearchMode = 'contains' | 'starts' | 'equals';
+
+const productSearchModeKey = 'products_search_mode';
 
 @Component({
   selector: 'app-products',
@@ -41,7 +66,14 @@ export class ProductsPage implements OnInit {
   protected selectedBranch: branch | null = null;
   protected canSelectBranch = false;
   protected searchText = '';
+  protected searchMode: SearchMode = 'contains';
+  protected showFilters = false;
   protected activeFilters = new Set<ProductFilter>();
+  protected searchModeOptions: { key: SearchMode; label: string }[] = [
+    { key: 'starts', label: 'Inicia' },
+    { key: 'contains', label: 'Contem' },
+    { key: 'equals', label: 'Igual' },
+  ];
   protected productFilters: { key: ProductFilter; label: string }[] = [
     { key: 'withStock', label: 'C/ Saldo' },
     { key: 'withoutStock', label: 'S/ Saldo' },
@@ -54,6 +86,7 @@ export class ProductsPage implements OnInit {
   constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController, private branchSvc: BranchService) { }
 
   async ngOnInit() {
+    await this.loadSavedSearchMode();
     await this.loadBranchContext();
     await this.getProdutcts();
 
@@ -65,7 +98,7 @@ export class ProductsPage implements OnInit {
   }
 
   confirm(product) {
-    this.modalCtrl.dismiss(product, 'confirm');
+    this.modalCtrl.dismiss(this.productWithBranchPrice(product), 'confirm');
   }
 
   protected productName(product: any) {
@@ -130,6 +163,16 @@ export class ProductsPage implements OnInit {
     this.activeFilters.clear();
   }
 
+  setSearchMode(mode: SearchMode) {
+    this.searchMode = mode;
+  }
+
+  async saveSearchMode() {
+    await Preferences.set({ key: productSearchModeKey, value: this.searchMode });
+    this.showFilters = false;
+    await this.alertMsg('Filtros salvos.');
+  }
+
   async showLoading() {
     const loading = await this.loadingController.create({ message: 'Carregando informações...' });
     await loading.present();
@@ -148,7 +191,7 @@ export class ProductsPage implements OnInit {
 
     this.showLoading();
 
-    await this.productSvc.getData(this.searchText).then((data) => {
+    await this.productSvc.getData(this.searchText, this.searchMode).then((data) => {
 
       if (data.status === 200) {
         this.products = data.data.data;
@@ -162,7 +205,7 @@ export class ProductsPage implements OnInit {
 
   async getProdutcts() {
     await this.showLoading();
-    await this.productSvc.getData().then((data) => {
+    await this.productSvc.getData('', this.searchMode).then((data) => {
 
       if (data.status === 200) {
         this.products = data.data.data;
@@ -192,7 +235,7 @@ export class ProductsPage implements OnInit {
   async openModal(xproduct) {
     const modal = await this.modalCtrl.create({
       component: ProductDetailPage,
-      componentProps: { product: xproduct }
+      componentProps: { product: this.productWithBranchPrice(xproduct) }
     });
 
     modal.present();
@@ -252,8 +295,89 @@ export class ProductsPage implements OnInit {
     await modal.present();
   }
 
+  effectivePrice(product: any) {
+    const selectedPrice = this.selectedBranchPrice(product);
+
+    if (selectedPrice && selectedPrice.PRECO !== undefined && selectedPrice.PRECO !== null) {
+      return Number(selectedPrice.PRECO || 0);
+    }
+
+    return Number(product?.PRECO2 || product?.PRECO || 0);
+  }
+
+  hasBranchPrices(product: any) {
+    return this.productPriceBranchCount(product) > 1;
+  }
+
+  async openPriceBranches(product: any, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (!this.hasBranchPrices(product)) {
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ProductPriceBranchesComponent,
+      componentProps: {
+        product,
+        branches: this.branches,
+        selectedBranch: this.selectedBranch,
+      }
+    });
+
+    await modal.present();
+  }
+
   private productStocks(product: any): ProductStock[] {
-    return product?.saldos || [];
+    const stocks = product?.saldos || [];
+    return Array.isArray(stocks) ? stocks.filter((stock) => this.hasSystemBranch(stock)) : [];
+  }
+
+  private productPrices(product: any): ProductBranchPrice[] {
+    const prices = product?.precos_filial || product?.PRECOS_FILIAL || product?.precosFilial || [];
+    return Array.isArray(prices) ? prices.filter((price) => this.hasSystemBranch(price)) : [];
+  }
+
+  private productPriceBranchCount(product: any) {
+    return new Set(
+      this.productPrices(product).map((price) => `${price.CODEMPRESA}-${price.CODFILIAL}`)
+    ).size;
+  }
+
+  private selectedBranchPrice(product: any) {
+    if (!this.selectedBranch) {
+      return null;
+    }
+
+    return this.productPrices(product).find((price) =>
+      price.CODEMPRESA === this.selectedBranch?.CODEMPRESA &&
+      price.CODFILIAL === this.selectedBranch?.CODFILIAL
+    ) || null;
+  }
+
+  private hasSystemBranch(item: { CODEMPRESA: number; CODFILIAL: number }) {
+    return this.branches.some((branch) =>
+      Number(branch.CODEMPRESA) === Number(item.CODEMPRESA) &&
+      Number(branch.CODFILIAL) === Number(item.CODFILIAL)
+    );
+  }
+
+  private productWithBranchPrice(product: any) {
+    const selectedPrice = this.selectedBranchPrice(product);
+
+    if (!selectedPrice) {
+      return product;
+    }
+
+    return {
+      ...product,
+      PRECO2: selectedPrice.PRECO ?? product.PRECO2,
+      PRECO: selectedPrice.PRECO ?? product.PRECO,
+      CUSTOUNITARIO: selectedPrice.CUSTOUNITARIO ?? product.CUSTOUNITARIO,
+      CUSTOMEDIO: selectedPrice.CUSTOMEDIO ?? product.CUSTOMEDIO,
+      PRECO_FILIAL: selectedPrice,
+    };
   }
 
   private matchesStockFilters(product: any) {
@@ -277,7 +401,7 @@ export class ProductsPage implements OnInit {
       return true;
     }
 
-    const hasPrice = Number(product?.PRECO2 || 0) > 0;
+    const hasPrice = this.effectivePrice(product) > 0;
 
     return (withPrice && hasPrice) || (withoutPrice && !hasPrice);
   }
@@ -353,6 +477,15 @@ export class ProductsPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  private async loadSavedSearchMode() {
+    const saved = await Preferences.get({ key: productSearchModeKey });
+    const value = saved.value as SearchMode | null;
+
+    if (value === 'starts' || value === 'contains' || value === 'equals') {
+      this.searchMode = value;
+    }
   }
 
 }

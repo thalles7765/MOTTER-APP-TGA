@@ -1,0 +1,80 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <div class="d-flex flex-row align-items-center gap-2 p-2">
+      <img [src]="brand.assets.favicon" height="52px" alt="" />
+      <ion-title>Precos por filial</ion-title>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="price-summary">
+    <p class="eyebrow">{{ product?.CODPRD }}</p>
+    <h2>{{ product?.NOMEFANTASIA }}</h2>
+    <strong>Referencia {{ selectedPrice() | currency : 'BRL' }}</strong>
+  </div>
+
+  <div class="price-list">
+    @for (price of prices; track $index) {
+      <div class="price-card" [class.selected]="isSelectedBranch(price)">
+        <div class="price-card-header">
+          <div>
+            <p class="branch-label">Filial {{ price.CODFILIAL }}</p>
+            <h3>{{ branchName(price) }}</h3>
+          </div>
+
+          <div class="price-badge">
+            {{ price.PRECO || 0 | currency : 'BRL' }}
+          </div>
+        </div>
+
+        <div class="price-info">
+          <p>
+            <ion-icon name="business"></ion-icon>
+            {{ branchDocument(price) }}
+          </p>
+          <p>
+            <ion-icon name="location"></ion-icon>
+            {{ branchCity(price) }}
+          </p>
+          <p>
+            <ion-icon name="location"></ion-icon>
+            {{ branchAddress(price) }}
+          </p>
+        </div>
+
+        <div class="price-grid">
+          <div><span>Preco filial</span><strong>{{ price.PRECO || 0 | currency : 'BRL' }}</strong></div>
+          @if (isAdmin) {
+            <div><span>Margem lucro</span><strong>{{ price.MARGEMLUCRO || 0 | number : '1.2-2' }}%</strong></div>
+            <div><span>Custo unitario</span><strong>{{ price.CUSTOUNITARIO || 0 | currency : 'BRL' }}</strong></div>
+            <div><span>Custo medio</span><strong>{{ price.CUSTOMEDIO || 0 | currency : 'BRL' }}</strong></div>
+            <div><span>Reposicao A</span><strong>{{ price.CUSTOREPOSICAOA || 0 | currency : 'BRL' }}</strong></div>
+            <div><span>Reposicao B</span><strong>{{ price.CUSTOREPOSICAOB || 0 | currency : 'BRL' }}</strong></div>
+            <div><span>Estoque minimo</span><strong>{{ price.ESTOQUEMINIMO || 0 }}</strong></div>
+            <div><span>Estoque maximo</span><strong>{{ price.ESTOQUEMAXIMO || 0 }}</strong></div>
+            <div><span>Ponto pedido</span><strong>{{ price.PONTOPEDIDO || 0 }}</strong></div>
+            <div><span>Ult. venda</span><strong>{{ price.DTULTIMAVENDA ? (price.DTULTIMAVENDA | date : 'dd/MM/yyyy') : 'N/A' }}</strong></div>
+            <div><span>Ult. compra</span><strong>{{ price.DTULTIMACOMPRA ? (price.DTULTIMACOMPRA | date : 'dd/MM/yyyy') : 'N/A' }}</strong></div>
+            <div><span>Ult. preco compra</span><strong>{{ price.ULTPRECOCOMPRA || 0 | currency : 'BRL' }}</strong></div>
+            <div><span>Qtd. ult. compra</span><strong>{{ price.QTDULTIMACOMPRA || 0 }}</strong></div>
+            <div><span>Doc. ult. compra</span><strong>{{ price.NUMDOCULTCOMPRA || 'N/A' }}</strong></div>
+            <div><span>Ult. preco venda</span><strong>{{ price.ULTPRECOVENDA || 0 | currency : 'BRL' }}</strong></div>
+          }
+        </div>
+
+        <div class="difference" [ngClass]="differenceClass(price)">
+          <span>Diferenca para filial selecionada</span>
+          <strong>
+            {{ differenceValue(price) | currency : 'BRL' }}
+            ({{ differencePercent(price) | number : '1.2-2' }}%)
+          </strong>
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

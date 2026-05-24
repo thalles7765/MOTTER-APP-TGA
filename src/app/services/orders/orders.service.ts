@@ -46,4 +46,12 @@ export class OrdersService {
         return data
       });
   }
+
+  async updateOrder(orderData: order) {
+    return await apiClient
+      .put(`${environment.url_api}/orders`, orderData, { withCredentials: true })
+      .then((data) => {
+        return data
+      });
+  }
 }

@@ -113,10 +113,53 @@ ion-card .text-white {
 ion-input,
 ion-textarea,
 ion-select,
+ion-searchbar,
 input,
 textarea,
 select {
   color: var(--app-card-text);
+}
+
+ion-searchbar {
+  --background: var(--app-card-bg);
+  --color: var(--app-card-text);
+  --placeholder-color: var(--app-muted-text);
+  --icon-color: var(--ion-color-primary);
+  --clear-button-color: var(--app-muted-text);
+}
+
+.alert-wrapper,
+.popover-content,
+ion-popover::part(content) {
+  background: var(--app-card-bg) !important;
+  color: var(--app-card-text) !important;
+}
+
+.alert-head,
+.alert-title,
+.alert-sub-title,
+.alert-message,
+.alert-checkbox-label,
+.alert-radio-label,
+.alert-button,
+.select-interface-option,
+ion-select-popover ion-item {
+  color: var(--app-card-text) !important;
+}
+
+.alert-checkbox-icon,
+.alert-radio-icon {
+  border-color: var(--app-muted-text) !important;
+}
+
+.alert-checkbox-group,
+.alert-radio-group {
+  border-color: var(--app-soft-border) !important;
+}
+
+.alert-button {
+  color: var(--ion-color-primary) !important;
+  font-weight: 900;
 }
 
 .order-remove-alert .alert-wrapper {

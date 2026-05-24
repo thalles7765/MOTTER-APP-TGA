@@ -1,5 +1,5 @@
 .branch-modal {
-  --background: #f8fafc;
+  --background: var(--app-page-bg);
 }
 
 .branch-hero {
@@ -47,11 +47,11 @@
 .branch-card {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--app-soft-border);
   border-radius: 8px;
   padding: 1rem;
-  background: #ffffff;
-  color: #1f2937;
+  background: var(--app-card-bg);
+  color: var(--app-card-text);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
 
   &.selected {
@@ -88,7 +88,7 @@
 
 .company-name {
   margin: 0.65rem 0;
-  color: #475569;
+  color: var(--app-muted-text);
   font-size: 0.9rem;
 }
 
@@ -101,7 +101,7 @@
     align-items: center;
     gap: 0.45rem;
     margin: 0;
-    color: #334155;
+    color: var(--app-card-text);
     font-size: 0.85rem;
   }
 
@@ -119,6 +119,6 @@
   display: grid;
   gap: 0.55rem;
   padding: 1rem;
-  background: rgba(248, 250, 252, 0.94);
+  background: color-mix(in srgb, var(--app-page-bg) 92%, transparent);
   backdrop-filter: blur(8px);
 }

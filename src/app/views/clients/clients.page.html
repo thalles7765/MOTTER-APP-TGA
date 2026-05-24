@@ -26,6 +26,7 @@
       show-clear-button="always"
       (keyup.enter)="searchClients()"
     ></ion-searchbar>
+    <button type="button" class="filter-icon-button" (click)="showFilters = !showFilters" aria-label="Filtros"></button>
     <button type="button" class="search-icon-button" (click)="searchClients()" aria-label="Pesquisar cliente"></button>
   </div>
 </ion-header>
@@ -39,6 +40,27 @@
       </div>
       <img [src]="brand.assets.menuLogo" alt="" />
     </section> -->
+
+    @if (showFilters) {
+    <section class="filter-panel">
+      <span>Tipo de pesquisa</span>
+      <div class="d-flex gap-1 overflow-auto">
+        @for (mode of searchModeOptions; track mode.key) {
+          <button
+            type="button"
+            class="btn btn-sm rounded-pill fw-bold text-nowrap"
+            [class.btn-primary]="searchMode === mode.key"
+            [class.btn-light]="searchMode !== mode.key"
+            (click)="setSearchMode(mode.key)"
+          >
+            {{ mode.label }}
+          </button>
+        }
+      </div>
+
+      <button type="button" class="save-filter-button" (click)="saveSearchMode()">Salvar filtros</button>
+    </section>
+    }
 
     <section class="d-flex gap-1 overflow-auto pb-1">
       @for (filter of filterOptions; track filter.key) {

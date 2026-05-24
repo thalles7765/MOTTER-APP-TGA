@@ -1,12 +1,17 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <div class="d-flex flex-row detail-toolbar">
-      <img class="px-2" [src]="brand.assets.favicon" alt="" />
-      <ion-title>Detalhes</ion-title>
-    </div>
+  <ion-toolbar class="client-detail-toolbar">
+    <ion-title class="client-detail-title">
+      <span class="client-detail-title-wrap">
+        <img [src]="brand.assets.favicon" alt="" />
+        <span class="client-detail-title-text">
+          <strong>Detalhes</strong>
+          <small>{{ clientName() }}</small>
+        </span>
+      </span>
+    </ion-title>
 
     <ion-buttons slot="end">
-      <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
+      <ion-button class="detail-close-button" fill="clear" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

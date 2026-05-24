@@ -9,6 +9,26 @@ export interface product {
     CODGRUPO: string;
     PRECO1: number;
     PRECO2: number;
+    PRECO?: number;
+    precos_filial?: {
+        CODEMPRESA: number;
+        CODFILIAL: number;
+        PRECO: number;
+        CUSTOUNITARIO: number;
+        CUSTOMEDIO: number;
+        CUSTOREPOSICAOA: number;
+        CUSTOREPOSICAOB: number;
+        MARGEMLUCRO: number;
+        ESTOQUEMINIMO: number;
+        ESTOQUEMAXIMO: number;
+        PONTOPEDIDO: number;
+        DTULTIMAVENDA: string | null;
+        DTULTIMACOMPRA: string | null;
+        ULTPRECOCOMPRA: number;
+        QTDULTIMACOMPRA: number;
+        NUMDOCULTCOMPRA: string | null;
+        ULTPRECOVENDA: number;
+    }[];
     PONTOEQ: number;
     CUSTOUNITARIO: number;
     CUSTOMEDIO: number;

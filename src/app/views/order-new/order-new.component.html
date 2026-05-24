@@ -3,7 +3,7 @@
     <div class="order-toolbar-title d-flex flex-row align-items-center gap-1 p-2">
       <img [src]="brand.assets.favicon" height="60px" alt="" />
 
-      <ion-title> Movimento </ion-title>
+      <ion-title> {{ isEditMode ? 'Editar Movimento' : 'Movimento' }} </ion-title>
     </div>
 
     <ion-buttons slot="end">
@@ -193,6 +193,28 @@
               class="mb-0 fw-bold w-100 text-center small"
             >
               {{ order.DATAEMISSAO | date : "dd/MM/yyyy" }}
+            </p>
+          </div>
+
+          <div class="d-flex flex-column gap-1 w-100 align-items-center" (click)="alertFilial()">
+            <img
+              style="
+                border-radius: 50%;
+                justify-content: center;
+                border: 2px #f1622b solid;
+                padding: 3px;
+              "
+              src="../../../assets/icon/venda2.png"
+              height="30px"
+              width="30px"
+              alt=""
+            />
+
+            <p
+              style="font-size: 0.7rem"
+              class="mb-0 fw-bold w-100 text-center small"
+            >
+              {{ branchLabel() }}
             </p>
           </div>
 
@@ -451,13 +473,13 @@
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
             >
-              <b>Preço Unit.</b>
+            <b>Preço Unit.</b>
             </p>
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"
             >
-              <b>{{ product?.PRECO2 | currency : "BRL" }}</b>
+              <b>{{ (product?.PRECOUNITARIO || product?.PRECO2) | currency : "BRL" }}</b>
             </p>
           </div>
 

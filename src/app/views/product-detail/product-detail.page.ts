@@ -10,6 +10,7 @@ import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
 import { branch } from 'src/app/interfaces/branch';
 import { ProductStockBranchesComponent } from '../product-stock-branches/product-stock-branches.component';
+import { ProductPriceBranchesComponent } from '../product-price-branches/product-price-branches.component';
 
 type ProductStock = {
   CODEMPRESA: number;
@@ -19,6 +20,26 @@ type ProductStock = {
   SALDOFISICO2?: number;
   ESTOQUEMINIMO?: number;
   ESTOQUEMAXIMO?: number;
+};
+
+type ProductBranchPrice = {
+  CODEMPRESA: number;
+  CODFILIAL: number;
+  PRECO?: number;
+  CUSTOUNITARIO?: number;
+  CUSTOMEDIO?: number;
+  CUSTOREPOSICAOA?: number;
+  CUSTOREPOSICAOB?: number;
+  MARGEMLUCRO?: number;
+  ESTOQUEMINIMO?: number;
+  ESTOQUEMAXIMO?: number;
+  PONTOPEDIDO?: number;
+  DTULTIMAVENDA?: string | null;
+  DTULTIMACOMPRA?: string | null;
+  ULTPRECOCOMPRA?: number;
+  QTDULTIMACOMPRA?: number;
+  NUMDOCULTCOMPRA?: string | null;
+  ULTPRECOVENDA?: number;
 };
 
 @Component({
@@ -142,8 +163,71 @@ export class ProductDetailPage implements OnInit {
     await modal.present();
   }
 
+  effectivePrice() {
+    const selectedPrice = this.selectedBranchPrice();
+
+    if (selectedPrice && selectedPrice.PRECO !== undefined && selectedPrice.PRECO !== null) {
+      return Number(selectedPrice.PRECO || 0);
+    }
+
+    return Number(this.product?.PRECO2 || this.product?.PRECO || 0);
+  }
+
+  hasBranchPrices() {
+    return this.productPriceBranchCount() > 1;
+  }
+
+  async openPriceBranches(event?: Event) {
+    event?.stopPropagation();
+
+    if (!this.hasBranchPrices()) {
+      return;
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: ProductPriceBranchesComponent,
+      componentProps: {
+        product: this.product,
+        branches: this.branches,
+        selectedBranch: this.selectedBranch,
+      }
+    });
+
+    await modal.present();
+  }
+
   private productStocks(): ProductStock[] {
-    return this.product?.saldos || [];
+    const stocks = this.product?.saldos || [];
+    return Array.isArray(stocks) ? stocks.filter((stock) => this.hasSystemBranch(stock)) : [];
+  }
+
+  private productPrices(): ProductBranchPrice[] {
+    const prices = this.product?.precos_filial || this.product?.PRECOS_FILIAL || this.product?.precosFilial || [];
+    return Array.isArray(prices) ? prices.filter((price) => this.hasSystemBranch(price)) : [];
+  }
+
+  private productPriceBranchCount() {
+    return new Set(
+      this.productPrices().map((price) => `${price.CODEMPRESA}-${price.CODFILIAL}`)
+    ).size;
+  }
+
+  private selectedBranchPrice() {
+    if (!this.selectedBranch) {
+      return null;
+    }
+
+    return this.productPrices().find((price) =>
+      price.CODEMPRESA === this.selectedBranch?.CODEMPRESA &&
+      price.CODFILIAL === this.selectedBranch?.CODFILIAL
+    ) || null;
+  }
+
+  private hasSystemBranch(item: { CODEMPRESA: number; CODFILIAL: number }) {
+    return this.branches.some((branch) =>
+      Number(branch.CODEMPRESA) === Number(item.CODEMPRESA) &&
+      Number(branch.CODFILIAL) === Number(item.CODFILIAL)
+    );
   }
 
   private resolveStockStatusClass(stock: ProductStock | null) {
