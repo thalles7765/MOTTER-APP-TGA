@@ -1,0 +1,86 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <div class="sync-toolbar-title">
+      <img [src]="brand.assets.favicon" alt="" />
+      <ion-title>Sincronizacao</ion-title>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="sync-shell">
+    <section class="sync-hero">
+      <div>
+        <p>{{ online ? 'Online' : 'Offline' }}</p>
+        <h1>{{ syncState.running ? syncState.step : 'Dados locais do app' }}</h1>
+        <span>Ultima sincronizacao: {{ lastSyncLabel() }}</span>
+      </div>
+
+      <div class="status-orb" [class.offline]="!online">
+        {{ online ? 'ON' : 'OFF' }}
+      </div>
+    </section>
+
+    <section class="sync-stats">
+      <div>
+        <span>Produtos</span>
+        <strong>{{ stats.products }}</strong>
+      </div>
+      <div>
+        <span>Clientes</span>
+        <strong>{{ stats.clients }}</strong>
+      </div>
+      <div>
+        <span>Pedidos</span>
+        <strong>{{ stats.orders }}</strong>
+      </div>
+      <div>
+        <span>Pendencias</span>
+        <strong>{{ stats.pending }}</strong>
+      </div>
+    </section>
+
+    <section class="sync-actions">
+      <ion-button expand="block" [disabled]="syncState.running || !online" (click)="syncNow()">
+        Sincronizar agora
+      </ion-button>
+      <ion-button expand="block" fill="outline" [disabled]="!online || pending.length === 0" (click)="resendAll()">
+        Reenviar pendencias
+      </ion-button>
+    </section>
+
+    <section class="pending-list">
+      <div class="section-title">
+        <h2>Pendencias de envio</h2>
+        <button type="button" (click)="refresh()">Atualizar</button>
+      </div>
+
+      @if (pending.length === 0) {
+        <div class="empty-card">
+          Nenhuma pendencia aguardando envio.
+        </div>
+      }
+
+      @for (item of pending; track item.id) {
+        <article class="pending-card" [class.error]="item.status === 'error'">
+          <div>
+            <p>{{ item.type }}</p>
+            <h3>{{ statusLabel(item.status) }}</h3>
+            <span>{{ item.method }} | Filial {{ item.codfilial || 'N/A' }}</span>
+            @if (item.last_error) {
+              <small>{{ item.last_error }}</small>
+            }
+          </div>
+
+          <ion-button size="small" fill="clear" [disabled]="!online || item.status === 'sending'" (click)="resendOne(item)">
+            Reenviar
+          </ion-button>
+        </article>
+      }
+    </section>
+  </main>
+</ion-content>

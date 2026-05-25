@@ -57,6 +57,11 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
   {
+    path: 'app/offline-sync',
+    loadComponent: () => import('./views/offline-sync/offline-sync.page').then(m => m.OfflineSyncPage),
+    canActivate: [authenticationGuard]
+  },
+  {
     path: 'app/store',
     loadComponent: () => import('./views/store/store.page').then(m => m.StorePage),
     canActivate: [authenticationGuard]

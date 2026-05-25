@@ -11,6 +11,7 @@ import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
 import { BranchSelectComponent, BranchSelectionResult } from '../branch-select/branch-select.component';
 import { branch } from 'src/app/interfaces/branch';
+import { NetworkService } from 'src/app/services/offline/network.service';
 
 @Component({
 	selector: 'app-login',
@@ -34,6 +35,7 @@ export class LoginPage implements OnInit {
 		private loadingController: LoadingController,
 		private modalController: ModalController,
 		private branchSvc: BranchService,
+		private networkSvc: NetworkService,
 
 	) {
 		this.credentials = new FormGroup({
@@ -94,11 +96,25 @@ export class LoginPage implements OnInit {
 				await loading.dismiss();
 			}
 		}).catch(async (err) => {
+			if (!err?.response && !(await this.networkSvc.refreshStatus())) {
+				const currentUser = await this.auth.getCurrentUser();
+
+				if (currentUser) {
+					const branchWasSelected = await this.resolveBranchSelection(currentUser);
+
+					if (branchWasSelected) {
+						await loading.dismiss();
+						this.router.navigateByUrl('/app/home');
+						return;
+					}
+				}
+			}
+
 			await loading.dismiss();
 
 			const alert = await this.alertController.create({
-				header: 'Login inválido',
-				message: 'verifique suas credenciais e tente novamente.',
+				header: 'Login indisponivel',
+				message: 'Sem conexao e sem sessao local valida. Conecte-se a internet para acessar.',
 				buttons: ['Fechar']
 			});
 

@@ -4,6 +4,8 @@ import { BehaviorSubject } from 'rxjs';
 import axios from 'axios';
 import { branch } from 'src/app/interfaces/branch';
 import { environment } from 'src/environments/environment';
+import { NetworkService } from '../offline/network.service';
+import { OfflineDatabaseService } from '../offline/offline-database.service';
 
 export type BranchPolicy = {
   defaultBranch: number | null;
@@ -23,7 +25,10 @@ export class BranchService {
   selectedBranch$ = this.selectedBranchSubject.asObservable();
   branches$ = this.branchesSubject.asObservable();
 
-  constructor() {
+  constructor(
+    private networkSvc: NetworkService,
+    private offlineDb: OfflineDatabaseService
+  ) {
     this.hydrateSelectedBranch();
   }
 
@@ -32,11 +37,28 @@ export class BranchService {
       return this.branchesSubject.value;
     }
 
-    const response = await axios.get(`${environment.url_api}/branches`, { withCredentials: true });
-    const branches = response.data?.data || [];
-    this.branchesSubject.next(branches);
+    if (!forceRefresh && !(await this.networkSvc.refreshStatus())) {
+      const localBranches = await this.offlineDb.queryRecords<branch>('branches');
+      this.branchesSubject.next(localBranches);
+      return localBranches;
+    }
 
-    return branches;
+    try {
+      const response = await axios.get(`${environment.url_api}/branches`, { withCredentials: true });
+      const branches = response.data?.data || [];
+      this.branchesSubject.next(branches);
+      await this.offlineDb.upsertRecords('branches', branches, (item) => `${item.CODEMPRESA}-${item.CODFILIAL}`);
+
+      return branches;
+    } catch (error: any) {
+      if (!error?.response) {
+        const localBranches = await this.offlineDb.queryRecords<branch>('branches');
+        this.branchesSubject.next(localBranches);
+        return localBranches;
+      }
+
+      throw error;
+    }
   }
 
   async updateDefaultBranch(defaultBranch: number, user?: any) {

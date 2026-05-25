@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { apiClient } from '../api/api-client';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject } from 'rxjs';
+import { NetworkService } from '../offline/network.service';
+import { OfflineDatabaseService } from '../offline/offline-database.service';
 
 export interface SystemConfig {
   id?: number;
@@ -54,11 +56,21 @@ export class ConfigService {
   private loadedFromApi = false;
   public config$ = this.configSubject.asObservable();
 
-  constructor() { }
+  constructor(
+    private networkSvc: NetworkService,
+    private offlineDb: OfflineDatabaseService
+  ) { }
 
   async getData(params_req = {}, force = false) {
     if (!force && this.loadedFromApi) {
       return { status: 200, data: { data: this.configSubject.value } };
+    }
+
+    if (!force && !(await this.networkSvc.refreshStatus())) {
+      const localConfig = await this.offlineDb.getRecord<SystemConfig>('configs', 'system');
+      const config = localConfig ? this.normalizeConfig(localConfig) : this.configSubject.value;
+      this.setConfig(config);
+      return { status: 200, data: { data: config, offline: true } };
     }
 
     return await apiClient
@@ -67,7 +79,17 @@ export class ConfigService {
         const config = this.normalizeConfig(response.data?.data || response.data);
         this.setConfig(config);
         this.loadedFromApi = true;
+        this.offlineDb.upsertRecords('configs', [{ ...config, key: 'system' }], 'key');
         return { ...response, data: { ...response.data, data: config } };
+      }).catch(async (error) => {
+        if (!error?.response) {
+          const localConfig = await this.offlineDb.getRecord<SystemConfig>('configs', 'system');
+          const config = localConfig ? this.normalizeConfig(localConfig) : this.configSubject.value;
+          this.setConfig(config);
+          return { status: 200, data: { data: config, offline: true } };
+        }
+
+        throw error;
       });
   }
 
@@ -84,6 +106,7 @@ export class ConfigService {
         const updated = this.normalizeConfig(response.data?.data || response.data || config);
         this.setConfig(updated);
         this.loadedFromApi = true;
+        this.offlineDb.upsertRecords('configs', [{ ...updated, key: 'system' }], 'key');
         return { ...response, data: { ...response.data, data: updated } };
       });
   }
@@ -97,6 +120,7 @@ export class ConfigService {
         if (syncedConfig) {
           this.setConfig(syncedConfig);
           this.loadedFromApi = true;
+          this.offlineDb.upsertRecords('configs', [{ ...syncedConfig, key: 'system' }], 'key');
           return { ...response, data: { ...response.data, data: syncedConfig } };
         }
 

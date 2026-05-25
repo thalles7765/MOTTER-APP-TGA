@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { BranchService } from '../branches/branch.service';
 import { app_user } from 'src/app/interfaces/app-user';
 import { NotificationService } from '../notifications/notification.service';
+import { NetworkService } from '../offline/network.service';
 
 const currentUserKey = 'current_user';
 
@@ -20,7 +21,8 @@ export class AuthService {
   constructor(
     private _router: Router,
     private branchSvc: BranchService,
-    private notificationSvc: NotificationService
+    private notificationSvc: NotificationService,
+    private networkSvc: NetworkService
   ) {
     this.hydrateCurrentUser();
   }
@@ -62,6 +64,10 @@ export class AuthService {
         return Boolean(true);
       }).catch(async (err) => {
         // console.log('56sa1d51as6d16as1d6a1s56d1sa6')
+        if (!err?.response && !(await this.networkSvc.refreshStatus())) {
+          return Boolean(await this.getCurrentUser());
+        }
+
         return false
       });
   }
