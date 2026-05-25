@@ -15,7 +15,7 @@ import { SellersComponent } from '../modals/sellers/sellers.component';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { BranchService } from 'src/app/services/branches/branch.service';
 
-type PermissionKey = 'admin' | 'clients' | 'products' | 'movements' | 'active';
+type PermissionKey = 'admin' | 'clients' | 'products' | 'movements' | 'edit_product' | 'edit_client' | 'active';
 type UserFilter = 'active' | 'inactive' | PermissionKey;
 
 @Component({
@@ -45,6 +45,8 @@ export class UserPermissionsPage implements OnInit {
     { key: 'clients', label: 'Clientes' },
     { key: 'products', label: 'Produtos' },
     { key: 'movements', label: 'Movimentos' },
+    { key: 'edit_product', label: 'Edita produtos' },
+    { key: 'edit_client', label: 'Edita clientes' },
   ];
 
   protected permissionOptions: { key: PermissionKey; label: string; description: string }[] = [
@@ -52,6 +54,8 @@ export class UserPermissionsPage implements OnInit {
     { key: 'clients', label: 'Clientes', description: 'Visualiza e gerencia clientes' },
     { key: 'products', label: 'Produtos', description: 'Consulta produtos e saldos' },
     { key: 'movements', label: 'Movimentos', description: 'Acesso a movimentos e pedidos' },
+    { key: 'edit_product', label: 'Editar produtos', description: 'Permite alterar dados cadastrais de produtos' },
+    { key: 'edit_client', label: 'Editar clientes', description: 'Permite alterar dados cadastrais de clientes' },
     { key: 'active', label: 'Usuário ativo', description: 'Permite login no aplicativo' },
   ];
 
@@ -433,6 +437,8 @@ export class UserPermissionsPage implements OnInit {
       clients: this.toBoolean(this.valueFromAliases(user, ['clients', 'CLIENTS'])),
       products: this.toBoolean(this.valueFromAliases(user, ['products', 'PRODUCTS'])),
       movements: this.toBoolean(this.valueFromAliases(user, ['movements', 'MOVEMENTS'])),
+      edit_product: this.toBoolean(this.valueFromAliases(user, ['edit_product', 'EDIT_PRODUCT', 'editProduct'])),
+      edit_client: this.toBoolean(this.valueFromAliases(user, ['edit_client', 'EDIT_CLIENT', 'editClient'])),
       active: this.toBoolean(this.valueFromAliases(user, ['active', 'ACTIVE'])),
       default_branch: this.valueFromAliases(user, ['default_branch', 'DEFAULT_BRANCH', 'defaultBranch']) || 1,
       select_branch: this.toBoolean(this.valueFromAliases(user, ['select_branch', 'SELECT_BRANCH', 'selectBranch'])),
@@ -560,7 +566,8 @@ export class UserPermissionsPage implements OnInit {
   }
 
   private toBoolean(value: any) {
-    return value === true || value === 1 || value === '1' || value === 'true';
+    const normalized = String(value ?? '').trim().toUpperCase();
+    return value === true || value === 1 || normalized === '1' || normalized === 'TRUE' || normalized === 'T' || normalized === 'S';
   }
 }
 

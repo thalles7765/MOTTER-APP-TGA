@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { business, location, pricetag } from 'ionicons/icons';
+import { business, chevronDown, chevronUp, location, pricetag } from 'ionicons/icons';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { branch } from 'src/app/interfaces/branch';
 import { AuthService } from 'src/app/services/auth/auth.service';
@@ -41,9 +41,10 @@ export class ProductPriceBranchesComponent implements OnInit {
 
   protected brand = brandConfig;
   protected isAdmin = false;
+  protected expandedPrices = new Set<string>();
 
   constructor(private modalCtrl: ModalController, private authSvc: AuthService) {
-    addIcons({ business, location, pricetag });
+    addIcons({ business, chevronDown, chevronUp, location, pricetag });
   }
 
   async ngOnInit() {
@@ -122,6 +123,25 @@ export class ProductPriceBranchesComponent implements OnInit {
     }
 
     return 'price-equal';
+  }
+
+  priceKey(price: ProductBranchPrice) {
+    return `${price.CODEMPRESA}-${price.CODFILIAL}`;
+  }
+
+  isExpanded(price: ProductBranchPrice) {
+    return this.expandedPrices.has(this.priceKey(price));
+  }
+
+  toggleExpanded(price: ProductBranchPrice) {
+    const key = this.priceKey(price);
+
+    if (this.expandedPrices.has(key)) {
+      this.expandedPrices.delete(key);
+      return;
+    }
+
+    this.expandedPrices.add(key);
   }
 
   cancel() {

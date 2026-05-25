@@ -11,6 +11,9 @@
     </ion-title>
 
     <ion-buttons slot="end">
+      @if (canEditClient() && !editing) {
+        <ion-button class="detail-close-button" fill="clear" (click)="startEdit()">Editar</ion-button>
+      }
       <ion-button class="detail-close-button" fill="clear" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -33,6 +36,92 @@
       <span>Conceito comercial</span>
       <strong>{{ client?.DESC_CONCEITO || 'Sem conceito' }}</strong>
     </section>
+
+    @if (editing) {
+      <section class="edit-card">
+        <div class="edit-title">
+          <h2>Editar cliente</h2>
+          <span>Filial {{ selectedBranch?.CODFILIAL || client?.CODFILIAL || 1 }}</span>
+        </div>
+
+        <label>
+          <span>Nome fantasia</span>
+          <input [(ngModel)]="form.NOMEFANTASIA" />
+        </label>
+
+        <label>
+          <span>Razao social</span>
+          <input [(ngModel)]="form.RAZAOSOCIAL" />
+        </label>
+
+        <div class="edit-grid">
+          <label>
+            <span>Telefone</span>
+            <input [(ngModel)]="form.TELEFONE" />
+          </label>
+          <label>
+            <span>Email</span>
+            <input [(ngModel)]="form.EMAIL" />
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label>
+            <span>Rua</span>
+            <input [(ngModel)]="form.RUA" />
+          </label>
+          <label>
+            <span>Numero</span>
+            <input [(ngModel)]="form.NUMERO" />
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label>
+            <span>Bairro</span>
+            <input [(ngModel)]="form.BAIRRO" />
+          </label>
+          <label>
+            <span>Cidade</span>
+            <input [(ngModel)]="form.CIDADE" />
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label>
+            <span>UF</span>
+            <input [(ngModel)]="form.ESTADO" maxlength="2" />
+          </label>
+          <label>
+            <span>CEP</span>
+            <input [(ngModel)]="form.CEP" />
+          </label>
+        </div>
+
+        @if (canEditSensitive()) {
+          <div class="sensitive-box">
+            <strong>Dados sensiveis</strong>
+            <div class="edit-grid">
+              <label>
+                <span>Limite credito</span>
+                <input type="number" [(ngModel)]="form.LIMITECREDITO" />
+              </label>
+              <label>
+                <span>Conceito</span>
+                <input [(ngModel)]="form.DESC_CONCEITO" />
+              </label>
+            </div>
+          </div>
+        }
+
+        <div class="edit-actions">
+          <button type="button" class="secondary-action" (click)="cancelEdit()" [disabled]="saving">Cancelar</button>
+          <button type="button" class="primary-action" (click)="saveClient()" [disabled]="saving">
+            {{ saving ? 'Salvando...' : 'Salvar cliente' }}
+          </button>
+        </div>
+      </section>
+    }
 
     <section class="money-grid">
       <div class="limit">

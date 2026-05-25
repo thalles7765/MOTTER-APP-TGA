@@ -9,6 +9,9 @@ export interface product {
     CODGRUPO: string;
     PRECO1: number;
     PRECO2: number;
+    PRECO3?: number;
+    PRECO4?: number;
+    PRECO5?: number;
     PRECO?: number;
     precos_filial?: {
         CODEMPRESA: number;

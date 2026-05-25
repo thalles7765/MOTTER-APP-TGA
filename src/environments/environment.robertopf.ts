@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   flavor: "robertopf",
+  pushNotificationsEnabled: false,
   appName: "Robertopf App",
   companyName: "Roberto Parafusos",
   companyFullName: "Roberto Parafusos",

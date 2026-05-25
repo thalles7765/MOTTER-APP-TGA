@@ -44,7 +44,7 @@ export const routes: Routes = [
   {
     path: 'app/config',
     loadComponent: () => import('./views/config/config.page').then(m => m.ConfigPage),
-    canActivate: [authenticationGuard]
+    canActivate: [adminGuard]
   },
   {
     path: 'app/user-permissions',

@@ -198,9 +198,9 @@ export class ClientsPage implements OnInit {
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
-    // if (role === 'confirm') {
-    //   this.message = `Hello, ${data}!`;
-    // }
+    if (role === 'saved' && data?.CODCFO) {
+      this.clients = this.clients.map((client) => client.CODCFO === data.CODCFO ? { ...client, ...data } : client);
+    }
   }
 
   async showLoading() {

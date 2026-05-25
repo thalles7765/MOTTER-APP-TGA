@@ -34,4 +34,37 @@ export class UtilsService {
         return data
       });
   }
+
+  async getCest(params_req = {}) {
+    return this.getLookup('/utils/cest', params_req);
+  }
+
+  async getFiscalClassifications(params_req = {}) {
+    return this.getLookup('/utils/fiscal-classifications', params_req);
+  }
+
+  async getGroups(params_req = {}) {
+    return this.getLookup('/utils/groups', params_req);
+  }
+
+  async getManufacturers(params_req = {}) {
+    return this.getLookup('/utils/manufacturers', params_req);
+  }
+
+  async getUnits(params_req = {}) {
+    return this.getLookup('/utils/units', params_req);
+  }
+
+  private async getLookup(path: string, params_req = {}) {
+    const params: any = { ...params_req };
+
+    if (params.search && !params.q) {
+      params.q = params.search;
+      params.value = params.search;
+    }
+
+    return await apiClient
+      .get(`${environment.url_api}${path}`, { params, withCredentials: true })
+      .then((data) => data);
+  }
 }

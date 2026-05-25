@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   flavor: "mercandressa",
+  pushNotificationsEnabled: false,
   appName: "Mercandressa App",
   companyName: "Mercandressa",
   companyFullName: "Mercandressa",

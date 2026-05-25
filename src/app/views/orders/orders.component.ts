@@ -622,7 +622,7 @@ export class OrdersComponent implements OnInit {
               fontSize: 8
             },
             {
-              text: 'NÂº Documento',
+              text: 'Nº Documento',
               fontSize: 8
             },
           ]

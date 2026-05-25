@@ -23,7 +23,7 @@ import {
 import { OrdersService } from 'src/app/services/orders/orders.service';
 import { SellersComponent } from '../modals/sellers/sellers.component';
 import { sellers } from 'src/app/interfaces/sellers';
-import { ConfigService } from 'src/app/services/config/config.service';
+import { ConfigService, SystemConfig } from 'src/app/services/config/config.service';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { app_user } from 'src/app/interfaces/app-user';
@@ -42,9 +42,10 @@ export class OrderNewComponent implements OnInit {
   @ViewChild('modalQtd', { static: true }) modalQtd!: IonModal;
   protected brand = brandConfig;
   protected isOpenModal: boolean = false;
-  protected typeModal = 1; //1 = QUANTIDADE; 2 = DESCONTO;
+  protected typeModal = 1; //1 = QUANTIDADE; 2 = DESCONTO; 3 = PRECO
   protected qtdOpt: boolean = false;
   private config;
+  protected systemConfig!: SystemConfig;
   private currentUser: app_user | null = null;
   protected selectedBranch: branch | null = null;
   protected order = {} as order;
@@ -82,6 +83,7 @@ export class OrderNewComponent implements OnInit {
       await this.cfgSvc.getData().then((data) => {
         if (data.status === 200) {
           this.config = data.data.data;
+          this.systemConfig = data.data.data;
         }
       })
 
@@ -232,7 +234,7 @@ export class OrderNewComponent implements OnInit {
   }
 
   private normalizeOrderItem(item: any, nseq: number) {
-    const unitPrice = Number(item.PRECOUNITARIO ?? item.PRECO2 ?? item.VALORUNITARIO ?? item.PRECOBASE ?? 0);
+    const unitPrice = Number(item.PRECOUNITARIO ?? item.PRECO2 ?? item.VALORUNITARIO ?? item.PRECOBASE ?? this.priceForMovement(item));
     const quantity = Number(item.QUANTIDADE || 1);
     const total = Number(item.VALORTOTALITEM ?? (quantity * unitPrice));
 
@@ -288,14 +290,13 @@ export class OrderNewComponent implements OnInit {
   }
 
   incrementQtd(xProduct, qtd: any = 1, type = 2) {
-    if (!qtd)
-      qtd = 1
+    const quantity = this.normalizeDecimalInput(qtd, 1);
 
     if (type === 1) {
-      this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE = qtd;
+      this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE = quantity;
       this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].VALORTOTALITEM = this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE * this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].PRECO2;
     } else {
-      this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE += qtd;
+      this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE += quantity;
       this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].VALORTOTALITEM = this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].QUANTIDADE * this.order.ITEMS[this.order.ITEMS.indexOf(xProduct)].PRECO2;
     }
 
@@ -303,22 +304,33 @@ export class OrderNewComponent implements OnInit {
   }
 
   incrementDiscount(valueDesc: any = 0, increment = 1) {
+    const discountValue = this.normalizeDecimalInput(valueDesc, 0);
 
     if (increment === 1) {
-      if (((valueDesc / this.order.VALORBRUTO) * 100) > this.order.MOVIMENTO.DESCMAXIMOMOV) {
+      const percent = this.order.VALORBRUTO > 0 ? (discountValue / this.order.VALORBRUTO) * 100 : 0;
+
+      if (percent > this.order.MOVIMENTO.DESCMAXIMOMOV) {
         this.showToast('top', 'Desconto maior que permitido!', 'warning');
         return
       }
 
-      this.order.VALORDESC = Number(valueDesc)
-      this.order.PERCENTUALDESC = (valueDesc / this.order.VALORBRUTO) * 100;
+      this.order.VALORDESC = discountValue;
+      this.order.PERCENTUALDESC = percent;
+    } else if (increment === 2) {
+      if (this.order.PERCENTUALDESC + discountValue > this.order.MOVIMENTO.DESCMAXIMOMOV) {
+        this.showToast('top', 'Desconto maior que permitido!', 'warning');
+        return
+      }
+
+      this.order.PERCENTUALDESC += discountValue;
+      this.order.VALORDESC = this.order.VALORBRUTO * (this.order.PERCENTUALDESC / 100);
     } else {
-      if (this.order.PERCENTUALDESC + Number(valueDesc) > this.order.MOVIMENTO.DESCMAXIMOMOV) {
+      if (discountValue > this.order.MOVIMENTO.DESCMAXIMOMOV) {
         this.showToast('top', 'Desconto maior que permitido!', 'warning');
         return
       }
 
-      this.order.PERCENTUALDESC += Number(valueDesc);
+      this.order.PERCENTUALDESC = discountValue;
       this.order.VALORDESC = this.order.VALORBRUTO * (this.order.PERCENTUALDESC / 100);
     }
 
@@ -363,7 +375,16 @@ export class OrderNewComponent implements OnInit {
     }
 
     const nextNseq = this.nextItemSequence();
-    const newItem = this.normalizeOrderItem({ ...xProduct, QUANTIDADE: 1 }, nextNseq);
+    const movementPrice = this.priceForMovement(xProduct);
+    const newItem = this.normalizeOrderItem({
+      ...xProduct,
+      QUANTIDADE: 1,
+      PRECO2: movementPrice,
+      PRECOUNITARIO: movementPrice,
+      VALORUNITARIO: movementPrice,
+      PRECOBASE: movementPrice,
+      PRECOTABELA: movementPrice,
+    }, nextNseq);
     this.order.ITEMS.push(newItem);
     this.showToast('bottom', 'Produto adicionado!');
 
@@ -499,7 +520,10 @@ export class OrderNewComponent implements OnInit {
   async openAddProduct() {
     const modal = await this.modalCtrl.create({
       component: ProductsPage,
-      componentProps: { status_modal: 1 }
+      componentProps: {
+        status_modal: 1,
+        priceNumberOverride: this.movementPriceNumber(),
+      }
     });
 
     modal.present();
@@ -520,6 +544,11 @@ export class OrderNewComponent implements OnInit {
   async openModalQtdDesc(xProduct: order_item | null, typeModal = 1) {
     this.typeModal = typeModal;
 
+    if (typeModal === 3 && !this.canEditProductPrice()) {
+      this.showToast('top', 'Este movimento nao permite edicao de preco.', 'warning');
+      return;
+    }
+
     if (typeModal === 2 && this.order.VALORLIQUIDO <= 0) {
       this.showToast('top', 'Valor do movimento inválido para desconto!', 'warning');
       return
@@ -527,7 +556,7 @@ export class OrderNewComponent implements OnInit {
 
     this.isOpenModal = !this.isOpenModal;
 
-    if (typeModal === 1) {
+    if (typeModal === 1 || typeModal === 3) {
       this.product_selected = xProduct;
     }
 
@@ -579,6 +608,7 @@ export class OrderNewComponent implements OnInit {
       if (data?.CODTIPOMOV) {
         this.order.CODTMV = data.CODTIPOMOV;
         this.order.MOVIMENTO = data;
+        this.applyMovementPriceToItems();
       }
       if (data?.CODCONDPGTO) {
         this.order.CODCPG = data.CODCONDPGTO;
@@ -594,6 +624,97 @@ export class OrderNewComponent implements OnInit {
 
   confirm() {
     return this.modalCtrl.dismiss(null, 'confirm');
+  }
+
+  protected canEditProductPrice() {
+    const value = this.order?.MOVIMENTO?.EDICAOPRECO ?? (this.order?.MOVIMENTO as any)?.edicaopreco;
+    const normalized = String(value ?? '').trim().toUpperCase();
+    return value === true || value === 1 || normalized === '1' || normalized === 'T' || normalized === 'S' || normalized === 'TRUE';
+  }
+
+  protected updateProductPrice(value: any) {
+    if (!this.product_selected) {
+      return;
+    }
+
+    const price = this.normalizeDecimalInput(value, 0);
+    this.product_selected.PRECO2 = price;
+    this.product_selected.PRECOUNITARIO = price;
+    this.product_selected.VALORUNITARIO = price;
+    this.product_selected.PRECOBASE = price;
+    this.product_selected.PRECOTABELA = price;
+    this.product_selected.VALORTOTALITEM = Number(this.product_selected.QUANTIDADE || 0) * price;
+    this.recalcValueTotal(this.order.ITEMS);
+  }
+
+  protected sanitizeDecimalInput(event: any) {
+    const input = event?.target;
+
+    if (!input) {
+      return;
+    }
+
+    const sanitized = this.decimalInputText(input.value);
+
+    if (input.value !== sanitized) {
+      input.value = sanitized;
+    }
+  }
+
+  protected formatDecimalInput(value: any, fractionDigits = 4) {
+    const numberValue = Number(value || 0);
+    return Number.isFinite(numberValue)
+      ? numberValue.toFixed(fractionDigits).replace('.', ',')
+      : '';
+  }
+
+  private normalizeDecimalInput(value: any, fallback = 0) {
+    const sanitized = this.decimalInputText(value);
+    const normalized = sanitized.replace(',', '.');
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  private decimalInputText(value: any) {
+    const raw = String(value ?? '').replace(/\./g, ',');
+    const onlyAllowed = raw.replace(/[^\d,]/g, '');
+    const parts = onlyAllowed.split(',');
+    const integerPart = parts.shift() || '';
+    const decimalPart = parts.join('');
+    return decimalPart ? `${integerPart},${decimalPart}` : integerPart;
+  }
+
+  private priceForMovement(product: any) {
+    const movementPrice = this.movementPriceNumber();
+    const priceNumber = movementPrice >= 1 && movementPrice <= 5 ? movementPrice : this.cfgSvc.priceNumber(this.systemConfig);
+    return this.cfgSvc.priceFromProduct(product, priceNumber);
+  }
+
+  private movementPriceNumber() {
+    const value = String(this.order?.MOVIMENTO?.QUALPRECO ?? (this.order?.MOVIMENTO as any)?.qualpreco ?? '').trim();
+    const priceNumber = Number(value);
+    return priceNumber >= 1 && priceNumber <= 5 ? priceNumber : 0;
+  }
+
+  private applyMovementPriceToItems() {
+    if (!this.order.ITEMS?.length) {
+      return;
+    }
+
+    this.order.ITEMS = this.order.ITEMS.map((item) => {
+      const price = this.priceForMovement(item);
+      return {
+        ...item,
+        PRECO2: price,
+        PRECOUNITARIO: price,
+        VALORUNITARIO: price,
+        PRECOBASE: price,
+        PRECOTABELA: price,
+        VALORTOTALITEM: Number(item.QUANTIDADE || 0) * price,
+      } as order_item;
+    });
+
+    this.recalcValueTotal(this.order.ITEMS);
   }
 
 }

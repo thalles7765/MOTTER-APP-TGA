@@ -4,110 +4,96 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <div class="d-flex flex-row align-items-center gap-1 p-2">
-      <img [src]="brand.assets.favicon" height="60px" alt="" />
-
-      <ion-title> Configurações </ion-title>
+    <div class="config-toolbar">
+      <img [src]="brand.assets.favicon" alt="" />
+      <ion-title>Configuracoes</ion-title>
     </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="d-flex flex-column align-items-center p-3 gap-3">
-    <div
-      class="d-flex p-2 shadow-sm rounded align-items-center flex-row w-100 gap-3"
-      style="background-color: whitesmoke"
-    >
-      <!-- <img
-        style="
-          border-radius: 50%;
-          justify-content: center;
-          border: 2px #f1622b solid;
-          padding: 2px;
-        "
-        [src]="brand.assets.menuLogo"
-        height="65px"
-        alt=""
-      /> -->
-
-      <div class="d-flex flex-column w-100 gap-2">
-        <p class="mb-1 w-100 text-center p-2">Defina os parâmetros</p>
-
-        <ion-input
-          fill="solid"
-          label=""
-          labelPlacement="floating"
-          helperText="Movimento padrão do pedido"          
-          value="2.1.01"
-          [readonly]="true"
-        ></ion-input>
-
-        <ion-input
-          fill="solid"
-          label=""
-          labelPlacement="floating"
-          helperText="Código / Nome Vendedor"
-          ngModel
-          value="{{xConfig?.codven}} / {{xConfig?.fullName}}"
-          [readonly]="true"
-        ></ion-input>
-
-        <ion-input
-          fill="solid"
-          label=""
-          labelPlacement="floating"
-          helperText="E-mail"
-          errorText="Invalid email"
-          ngModel
-          [value]="xConfig?.email? xConfig?.email : xConfig?.vendedor?.EMAIL"
-          [readonly]="true"
-        ></ion-input>
-
-        <ion-input
-          fill="solid"
-          label=""
-          labelPlacement="floating"
-          helperText="Telefone"
-          ngModel
-          [value]="xConfig?.vendedor?.TELVEND1 || 'N/A'"
-          [readonly]="true"
-        ></ion-input>        
-
-        <ion-input
-          fill="solid"
-          label=""
-          labelPlacement="floating"
-          helperText="Visualiza todos movimentos"
-          value="Sim"        
-          [readonly]="true"
-        ></ion-input>
-
-        <br />
-
-        <!-- <p class="mb-1 fw-bold small">teste</p>
-        <p class="mb-0 text-gray small">teste</p> -->
-
-        <!-- <p class="mb-2 text-gray small">
-          Últ. Compra: <b>{{xClient.DATAULTMOVIMENTO | date: 'dd/MM/yyyy'}}</b>
-        </p> -->
-
-        <!-- <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="w-50 rounded shadow-sm p-1 d-flex flex-column">
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-success"
-            >
-              <b>À vencer</b>
-            </p>
-            <p
-              style="font-size: 0.7rem"
-              class="w-100 text-center mb-0 text-black"
-            >
-              <b>{{ 0 | currency: 'BRL'}}</b>
-            </p>
-          </div>
-        </div> -->
+  <main class="config-shell">
+    <section class="config-hero">
+      <div>
+        <span>Parametros do sistema</span>
+        <h1>Precos e saldos do aplicativo</h1>
       </div>
-    </div>
-  </div>
+
+      @if (loading) {
+        <ion-spinner name="crescent"></ion-spinner>
+      }
+    </section>
+
+    @if (config) {
+      <section class="config-card">
+        <div class="section-title">
+          <h2>Preco padrao</h2>
+          <p>Define qual preco sera usado nas consultas e como base dos movimentos.</p>
+        </div>
+
+        <ion-item lines="none" class="config-field">
+          <ion-select
+            label="Preco default"
+            labelPlacement="stacked"
+            interface="popover"
+            [(ngModel)]="config.precoDefault"
+          >
+            @for (option of enabledPriceOptions(); track option.value) {
+              <ion-select-option [value]="option.value">
+                {{ priceOptionLabel(option) }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <div class="price-grid">
+          @for (option of priceOptions; track option.value) {
+            <div class="price-config">
+              <ion-item lines="none" class="config-field">
+                <ion-input
+                  [label]="'Descricao preco ' + option.value"
+                  labelPlacement="stacked"
+                  [(ngModel)]="$any(config)[option.descKey]"
+                ></ion-input>
+              </ion-item>
+
+              <ion-item lines="none" class="toggle-field">
+                <ion-toggle [(ngModel)]="$any(config)[option.enabledKey]">
+                  Habilitado
+                </ion-toggle>
+              </ion-item>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="config-card">
+        <div class="section-title">
+          <h2>Filiais</h2>
+          <p>Controla a visualizacao de preco e saldo por filial no app.</p>
+        </div>
+
+        <ion-item lines="none" class="toggle-field">
+          <ion-toggle [(ngModel)]="config.habilitaPrecofilial">
+            Habilitar preco por filial
+          </ion-toggle>
+        </ion-item>
+
+        <ion-item lines="none" class="toggle-field">
+          <ion-toggle [(ngModel)]="config.habilitaSaldofilial">
+            Habilitar saldo por filial
+          </ion-toggle>
+        </ion-item>
+      </section>
+
+      <section class="actions">
+        <ion-button fill="outline" color="secondary" [disabled]="saving || loading" (click)="syncConfig()">
+          Buscar config do sistema
+        </ion-button>
+        <ion-button color="primary" [disabled]="saving || loading" (click)="saveConfig()">
+          {{ saving ? 'Salvando...' : 'Salvar configuracoes' }}
+        </ion-button>
+      </section>
+    }
+  </main>
 </ion-content>

@@ -23,14 +23,14 @@
 
 .price-list {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.55rem;
   padding: 0.75rem;
 }
 
 .price-card {
   border: 1px solid var(--app-soft-border);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.65rem;
   background: var(--app-card-bg);
   color: var(--app-card-text);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
@@ -44,8 +44,8 @@
 .price-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.6rem;
 
   .branch-label {
     margin: 0;
@@ -58,26 +58,27 @@
   h3 {
     margin: 0.2rem 0 0;
     color: var(--app-card-text);
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 800;
+    line-height: 1.18;
   }
 }
 
 .price-badge {
   flex: 0 0 auto;
-  padding: 0.35rem 0.5rem;
+  padding: 0.34rem 0.48rem;
   border-radius: 8px;
   color: #ffffff;
   background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .price-info {
   display: grid;
-  gap: 0.3rem;
-  margin-top: 0.75rem;
+  gap: 0.24rem;
+  margin-top: 0.5rem;
 
   p {
     display: flex;
@@ -85,7 +86,8 @@
     gap: 0.4rem;
     margin: 0;
     color: var(--app-muted-text);
-    font-size: 0.76rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
   }
 
   ion-icon {
@@ -94,16 +96,57 @@
   }
 }
 
+.details-toggle {
+  width: 100%;
+  min-height: 32px;
+  margin: 0.45rem 0 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: var(--ion-color-primary);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: none;
+}
+
+.expanded-details {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--app-soft-border);
+}
+
+.detail-line {
+  display: grid;
+  gap: 0.16rem;
+  padding: 0.48rem;
+  border: 1px solid var(--app-soft-border);
+  border-radius: 8px;
+  background: var(--app-soft-bg);
+
+  span {
+    color: var(--app-muted-text);
+    font-size: 0.58rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: var(--app-card-text);
+    font-size: 0.72rem;
+    line-height: 1.22;
+  }
+}
+
 .price-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin-top: 0.75rem;
+  gap: 0.38rem;
 
   div {
     display: grid;
     gap: 0.15rem;
-    padding: 0.45rem;
+    padding: 0.42rem;
     border: 1px solid var(--app-soft-border);
     border-radius: 8px;
     background: var(--app-soft-bg);
@@ -118,18 +161,37 @@
   strong {
     color: var(--app-card-text);
     font-size: 0.72rem;
+    line-height: 1.18;
+  }
+}
+
+.admin-details {
+  display: grid;
+  gap: 0.4rem;
+
+  p {
+    margin: 0;
+    color: var(--ion-color-primary);
+    font-size: 0.64rem;
+    font-weight: 900;
+    text-transform: uppercase;
   }
 }
 
 .difference {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding: 0.55rem;
+  margin-top: 0.5rem;
+  padding: 0.42rem 0.48rem;
   border-radius: 8px;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 900;
+}
+
+.difference.compact {
+  margin-top: 0.55rem;
 }
 
 .difference span {

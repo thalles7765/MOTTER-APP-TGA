@@ -21,4 +21,10 @@ export class ClientService {
       });
   }
 
+  async updateClient(codcfo: string, payload: any) {
+    return await apiClient
+      .put(`${environment.url_api}/clients/${encodeURIComponent(codcfo)}`, payload, { withCredentials: true })
+      .then((data) => data);
+  }
+
 }

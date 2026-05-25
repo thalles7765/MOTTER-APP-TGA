@@ -21,4 +21,10 @@ export class ProductService {
       });
   }
 
+  async updateProduct(codprd: string, payload: any) {
+    return await apiClient
+      .put(`${environment.url_api}/products/${encodeURIComponent(codprd)}`, payload, { withCredentials: true })
+      .then((data) => data);
+  }
+
 }

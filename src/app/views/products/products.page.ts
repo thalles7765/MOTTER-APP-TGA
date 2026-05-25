@@ -12,6 +12,7 @@ import { branch } from 'src/app/interfaces/branch';
 import { ProductStockBranchesComponent } from '../product-stock-branches/product-stock-branches.component';
 import { Preferences } from '@capacitor/preferences';
 import { ProductPriceBranchesComponent } from '../product-price-branches/product-price-branches.component';
+import { ConfigService, ProductPriceOption, SystemConfig } from 'src/app/services/config/config.service';
 
 type ProductStock = {
   CODEMPRESA: number;
@@ -57,6 +58,7 @@ const productSearchModeKey = 'products_search_mode';
 })
 export class ProductsPage implements OnInit {
   @Input() status_modal = 0;
+  @Input() priceNumberOverride: number | string | null = null;
 
   private productSvc = inject(ProductService);
 
@@ -65,6 +67,7 @@ export class ProductsPage implements OnInit {
   protected branches: branch[] = [];
   protected selectedBranch: branch | null = null;
   protected canSelectBranch = false;
+  protected systemConfig!: SystemConfig;
   protected searchText = '';
   protected searchMode: SearchMode = 'contains';
   protected showFilters = false;
@@ -83,9 +86,12 @@ export class ProductsPage implements OnInit {
     { key: 'withoutPromotion', label: 'S/ Promoção' },
   ];
 
-  constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController, private branchSvc: BranchService) { }
+  constructor(private loadingController: LoadingController, private alertController: AlertController, private _route: Router, private modalCtrl: ModalController, private branchSvc: BranchService, private configSvc: ConfigService) { }
 
   async ngOnInit() {
+    this.systemConfig = this.configSvc.currentConfig();
+    this.configSvc.config$.subscribe((config) => this.systemConfig = config);
+    await this.loadSystemConfig();
     await this.loadSavedSearchMode();
     await this.loadBranchContext();
     await this.getProdutcts();
@@ -241,13 +247,13 @@ export class ProductsPage implements OnInit {
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
-    // if (role === 'confirm') {
-    //   this.message = `Hello, ${data}!`;
-    // }
+    if (role === 'saved' && data?.CODPRD) {
+      this.products = this.products.map((product) => product.CODPRD === data.CODPRD ? { ...product, ...data } : product);
+    }
   }
 
   selectedBranchStock(product: any) {
-    if (!this.selectedBranch) {
+    if (!this.systemConfig?.habilitaSaldofilial || !this.selectedBranch) {
       return null;
     }
 
@@ -258,6 +264,10 @@ export class ProductsPage implements OnInit {
   }
 
   selectedBranchBalance(product: any) {
+    if (!this.systemConfig?.habilitaSaldofilial) {
+      return Number(product?.SALDOGERALFISICO ?? product?.SALDOGERALFISICO1 ?? product?.SALDOFISICO1 ?? 0);
+    }
+
     return this.selectedBranchStock(product)?.SALDOFISICO1 || 0;
   }
 
@@ -266,7 +276,7 @@ export class ProductsPage implements OnInit {
   }
 
   hasOtherBranchBalance(product: any) {
-    if (!this.canSelectBranch || !this.selectedBranch) {
+    if (!this.systemConfig?.habilitaSaldofilial || !this.canSelectBranch || !this.selectedBranch) {
       return false;
     }
 
@@ -280,7 +290,7 @@ export class ProductsPage implements OnInit {
   async openStockBranches(product: any, event?: Event) {
     event?.stopPropagation();
 
-    if (!this.canSelectBranch || this.productStocks(product).length <= 0) {
+    if (!this.systemConfig?.habilitaSaldofilial || !this.canSelectBranch || this.productStocks(product).length <= 0) {
       return;
     }
 
@@ -296,13 +306,28 @@ export class ProductsPage implements OnInit {
   }
 
   effectivePrice(product: any) {
-    const selectedPrice = this.selectedBranchPrice(product);
+    return this.effectivePriceInfo(product).valor;
+  }
+
+  effectivePriceLabel(product: any) {
+    return this.effectivePriceInfo(product).descricao || this.configSvc.priceDescription(this.displayPriceNumber());
+  }
+
+  effectivePriceInfo(product: any): ProductPriceOption {
+    const selectedPrice = this.systemConfig?.habilitaPrecofilial ? this.selectedBranchPrice(product) : null;
 
     if (selectedPrice && selectedPrice.PRECO !== undefined && selectedPrice.PRECO !== null) {
-      return Number(selectedPrice.PRECO || 0);
+      return {
+        codigo: this.displayPriceNumber(),
+        campo: 'PRECO_FILIAL',
+        descricao: this.configSvc.priceDescription(this.displayPriceNumber(), this.systemConfig),
+        valor: Number(selectedPrice.PRECO || 0),
+        default: true,
+      };
     }
 
-    return Number(product?.PRECO2 || product?.PRECO || 0);
+    const override = this.displayPriceOverride();
+    return this.configSvc.priceInfoFromProduct(product, override || this.configSvc.priceNumber(this.systemConfig));
   }
 
   hasBranchPrices(product: any) {
@@ -364,19 +389,20 @@ export class ProductsPage implements OnInit {
   }
 
   private productWithBranchPrice(product: any) {
-    const selectedPrice = this.selectedBranchPrice(product);
-
-    if (!selectedPrice) {
-      return product;
-    }
+    const priceInfo = this.effectivePriceInfo(product);
+    const defaultPrice = priceInfo.valor;
 
     return {
       ...product,
-      PRECO2: selectedPrice.PRECO ?? product.PRECO2,
-      PRECO: selectedPrice.PRECO ?? product.PRECO,
-      CUSTOUNITARIO: selectedPrice.CUSTOUNITARIO ?? product.CUSTOUNITARIO,
-      CUSTOMEDIO: selectedPrice.CUSTOMEDIO ?? product.CUSTOMEDIO,
-      PRECO_FILIAL: selectedPrice,
+      PRECO2: defaultPrice,
+      PRECO: defaultPrice,
+      PRECOUNITARIO: defaultPrice,
+      VALORUNITARIO: defaultPrice,
+      PRECOBASE: defaultPrice,
+      PRECOTABELA: defaultPrice,
+      PRECO_TABELA_APP: defaultPrice,
+      QUALPRECO_APP: priceInfo.codigo,
+      DESCPRECO_APP: priceInfo.descricao,
     };
   }
 
@@ -404,6 +430,29 @@ export class ProductsPage implements OnInit {
     const hasPrice = this.effectivePrice(product) > 0;
 
     return (withPrice && hasPrice) || (withoutPrice && !hasPrice);
+  }
+
+  private displayPriceOverride() {
+    const override = Number(this.priceNumberOverride || 0);
+
+    if (this.status_modal === 1 && override >= 1 && override <= 5) {
+      return override;
+    }
+
+    return null;
+  }
+
+  private displayPriceNumber() {
+    return this.displayPriceOverride() || this.configSvc.priceNumber(this.systemConfig);
+  }
+
+  private async loadSystemConfig() {
+    try {
+      const response = await this.configSvc.getData();
+      this.systemConfig = response.data.data;
+    } catch {
+      this.systemConfig = this.configSvc.currentConfig();
+    }
   }
 
   private matchesPromotionFilters(product: any) {

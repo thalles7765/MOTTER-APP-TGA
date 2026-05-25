@@ -1,0 +1,52 @@
+<ion-header [translucent]="true" class="lookup-header">
+  <ion-toolbar>
+    <div class="lookup-title">
+      <span class="lookup-logo">
+        <img [src]="brand.assets.favicon" alt="" />
+      </span>
+      <div>
+        <small>Selecionar</small>
+        <ion-title>{{ title }}</ion-title>
+      </div>
+    </div>
+
+    <ion-buttons slot="end">
+      <ion-button class="close-button" (click)="cancel()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="lookup-search">
+    <ion-searchbar
+      [(ngModel)]="searchText"
+      animated="true"
+      placeholder="Pesquisar"
+      show-clear-button="always"
+      (keyup.enter)="search()"
+    ></ion-searchbar>
+    <button type="button" class="search-action" (click)="search()" aria-label="Pesquisar"></button>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="lookup-content">
+  <div class="lookup-list">
+    @if (items.length <= 0 && !loading) {
+      <div class="lookup-empty">
+        <img src="../../../../assets/icon/produto.png" alt="" />
+        <p>Nenhum registro encontrado.</p>
+      </div>
+    }
+
+    @for (item of items; track itemCode(item) || $index) {
+      <article class="lookup-card">
+        <div class="lookup-badge">{{ itemCode(item) || 'N/A' }}</div>
+        <div class="lookup-info">
+          <strong>{{ itemTitle(item) }}</strong>
+          @if (itemSubtitle(item)) {
+            <small>{{ itemSubtitle(item) }}</small>
+          }
+        </div>
+        <button type="button" class="select-action" (click)="confirm(item)">Selecionar</button>
+      </article>
+    }
+  </div>
+</ion-content>

@@ -13,6 +13,8 @@ export interface app_user {
   clients: boolean;
   products: boolean;
   movements: boolean;
+  edit_client?: boolean;
+  edit_product?: boolean;
   active: boolean;
   default_branch?: number;
   select_branch?: boolean;

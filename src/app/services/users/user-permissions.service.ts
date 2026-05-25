@@ -9,6 +9,8 @@ export type UserPermissionsPayload = {
   clients: boolean;
   products: boolean;
   movements: boolean;
+  edit_product: boolean;
+  edit_client: boolean;
   active: boolean;
 };
 
@@ -53,6 +55,8 @@ export class UserPermissionsService {
       clients: Boolean(user.clients),
       products: Boolean(user.products),
       movements: Boolean(user.movements),
+      edit_product: Boolean(user.edit_product),
+      edit_client: Boolean(user.edit_client),
       active: Boolean(user.active),
     };
   }

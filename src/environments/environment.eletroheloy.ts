@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   flavor: "eletroheloy",
+  pushNotificationsEnabled: false,
   appName: "Eletro Heloy App",
   companyName: "Eletro Heloy",
   companyFullName: "Eletro Heloy",

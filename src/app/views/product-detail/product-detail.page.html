@@ -6,6 +6,9 @@
     </div>
 
     <ion-buttons slot="end">
+      @if (canEditProduct() && !editing) {
+        <ion-button color="primary" (click)="startEdit()">Editar</ion-button>
+      }
       <ion-button color="medium" (click)="cancel()">Fechar</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -26,15 +29,141 @@
       </div>
     </section>
 
+    @if (editing) {
+      <section class="edit-card">
+        <div class="section-title">
+          <h2>Editar produto</h2>
+          <span>Filial {{ selectedBranch?.CODFILIAL || product?.CODFILIAL || 1 }}</span>
+        </div>
+
+        <label>
+          <span>Descricao</span>
+          <input [(ngModel)]="form.NOMEFANTASIA" />
+        </label>
+
+        <div class="edit-grid">
+          <label>
+            <span>Codigo barras</span>
+            <input [(ngModel)]="form.CODBARRAS" />
+          </label>
+          <label class="lookup-field">
+            <span>Unidade</span>
+            <div>
+              <input [(ngModel)]="form.UNIDADE" (keyup.enter)="resolveProductLookup('units', form.UNIDADE)" />
+              <button type="button" (click)="openProductLookup('units', form.UNIDADE)">Buscar</button>
+            </div>
+            @if (form.UNIDADE_DESC) {
+              <small>{{ form.UNIDADE_DESC }}</small>
+            }
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label class="lookup-field">
+            <span>Grupo</span>
+            <div>
+              <input [(ngModel)]="form.DESC_GRUPO" (keyup.enter)="resolveProductLookup('groups', form.DESC_GRUPO)" />
+              <button type="button" (click)="openProductLookup('groups', form.DESC_GRUPO)">Buscar</button>
+            </div>
+            @if (form.CODGRUPO) {
+              <small>{{ form.CODGRUPO }} - {{ form.DESC_GRUPO }}</small>
+            }
+          </label>
+          <label class="lookup-field">
+            <span>Fabricante</span>
+            <div>
+              <input [(ngModel)]="form.DESC_FABRICANTE" (keyup.enter)="resolveProductLookup('manufacturers', form.DESC_FABRICANTE)" />
+              <button type="button" (click)="openProductLookup('manufacturers', form.DESC_FABRICANTE)">Buscar</button>
+            </div>
+            @if (form.CODFAB) {
+              <small>{{ form.CODFAB }} - {{ form.DESC_FABRICANTE }}</small>
+            }
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label>
+            <span>Deposito</span>
+            <input [(ngModel)]="form.DEPOSITO" />
+          </label>
+          <label>
+            <span>Prateleira</span>
+            <input [(ngModel)]="form.PRATELEIRA" />
+          </label>
+        </div>
+
+        <div class="edit-grid">
+          <label class="lookup-field">
+            <span>NCM</span>
+            <div>
+              <input [(ngModel)]="form.CODCLAS" (keyup.enter)="resolveProductLookup('fiscal-classifications', form.CODCLAS)" />
+              <button type="button" (click)="openProductLookup('fiscal-classifications', form.CODCLAS)">Buscar</button>
+            </div>
+            @if (form.DESC_NCM) {
+              <small>{{ form.CODCLAS }} - {{ form.DESC_NCM }}</small>
+            }
+          </label>
+          <label class="lookup-field">
+            <span>CEST</span>
+            <div>
+              <input [(ngModel)]="form.CEST" (keyup.enter)="resolveProductLookup('cest', form.CEST)" />
+              <button type="button" (click)="openProductLookup('cest', form.CEST)">Buscar</button>
+            </div>
+            @if (form.DESC_CEST) {
+              <small>{{ form.CEST }} - {{ form.DESC_CEST }}</small>
+            }
+          </label>
+        </div>
+
+        @if (canEditSensitive()) {
+          <div class="sensitive-box">
+            <strong>Precos e custos</strong>
+
+            <div class="edit-grid">
+              <label>
+                <span>Custo unitario</span>
+                <input type="number" [(ngModel)]="form.CUSTOUNITARIO" />
+              </label>
+              <label>
+                <span>Custo medio</span>
+                <input type="number" [(ngModel)]="form.CUSTOMEDIO" />
+              </label>
+            </div>
+
+            @if (systemConfig.habilitaPrecofilial && selectedBranchPrice()) {
+              <label>
+                <span>Preco filial selecionada</span>
+                <input type="number" [(ngModel)]="form.PRECO_FILIAL" />
+              </label>
+            }
+
+            <div class="edit-price-list">
+              @for (price of form.precos; track price.campo) {
+                <label>
+                  <span>{{ price.descricao }}</span>
+                  <input type="number" [(ngModel)]="price.valor" />
+                </label>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="edit-actions">
+          <button type="button" class="secondary-action" (click)="cancelEdit()" [disabled]="saving">Cancelar</button>
+          <button type="button" class="primary-action" (click)="saveProduct()" [disabled]="saving">
+            {{ saving ? 'Salvando...' : 'Salvar produto' }}
+          </button>
+        </div>
+      </section>
+    }
+
     <section class="money-grid">
       <button
         type="button"
         class="price-box"
-        [class.has-branch-prices]="hasBranchPrices()"
         (pointerdown)="$event.stopPropagation()"
-        (click)="openPriceBranches($event)"
       >
-        <span>Preco venda</span>
+        <span>{{ effectivePriceLabel() }}</span>
         <strong>{{ effectivePrice() | currency : 'BRL' }}</strong>
       </button>
       <button
@@ -53,6 +182,39 @@
       </button>
     </section>
 
+    <section class="price-list-card">
+      <div class="section-title">
+        <h2>{{ branchPriceListTitle() }}</h2>
+        <span>{{ branchPriceListCount() }} opcoes</span>
+      </div>
+
+      @if (shouldShowBranchPriceList()) {
+        <div class="price-chip-grid branch-price-grid">
+          @for (price of branchPriceList(); track price.CODEMPRESA + '-' + price.CODFILIAL) {
+            <button
+              type="button"
+              class="price-option branch-price-option"
+              [class.default]="selectedBranchPrice()?.CODEMPRESA === price.CODEMPRESA && selectedBranchPrice()?.CODFILIAL === price.CODFILIAL"
+              (click)="openPriceBranches($event)"
+            >
+              <span>{{ branchPriceDescription(price) }}</span>
+              <strong>{{ branchPriceName(price) }}</strong>
+              <b>{{ price.PRECO || 0 | currency : 'BRL' }}</b>
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="price-chip-grid">
+          @for (price of productPriceOptions(); track price.campo) {
+            <div class="price-option" [class.default]="price.default">
+              <span>{{ price.descricao }}</span>
+              <strong>{{ price.valor | currency : 'BRL' }}</strong>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
     <section class="tag-row">
       @if (curveLetter() !== '-') {
         <span class="curve-badge" [ngClass]="curveClass()">{{ curveLetter() }}</span>
@@ -62,40 +224,46 @@
       }
     </section>
 
-    <section class="info-card">
-      <h2>Cadastro</h2>
-      <dl>
-        <div><dt>Codigo</dt><dd>{{ product?.CODPRD || 'N/A' }}</dd></div>
-        <div><dt>Grupo</dt><dd>{{ product?.DESC_GRUPO || 'N/A' }}</dd></div>
-        <div><dt>Fabricante</dt><dd>{{ product?.DESC_FABRICANTE || 'N/A' }}</dd></div>
-        <div><dt>Unidade</dt><dd>{{ product?.UNIDADE || 'N/A' }}</dd></div>
-      </dl>
-    </section>
+    <ion-button class="info-toggle" fill="outline" size="small" (click)="toggleMoreInfo()">
+      {{ showMoreInfo ? 'Ocultar informacoes' : 'Exibir informacoes' }}
+    </ion-button>
 
-    <section class="info-card">
-      <h2>Localizacao</h2>
-      <dl>
-        <div><dt>Deposito</dt><dd>{{ product?.DEPOSITO || 'N/A' }}</dd></div>
-        <div><dt>Prateleira</dt><dd>{{ product?.PRATELEIRA || 'N/A' }}</dd></div>
-      </dl>
-    </section>
-
-    <section class="info-card">
-      <h2>Fiscal</h2>
-      <dl>
-        <div><dt>NCM</dt><dd>{{ product?.CODCLAS || 'N/A' }}</dd></div>
-        <div><dt>CEST</dt><dd>{{ product?.CEST || 'N/A' }}</dd></div>
-      </dl>
-    </section>
-
-    @if (xConfig?.admin) {
+    @if (showMoreInfo) {
       <section class="info-card">
-        <h2>Custos</h2>
+        <h2>Cadastro</h2>
         <dl>
-          <div><dt>Custo unitario</dt><dd>{{ product?.CUSTOUNITARIO | currency : 'BRL' }}</dd></div>
-          <div><dt>Ponto equilibrio</dt><dd>{{ product?.PONTOEQ | currency : 'BRL' }}</dd></div>
+          <div><dt>Codigo</dt><dd>{{ product?.CODPRD || 'N/A' }}</dd></div>
+          <div><dt>Grupo</dt><dd>{{ product?.DESC_GRUPO || 'N/A' }}</dd></div>
+          <div><dt>Fabricante</dt><dd>{{ product?.DESC_FABRICANTE || 'N/A' }}</dd></div>
+          <div><dt>Unidade</dt><dd>{{ product?.UNIDADE || 'N/A' }}</dd></div>
         </dl>
       </section>
+
+      <section class="info-card">
+        <h2>Localizacao</h2>
+        <dl>
+          <div><dt>Deposito</dt><dd>{{ product?.DEPOSITO || 'N/A' }}</dd></div>
+          <div><dt>Prateleira</dt><dd>{{ product?.PRATELEIRA || 'N/A' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="info-card">
+        <h2>Fiscal</h2>
+        <dl>
+          <div><dt>NCM</dt><dd>{{ product?.CODCLAS || 'N/A' }}</dd></div>
+          <div><dt>CEST</dt><dd>{{ product?.CEST || 'N/A' }}</dd></div>
+        </dl>
+      </section>
+
+      @if (canEditSensitive()) {
+        <section class="info-card">
+          <h2>Custos</h2>
+          <dl>
+            <div><dt>Custo unitario</dt><dd>{{ product?.CUSTOUNITARIO | currency : 'BRL' }}</dd></div>
+            <div><dt>Ponto equilibrio</dt><dd>{{ product?.PONTOEQ | currency : 'BRL' }}</dd></div>
+          </dl>
+        </section>
+      }
     }
   </main>
 </ion-content>

@@ -50,10 +50,12 @@
           <ion-item>
             <ion-input
               #qtdInput
-              [ngModel]="product_selected?.QUANTIDADE"
-              (ionChange)="incrementQtd(product_selected, qtdInput.value, 1)"
+              [value]="formatDecimalInput(product_selected?.QUANTIDADE)"
+              (ionInput)="sanitizeDecimalInput($event)"
+              (ionBlur)="incrementQtd(product_selected, qtdInput.value, 1)"
               class="text-center"
-              type="number"
+              inputmode="decimal"
+              type="text"
               placeholder="000"
             ></ion-input>
           </ion-item>
@@ -66,7 +68,7 @@
           }
         </div>
       </div>
-      } @else {
+      } @else if (typeModal === 2) {
       <div class="d-flex flex-column w-100 p-2 gap-2">
         <div
           class="d-flex flex-row w-100 gap-3 align-items-center mt-3 justify-content-center"
@@ -92,10 +94,12 @@
           <ion-item>
             <ion-input
               #descInput
-              [ngModel]="order.VALORDESC.toFixed(4)"
-              (ionChange)="incrementDiscount(descInput.value)"
+              [value]="formatDecimalInput(order.VALORDESC, 4)"
+              (ionInput)="sanitizeDecimalInput($event)"
+              (ionBlur)="incrementDiscount(descInput.value, 1)"
               class="text-center"
-              type="number"
+              inputmode="decimal"
+              type="text"
               placeholder="000"
             ></ion-input>
           </ion-item>
@@ -106,10 +110,12 @@
           <ion-item>
             <ion-input
               #descInput2
-              [ngModel]="order.PERCENTUALDESC.toFixed(2)"
-              (ionChange)="incrementDiscount(descInput2.value)"
+              [value]="formatDecimalInput(order.PERCENTUALDESC, 2)"
+              (ionInput)="sanitizeDecimalInput($event)"
+              (ionBlur)="incrementDiscount(descInput2.value, 3)"
               class="text-center"
-              type="number"
+              inputmode="decimal"
+              type="text"
               placeholder="000"
             ></ion-input>
           </ion-item>
@@ -118,6 +124,28 @@
           >
           }
         </div>
+      </div>
+      } @else {
+      <div class="d-flex flex-column w-100 p-3 gap-3">
+        <div class="text-center mt-2">
+          <h6 class="mb-1">Editar preco do produto</h6>
+          <p class="mb-0 small text-muted">{{ product_selected?.CODPRD }} - {{ product_selected?.NOMEFANTASIA }}</p>
+        </div>
+
+        <ion-item>
+          <ion-input
+            #priceInput
+            [value]="formatDecimalInput(product_selected?.PRECOUNITARIO || product_selected?.PRECO2 || 0, 4)"
+            (ionInput)="sanitizeDecimalInput($event)"
+            (ionBlur)="updateProductPrice(priceInput.value)"
+            class="text-center"
+            inputmode="decimal"
+            type="text"
+            placeholder="0,00"
+          ></ion-input>
+        </ion-item>
+
+        <ion-button color="primary" (click)="isOpenModal = false">Confirmar preco</ion-button>
       </div>
       }
     </ng-template>
@@ -468,7 +496,11 @@
         </p>
 
         <div class="w-100 d-flex flex-row mb-2 gap-2">
-          <div class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column">
+          <div
+            class="metric-box w-50 rounded shadow-sm p-1 d-flex flex-column"
+            [class.can-edit]="canEditProductPrice()"
+            (click)="openModalQtdDesc(product, 3)"
+          >
             <p
               style="font-size: 0.7rem"
               class="w-100 text-center mb-0 text-black"

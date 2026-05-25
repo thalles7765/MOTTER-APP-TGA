@@ -1,0 +1,115 @@
+.config-toolbar {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .45rem .7rem;
+
+  img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
+  }
+}
+
+.config-shell {
+  min-height: 100%;
+  padding: 1rem;
+  background:
+    linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), .12), rgba(var(--ion-color-secondary-rgb), .08)),
+    var(--ion-background-color);
+}
+
+.config-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  box-shadow: 0 18px 35px rgba(15, 23, 42, .18);
+
+  span {
+    display: block;
+    font-size: .76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    opacity: .78;
+  }
+
+  h1 {
+    margin: .2rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 900;
+  }
+}
+
+.config-card {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(var(--ion-color-primary-rgb), .16);
+  border-radius: 8px;
+  background: var(--ion-card-background, #fff);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+}
+
+.section-title {
+  margin-bottom: .85rem;
+
+  h2 {
+    margin: 0;
+    color: var(--ion-text-color);
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: .15rem 0 0;
+    color: var(--ion-color-medium);
+    font-size: .82rem;
+  }
+}
+
+.config-field,
+.toggle-field {
+  --background: rgba(var(--ion-color-primary-rgb), .06);
+  --border-radius: 8px;
+  --padding-start: .75rem;
+  --inner-padding-end: .75rem;
+  margin-bottom: .65rem;
+  color: var(--ion-text-color);
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: .75rem;
+}
+
+.price-config {
+  padding: .65rem;
+  border-radius: 8px;
+  background: rgba(var(--ion-color-secondary-rgb), .05);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .75rem;
+  padding-bottom: 1rem;
+}
+
+:host-context(body.app-theme-dark) .config-card {
+  background: #172237;
+  border-color: rgba(255, 255, 255, .12);
+}
+
+:host-context(body.app-theme-dark) .config-field,
+:host-context(body.app-theme-dark) .toggle-field {
+  --background: rgba(255, 255, 255, .08);
+}

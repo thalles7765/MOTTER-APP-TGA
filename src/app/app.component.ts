@@ -10,6 +10,7 @@ import { brandConfig } from './branding/brand-config';
 import { SecurityService } from './services/security/security.service';
 import { Subscription } from 'rxjs';
 import { NotificationService } from './services/notifications/notification.service';
+import { ConfigService } from './services/config/config.service';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ export class AppComponent implements OnDestroy {
     { title: 'Produtos', url: '/app/products', icon: 'qr-code' },
     { title: 'Clientes', url: '/app/clients', icon: 'people' },
     { title: 'Movimentos', url: '/app/orders', icon: 'bag' },
+    { title: 'Configuracoes', url: '/app/config', icon: 'settings', adminOnly: true },
     // { title: 'Antrisia (I.A)', url: '/app/antrisia', icon: 'bulb' },
     // { title: 'Configurações', url: '/app/config', icon: 'settings' },
     { title: 'Permissões', url: '/app/user-permissions', icon: 'shield-checkmark', adminOnly: true },
@@ -50,10 +52,14 @@ export class AppComponent implements OnDestroy {
     private authSvc: AuthService,
     private securitySvc: SecurityService,
     private notificationSvc: NotificationService,
+    private configSvc: ConfigService,
     private router: Router,
     private menuCtrl: MenuController
   ) {
     applyBrandTheme(this.brand);
+    this.configSvc.getData().catch((error) => {
+      console.log('Nao foi possivel carregar as configuracoes do sistema.', error);
+    });
     this.authSvc.currentUser$.subscribe((user) => {
       this.isAdmin = this.toBoolean(user?.admin);
       this.currentUserName = this.getUserDisplayName(user);

@@ -151,11 +151,10 @@
             <button
               type="button"
               class="price"
-              [class.has-branch-prices]="hasBranchPrices(xProduct)"
               (pointerdown)="$event.stopPropagation()"
-              (click)="openPriceBranches(xProduct, $event)"
             >
-              {{ effectivePrice(xProduct) | currency : 'BRL' }}
+              <small class="p-1">{{ effectivePriceLabel(xProduct) }}</small>
+              <b>{{ effectivePrice(xProduct) | currency : 'BRL' }}</b>
             </button>
 
             @if (status_modal === 1) {

@@ -23,7 +23,7 @@ export class NotificationService {
   ) { }
 
   async registerAdminDevice(user: app_user | null) {
-    if (!this.isNativePlatform() || !user || !this.isAdmin(user) || this.registrationInProgress) {
+    if (!this.isPushEnabled() || !this.isNativePlatform() || !user || !this.isAdmin(user) || this.registrationInProgress) {
       return;
     }
 
@@ -47,7 +47,7 @@ export class NotificationService {
   }
 
   async unregisterCurrentToken() {
-    if (!this.isNativePlatform()) {
+    if (!this.isPushEnabled() || !this.isNativePlatform()) {
       return;
     }
 
@@ -145,6 +145,10 @@ export class NotificationService {
 
   private isNativePlatform() {
     return Capacitor.isNativePlatform();
+  }
+
+  private isPushEnabled() {
+    return Boolean((environment as any).pushNotificationsEnabled);
   }
 
   private isAdmin(user: app_user | null) {

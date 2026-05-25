@@ -9,4 +9,8 @@ export interface movements_type {
     CODCPG: string; 
     CODCCUSTO: string; 
     INATIVO: string; 
+    QUALPRECO?: number | string | null;
+    EDICAOPRECO?: 'T' | 'F' | boolean | number | string | null;
+    qualpreco?: number | string | null;
+    edicaopreco?: 'T' | 'F' | boolean | number | string | null;
 }

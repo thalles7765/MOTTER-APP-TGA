@@ -4,22 +4,37 @@ Aplicativo Ionic/Angular com Capacitor e flavors Android por empresa.
 
 ## Requisitos
 
-- Node.js instalado
-- Java 17 configurado no ambiente
-- Android SDK/Gradle funcionando
+- Node.js 22 ou superior. Ambiente atual validado com Node.js 24.15.0.
+- JDK 21 LTS configurado no ambiente.
+- Android SDK instalado com API 36.
+- Gradle wrapper do projeto. Nao instale Gradle global manualmente para este app.
 - Dependencias instaladas com:
 
 ```powershell
 npm install
 ```
 
-O projeto usa um patch local para manter os plugins Capacitor compatíveis com Java 17:
+Configure `JAVA_HOME` apontando para a pasta raiz do JDK 21, por exemplo:
 
-```powershell
-npm run patch:android-java17
+```text
+C:\Program Files\Microsoft\jdk-21.0.10.7-hotspot
 ```
 
-Esse patch tambem roda automaticamente no `postinstall` e durante o `sync:android`.
+No `Path`, mantenha `%JAVA_HOME%\bin` antes de atalhos antigos do Java, principalmente antes de:
+
+```text
+C:\Program Files\Common Files\Oracle\Java\javapath
+```
+
+Valide o ambiente:
+
+```powershell
+node -v
+npm.cmd -v
+java -version
+npm run check:jdk21
+android\gradlew.bat -p android --version
+```
 
 ## Rodar Em Desenvolvimento
 
@@ -61,33 +76,11 @@ npm run start:medianeira -- --host 0.0.0.0 --port 4201
 
 ## Build Web Por Flavor
 
-Medianeira:
-
 ```powershell
 npm run build:medianeira
-```
-
-RobertoPF:
-
-```powershell
 npm run build:robertopf
-```
-
-Mercandressa:
-
-```powershell
 npm run build:mercandressa
-```
-
-Hafam:
-
-```powershell
 npm run build:hafam
-```
-
-Eletro Heloy:
-
-```powershell
 npm run build:eletroheloy
 ```
 
@@ -99,13 +92,39 @@ Depois de alterar assets, plugins, configuracoes do Capacitor ou flavors:
 npm run sync:android
 ```
 
-Esse comando executa:
+Esse comando valida o JDK 21 e depois executa:
 
 ```powershell
-npm run patch:android-java17
 npx cap sync android
-npm run patch:android-java17
 ```
+
+## Versionamento Debug Android
+
+Todo comando `npm run android:<flavor>` incrementa automaticamente a versao em `android/app/build.gradle` antes de gerar o APK debug.
+
+Campos atualizados:
+
+```text
+versionCode = codigo interno usado pelo Android para aceitar atualizacao
+versionName = versao visivel, no formato 1.0.<versionCode>
+```
+
+Isso garante que o APK debug novo possa atualizar o app ja instalado no aparelho quando o `applicationId` do flavor for o mesmo.
+
+Exemplos:
+
+```powershell
+npm run android:robertopf
+npm run android:medianeira
+```
+
+Se voce gerar o APK manualmente direto pelo Gradle, rode primeiro:
+
+```powershell
+npm run version:android-debug -- robertopf
+```
+
+Depois siga com o build web, sync e Gradle. Sem aumentar o `versionCode`, o Android pode recusar a instalacao por cima ou manter uma versao anterior.
 
 ## Gerar APK Debug
 
@@ -174,6 +193,7 @@ android/app/build/outputs/apk/eletroheloy/debug/app-eletroheloy-debug.apk
 Quando precisar rodar passo a passo:
 
 ```powershell
+npm run version:android-debug -- robertopf
 npm run build:robertopf
 npm run sync:android
 cd android

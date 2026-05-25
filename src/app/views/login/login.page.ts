@@ -11,8 +11,6 @@ import { brandConfig } from 'src/app/branding/brand-config';
 import { BranchService } from 'src/app/services/branches/branch.service';
 import { BranchSelectComponent, BranchSelectionResult } from '../branch-select/branch-select.component';
 import { branch } from 'src/app/interfaces/branch';
-import { Capacitor } from '@capacitor/core';
-import { PushNotifications } from '@capacitor/push-notifications';
 
 @Component({
 	selector: 'app-login',
@@ -50,19 +48,6 @@ export class LoginPage implements OnInit {
 		this.menuCtrl.enable(false, 'menuOpt');
 
 		this.getDataStorage();
-		this.requestLoginPermissions();
-	}
-
-	private async requestLoginPermissions() {
-		if (!Capacitor.isNativePlatform()) {
-			return;
-		}
-
-		try {
-			await PushNotifications.requestPermissions();
-		} catch (error) {
-			console.log('Nao foi possivel solicitar permissao de notificacao no login.', error);
-		}
 	}
 
 	async setDataStorage() {
@@ -97,12 +82,12 @@ export class LoginPage implements OnInit {
 			// console.log(login.data)
 			if (!login.data.data.error) {
 				const userData = this.extractUserData(login.data.data);
-				await this.auth.setCurrentUser(userData);
 				await loading.dismiss();
 
 				const branchWasSelected = await this.resolveBranchSelection(userData);
 
 				if (branchWasSelected) {
+					await this.auth.setCurrentUser(userData);
 					this.router.navigateByUrl('/app/home')
 				}
 			} else {

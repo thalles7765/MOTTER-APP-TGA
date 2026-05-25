@@ -32,11 +32,10 @@ export class AuthService {
         "username": user,
         "password": password
       }, { withCredentials: true })
-      .then(async (data) => {
+      .then((data) => {
         // this.ROUTES = data.data.data;
         // console.log('@@###')
         // console.log(data.data)
-        await this.setCurrentUser(data.data?.data || null);
         return data
       });
   }
@@ -161,6 +160,8 @@ export class AuthService {
       clients: this.toBoolean(user.clients),
       products: this.toBoolean(user.products),
       movements: this.toBoolean(user.movements),
+      edit_client: this.toBoolean(user.edit_client ?? user.EDIT_CLIENT),
+      edit_product: this.toBoolean(user.edit_product ?? user.EDIT_PRODUCT),
       active: user.active === undefined ? true : this.toBoolean(user.active),
       default_branch: user.default_branch,
       select_branch: this.toBoolean(user.select_branch),
@@ -188,7 +189,7 @@ export class AuthService {
   }
 
   private hasPermissionFields(user: any) {
-    return ['admin', 'clients', 'products', 'movements', 'active'].every((field) =>
+    return ['admin', 'clients', 'products', 'movements', 'edit_client', 'edit_product', 'active'].every((field) =>
       Object.prototype.hasOwnProperty.call(user, field)
     );
   }
@@ -210,7 +211,8 @@ export class AuthService {
   }
 
   private toBoolean(value: any) {
-    return value === true || value === 1 || value === '1' || value === 'true';
+    const normalized = String(value ?? '').trim().toUpperCase();
+    return value === true || value === 1 || normalized === '1' || normalized === 'TRUE' || normalized === 'T' || normalized === 'S';
   }
 
 }
