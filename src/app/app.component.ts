@@ -66,10 +66,12 @@ export class AppComponent implements OnDestroy {
       this.currentUserName = this.getUserDisplayName(user);
 
       if (this.isAdmin) {
-        this.loadPendingSecurityRequests();
-        this.notificationSvc.registerAdminDevice(user).catch((error) => {
-          console.log('Nao foi possivel registrar notificacao do administrador.', error);
-        });
+        window.setTimeout(() => {
+          this.loadPendingSecurityRequests();
+          this.notificationSvc.registerAdminDevice(user).catch((error) => {
+            console.log('Nao foi possivel registrar notificacao do administrador.', error);
+          });
+        }, 1200);
       } else {
         this.pendingSecurityRequests = 0;
         this.notificationSvc.unregisterCurrentToken().catch((error) => {
