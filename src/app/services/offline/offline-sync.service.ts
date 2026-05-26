@@ -16,6 +16,29 @@ export type SyncState = {
   lastError?: string | null;
 };
 
+export type SyncStats = {
+  products: number;
+  clients: number;
+  orders: number;
+  pending: number;
+  lastSync: string | null;
+  lastDurationMs: number | null;
+  nextSync: string | null;
+  lastSummary: SyncSummary | null;
+};
+
+export type SyncSummary = {
+  products?: number;
+  clients?: number;
+  orders?: number;
+  pending?: number;
+  durationMs?: number;
+  startedAt?: string;
+  finishedAt?: string;
+};
+
+const syncIntervalMs = 24 * 60 * 60 * 1000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,13 +56,7 @@ export class OfflineSyncService {
     private clientSvc: ClientService,
     private productSvc: ProductService,
     private ordersSvc: OrdersService
-  ) {
-    this.networkSvc.online$.subscribe((online) => {
-      if (online) {
-        this.pendingQueue.sendAll().catch((error) => console.log('Falha no envio automatico offline.', error));
-      }
-    });
-  }
+  ) { }
 
   get state() {
     return this.stateSubject.value;
@@ -50,6 +67,7 @@ export class OfflineSyncService {
       throw new Error('Sem conexao para sincronizar.');
     }
 
+    const startedAt = Date.now();
     this.setState('Iniciando sincronizacao...');
 
     try {
@@ -89,7 +107,19 @@ export class OfflineSyncService {
       this.setState('Enviando pendencias');
       await this.pendingQueue.sendAll();
 
-      await this.offlineDb.setMeta('last_full_sync', new Date().toISOString());
+      const finishedAt = new Date();
+      const durationMs = Date.now() - startedAt;
+      const stats = await this.offlineDb.stats();
+      await this.offlineDb.setMeta('last_full_sync', finishedAt.toISOString());
+      await this.offlineDb.setMeta('last_full_sync_summary', {
+        products: stats.products,
+        clients: stats.clients,
+        orders: stats.orders,
+        pending: stats.pending,
+        durationMs,
+        startedAt: new Date(startedAt).toISOString(),
+        finishedAt: finishedAt.toISOString(),
+      });
       this.stateSubject.next({ running: false, step: 'Sincronizacao concluida', lastError: null });
     } catch (error: any) {
       this.stateSubject.next({ running: false, step: 'Erro na sincronizacao', lastError: error?.message || String(error) });
@@ -98,7 +128,38 @@ export class OfflineSyncService {
   }
 
   async stats() {
-    return this.offlineDb.stats();
+    const stats = await this.offlineDb.stats();
+    const summary = await this.offlineDb.getMeta<SyncSummary>('last_full_sync_summary');
+    const lastSync = stats.lastSync;
+    const nextSync = lastSync ? new Date(new Date(lastSync).getTime() + syncIntervalMs).toISOString() : null;
+
+    return {
+      ...stats,
+      lastDurationMs: Number(summary?.durationMs || 0) || null,
+      nextSync,
+      lastSummary: summary || null,
+    } as SyncStats;
+  }
+
+  async runScheduledSyncIfNeeded() {
+    const stats = await this.stats();
+    const now = Date.now();
+    const lastSyncTime = stats.lastSync ? new Date(stats.lastSync).getTime() : 0;
+
+    if (this.state.running || (lastSyncTime && now - lastSyncTime < syncIntervalMs)) {
+      return false;
+    }
+
+    await this.fullSync();
+    return true;
+  }
+
+  async sendPendingIfOnline() {
+    if (!(await this.networkSvc.refreshStatus())) {
+      return { sent: 0, failed: 0 };
+    }
+
+    return this.pendingQueue.sendAll();
   }
 
   private setState(step: string) {

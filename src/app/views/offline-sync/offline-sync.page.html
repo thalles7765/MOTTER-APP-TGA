@@ -13,11 +13,19 @@
 
 <ion-content [fullscreen]="true">
   <main class="sync-shell">
+    @if (!offlineModeEnabled) {
+      <section class="empty-card">
+        <h2>Modo offline desativado</h2>
+        <p>Ative o modo offline em Configuracoes para liberar sincronizacao local neste aparelho.</p>
+        <ion-button (click)="goToConfig()">Abrir configuracoes</ion-button>
+      </section>
+    } @else {
     <section class="sync-hero">
       <div>
         <p>{{ online ? 'Online' : 'Offline' }}</p>
         <h1>{{ syncState.running ? syncState.step : 'Dados locais do app' }}</h1>
         <span>Ultima sincronizacao: {{ lastSyncLabel() }}</span>
+        <span>Proxima sincronizacao: {{ nextSyncLabel() }}</span>
       </div>
 
       <div class="status-orb" [class.offline]="!online">
@@ -42,7 +50,24 @@
         <span>Pendencias</span>
         <strong>{{ stats.pending }}</strong>
       </div>
+      <div>
+        <span>Tempo ultimo sync</span>
+        <strong>{{ durationLabel() }}</strong>
+      </div>
     </section>
+
+    @if (stats.lastSummary) {
+      <section class="sync-summary">
+        <div>
+          <span>Inicio</span>
+          <strong>{{ stats.lastSummary.startedAt ? (stats.lastSummary.startedAt | date:'dd/MM/yyyy HH:mm:ss') : '-' }}</strong>
+        </div>
+        <div>
+          <span>Final</span>
+          <strong>{{ stats.lastSummary.finishedAt ? (stats.lastSummary.finishedAt | date:'dd/MM/yyyy HH:mm:ss') : '-' }}</strong>
+        </div>
+      </section>
+    }
 
     <section class="sync-actions">
       <ion-button expand="block" [disabled]="syncState.running || !online" (click)="syncNow()">
@@ -82,5 +107,6 @@
         </article>
       }
     </section>
+    }
   </main>
 </ion-content>

@@ -19,6 +19,8 @@ import {
 } from '@ionic/angular/standalone';
 import { ConfigService, SystemConfig } from 'src/app/services/config/config.service';
 import { brandConfig } from 'src/app/branding/brand-config';
+import { OfflineModeService } from 'src/app/services/offline/offline-mode.service';
+import { OfflineSyncService, SyncStats } from 'src/app/services/offline/offline-sync.service';
 
 @Component({
   selector: 'app-config',
@@ -47,6 +49,8 @@ export class ConfigPage implements OnInit {
   protected config!: SystemConfig;
   protected loading = false;
   protected saving = false;
+  protected offlineModeEnabled = false;
+  protected syncStats: SyncStats | null = null;
 
   protected priceOptions = [
     { value: 1, label: 'Preco 1', descKey: 'descPreco1' as keyof SystemConfig, enabledKey: 'habilitaPreco1' as keyof SystemConfig },
@@ -56,10 +60,17 @@ export class ConfigPage implements OnInit {
     { value: 5, label: 'Preco 5', descKey: 'descPreco5' as keyof SystemConfig, enabledKey: 'habilitaPreco5' as keyof SystemConfig },
   ];
 
-  constructor(private configSvc: ConfigService, private toastCtrl: ToastController) { }
+  constructor(
+    private configSvc: ConfigService,
+    private offlineModeSvc: OfflineModeService,
+    private offlineSyncSvc: OfflineSyncService,
+    private toastCtrl: ToastController
+  ) { }
 
   async ngOnInit() {
     this.config = { ...this.configSvc.currentConfig() };
+    this.offlineModeEnabled = await this.offlineModeSvc.refresh();
+    await this.loadSyncStats();
     await this.getConfig();
   }
 
@@ -112,6 +123,52 @@ export class ConfigPage implements OnInit {
       this.showToast('Nao foi possivel buscar as configuracoes do sistema.', 'danger');
     } finally {
       this.saving = false;
+    }
+  }
+
+  async toggleOfflineMode() {
+    await this.offlineModeSvc.setEnabled(this.offlineModeEnabled);
+    await this.loadSyncStats();
+    this.showToast(
+      this.offlineModeEnabled
+        ? 'Modo offline habilitado neste aparelho.'
+        : 'Modo offline desabilitado neste aparelho.',
+      this.offlineModeEnabled ? 'success' : 'warning'
+    );
+  }
+
+  protected lastSyncLabel() {
+    return this.syncStats?.lastSync ? new Date(this.syncStats.lastSync).toLocaleString('pt-BR') : 'Nunca sincronizado';
+  }
+
+  protected nextSyncLabel() {
+    return this.syncStats?.nextSync ? new Date(this.syncStats.nextSync).toLocaleString('pt-BR') : 'Aguardando primeira sincronizacao';
+  }
+
+  protected durationLabel() {
+    const duration = Number(this.syncStats?.lastDurationMs || 0);
+
+    if (!duration) {
+      return 'Sem historico';
+    }
+
+    const seconds = Math.max(1, Math.round(duration / 1000));
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return minutes > 0 ? `${minutes}min ${remainingSeconds}s` : `${seconds}s`;
+  }
+
+  private async loadSyncStats() {
+    if (!this.offlineModeEnabled) {
+      this.syncStats = null;
+      return;
+    }
+
+    try {
+      this.syncStats = await this.offlineSyncSvc.stats();
+    } catch (error) {
+      this.syncStats = null;
     }
   }
 

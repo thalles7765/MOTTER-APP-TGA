@@ -97,6 +97,35 @@
   background: rgba(var(--ion-color-secondary-rgb), .05);
 }
 
+.offline-sync-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: .6rem;
+  margin-top: .75rem;
+
+  div {
+    display: grid;
+    gap: .2rem;
+    padding: .75rem;
+    border: 1px solid var(--app-soft-border);
+    border-radius: 8px;
+    background: var(--app-soft-bg);
+  }
+
+  span {
+    color: var(--app-muted-text);
+    font-size: .68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: var(--app-card-text);
+    font-size: .82rem;
+    line-height: 1.25;
+  }
+}
+
 .actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

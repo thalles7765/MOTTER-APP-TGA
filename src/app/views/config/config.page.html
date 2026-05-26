@@ -86,6 +86,44 @@
         </ion-item>
       </section>
 
+      <section class="config-card">
+        <div class="section-title">
+          <h2>Modo offline</h2>
+          <p>Quando ativo, o app libera o menu de sincronizacao e mantem dados locais neste aparelho.</p>
+        </div>
+
+        <ion-item lines="none" class="toggle-field">
+          <ion-toggle [(ngModel)]="offlineModeEnabled" (ionChange)="toggleOfflineMode()">
+            Trabalhar online/offline
+          </ion-toggle>
+        </ion-item>
+
+        @if (offlineModeEnabled) {
+          <div class="offline-sync-status">
+            <div>
+              <span>Ultima sincronizacao</span>
+              <strong>{{ lastSyncLabel() }}</strong>
+            </div>
+            <div>
+              <span>Proxima sincronizacao</span>
+              <strong>{{ nextSyncLabel() }}</strong>
+            </div>
+            <div>
+              <span>Tempo levado</span>
+              <strong>{{ durationLabel() }}</strong>
+            </div>
+            <div>
+              <span>Registros locais</span>
+              <strong>
+                P {{ syncStats?.products || 0 }} |
+                C {{ syncStats?.clients || 0 }} |
+                M {{ syncStats?.orders || 0 }}
+              </strong>
+            </div>
+          </div>
+        }
+      </section>
+
       <section class="actions">
         <ion-button fill="outline" color="secondary" [disabled]="saving || loading" (click)="syncConfig()">
           Buscar config do sistema

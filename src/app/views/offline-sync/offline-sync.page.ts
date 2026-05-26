@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IonButton, IonButtons, IonContent, IonHeader, IonMenuButton, IonTitle, IonToolbar, ToastController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { brandConfig } from 'src/app/branding/brand-config';
 import { NetworkService } from 'src/app/services/offline/network.service';
-import { OfflineSyncService, SyncState } from 'src/app/services/offline/offline-sync.service';
+import { OfflineSyncService, SyncState, SyncStats } from 'src/app/services/offline/offline-sync.service';
 import { PendingMutation } from 'src/app/services/offline/offline-database.service';
 import { PendingQueueService } from 'src/app/services/offline/pending-queue.service';
+import { OfflineModeService } from 'src/app/services/offline/offline-mode.service';
 
 @Component({
   selector: 'app-offline-sync',
@@ -19,21 +21,34 @@ import { PendingQueueService } from 'src/app/services/offline/pending-queue.serv
 export class OfflineSyncPage implements OnInit, OnDestroy {
   protected brand = brandConfig;
   protected online = true;
+  protected offlineModeEnabled = false;
   protected syncState: SyncState = { running: false, step: '' };
-  protected stats = { products: 0, clients: 0, orders: 0, pending: 0, lastSync: null as string | null };
+  protected stats: SyncStats = {
+    products: 0,
+    clients: 0,
+    orders: 0,
+    pending: 0,
+    lastSync: null,
+    lastDurationMs: null,
+    nextSync: null,
+    lastSummary: null,
+  };
   protected pending: PendingMutation[] = [];
   private subscriptions: Subscription[] = [];
 
   constructor(
     private networkSvc: NetworkService,
+    private offlineModeSvc: OfflineModeService,
     private syncSvc: OfflineSyncService,
     private pendingQueue: PendingQueueService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private router: Router
   ) { }
 
   async ngOnInit() {
     this.subscriptions.push(
       this.networkSvc.online$.subscribe((online) => this.online = online),
+      this.offlineModeSvc.enabled$.subscribe((enabled) => this.offlineModeEnabled = enabled),
       this.syncSvc.state$.subscribe((state) => this.syncState = state)
     );
     await this.refresh();
@@ -41,6 +56,12 @@ export class OfflineSyncPage implements OnInit, OnDestroy {
 
   async refresh() {
     this.online = await this.networkSvc.refreshStatus();
+    this.offlineModeEnabled = await this.offlineModeSvc.refresh();
+
+    if (!this.offlineModeEnabled) {
+      return;
+    }
+
     this.stats = await this.syncSvc.stats();
     this.pending = await this.pendingQueue.list(['pending', 'sending', 'error']);
   }
@@ -81,6 +102,28 @@ export class OfflineSyncPage implements OnInit, OnDestroy {
 
   protected lastSyncLabel() {
     return this.stats.lastSync ? new Date(this.stats.lastSync).toLocaleString('pt-BR') : 'Nunca sincronizado';
+  }
+
+  protected nextSyncLabel() {
+    return this.stats.nextSync ? new Date(this.stats.nextSync).toLocaleString('pt-BR') : 'Aguardando primeira sincronizacao';
+  }
+
+  protected durationLabel() {
+    const duration = Number(this.stats.lastDurationMs || 0);
+
+    if (!duration) {
+      return 'Sem historico';
+    }
+
+    const seconds = Math.max(1, Math.round(duration / 1000));
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return minutes > 0 ? `${minutes}min ${remainingSeconds}s` : `${seconds}s`;
+  }
+
+  protected goToConfig() {
+    this.router.navigateByUrl('/app/config');
   }
 
   ngOnDestroy() {

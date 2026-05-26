@@ -1,9 +1,28 @@
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Injector, OnDestroy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AlertController, MenuController, IonApp, IonSplitPane, IonMenu, IonContent, IonList, IonListHeader, IonNote, IonMenuToggle, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonRouterLink } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp } from 'ionicons/icons';
+import {
+  bagOutline,
+  bagSharp,
+  homeOutline,
+  homeSharp,
+  lockOpenOutline,
+  lockOpenSharp,
+  logInOutline,
+  logInSharp,
+  peopleOutline,
+  peopleSharp,
+  qrCodeOutline,
+  qrCodeSharp,
+  settingsOutline,
+  settingsSharp,
+  shieldCheckmarkOutline,
+  shieldCheckmarkSharp,
+  syncOutline,
+  syncSharp,
+} from 'ionicons/icons';
 import { AuthService } from './services/auth/auth.service';
 import { applyBrandTheme } from './branding/apply-brand-theme';
 import { brandConfig } from './branding/brand-config';
@@ -11,6 +30,7 @@ import { SecurityService } from './services/security/security.service';
 import { Subscription } from 'rxjs';
 import { NotificationService } from './services/notifications/notification.service';
 import { ConfigService } from './services/config/config.service';
+import { OfflineModeService } from './services/offline/offline-mode.service';
 
 @Component({
   selector: 'app-root',
@@ -21,10 +41,13 @@ import { ConfigService } from './services/config/config.service';
 export class AppComponent implements OnDestroy {
   public brand = brandConfig;
   public isAdmin = false;
+  public offlineModeEnabled = false;
   public currentUserName = '';
   public pendingSecurityRequests = 0;
   private securityRefreshInterval?: number;
+  private offlineSyncInterval?: number;
   private securityRequestsChangedSub?: Subscription;
+  private offlineModeSub?: Subscription;
 
   public appPages = [
     { title: 'Início', url: '/app/home', icon: 'home' },
@@ -32,7 +55,7 @@ export class AppComponent implements OnDestroy {
     { title: 'Produtos', url: '/app/products', icon: 'qr-code' },
     { title: 'Clientes', url: '/app/clients', icon: 'people' },
     { title: 'Movimentos', url: '/app/orders', icon: 'bag' },
-    { title: 'Sincronizacao', url: '/app/offline-sync', icon: 'sync' },
+    { title: 'Sincronizacao', url: '/app/offline-sync', icon: 'sync', offlineOnly: true },
     { title: 'Configuracoes', url: '/app/config', icon: 'settings', adminOnly: true },
     // { title: 'Antrisia (I.A)', url: '/app/antrisia', icon: 'bulb' },
     // { title: 'Configurações', url: '/app/config', icon: 'settings' },
@@ -44,19 +67,37 @@ export class AppComponent implements OnDestroy {
   ];
 
 
-  // constructor() {
-  // addIcons({ mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, heartOutline, heartSharp, archiveOutline, archiveSharp, trashOutline, trashSharp, warningOutline, warningSharp, bookmarkOutline, bookmarkSharp });
-  // }
-
   constructor(
+    private injector: Injector,
     private alertController: AlertController,
     private authSvc: AuthService,
     private securitySvc: SecurityService,
     private notificationSvc: NotificationService,
     private configSvc: ConfigService,
+    private offlineModeSvc: OfflineModeService,
     private router: Router,
     private menuCtrl: MenuController
   ) {
+    addIcons({
+      bagOutline,
+      bagSharp,
+      homeOutline,
+      homeSharp,
+      lockOpenOutline,
+      lockOpenSharp,
+      logInOutline,
+      logInSharp,
+      peopleOutline,
+      peopleSharp,
+      qrCodeOutline,
+      qrCodeSharp,
+      settingsOutline,
+      settingsSharp,
+      shieldCheckmarkOutline,
+      shieldCheckmarkSharp,
+      syncOutline,
+      syncSharp,
+    });
     applyBrandTheme(this.brand);
     this.configSvc.getData().catch((error) => {
       console.log('Nao foi possivel carregar as configuracoes do sistema.', error);
@@ -80,6 +121,10 @@ export class AppComponent implements OnDestroy {
       }
     });
     this.authSvc.getCurrentUser();
+    this.offlineModeSub = this.offlineModeSvc.enabled$.subscribe((enabled) => {
+      this.offlineModeEnabled = enabled;
+      this.configureOfflineSchedule(enabled);
+    });
     this.securityRequestsChangedSub = this.securitySvc.requestsChanged$.subscribe(() => {
       this.loadPendingSecurityRequests();
     });
@@ -87,7 +132,9 @@ export class AppComponent implements OnDestroy {
   }
 
   get visibleAppPages() {
-    return this.appPages.filter((page) => !page.adminOnly || this.isAdmin);
+    return this.appPages.filter((page) =>
+      (!page.adminOnly || this.isAdmin) && (!page.offlineOnly || this.offlineModeEnabled)
+    );
   }
 
   async handleMenuClick(page: any) {
@@ -141,11 +188,45 @@ export class AppComponent implements OnDestroy {
     }
   }
 
+  private configureOfflineSchedule(enabled: boolean) {
+    if (this.offlineSyncInterval) {
+      window.clearInterval(this.offlineSyncInterval);
+      this.offlineSyncInterval = undefined;
+    }
+
+    if (!enabled) {
+      return;
+    }
+
+    window.setTimeout(() => this.runScheduledOfflineSync(), 2500);
+    this.offlineSyncInterval = window.setInterval(() => this.runScheduledOfflineSync(), 60 * 60 * 1000);
+  }
+
+  private async runScheduledOfflineSync() {
+    if (!this.offlineModeEnabled) {
+      return;
+    }
+
+    try {
+      const { OfflineSyncService } = await import('./services/offline/offline-sync.service');
+      const syncSvc = this.injector.get(OfflineSyncService);
+      await syncSvc.runScheduledSyncIfNeeded();
+      await syncSvc.sendPendingIfOnline();
+    } catch (error) {
+      console.log('Nao foi possivel executar sincronizacao agendada.', error);
+    }
+  }
+
   ngOnDestroy() {
     this.securityRequestsChangedSub?.unsubscribe();
+    this.offlineModeSub?.unsubscribe();
 
     if (this.securityRefreshInterval) {
       window.clearInterval(this.securityRefreshInterval);
+    }
+
+    if (this.offlineSyncInterval) {
+      window.clearInterval(this.offlineSyncInterval);
     }
   }
 
