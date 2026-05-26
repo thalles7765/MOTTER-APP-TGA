@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 export type OfflineRecordType =
   | 'branches'
@@ -56,8 +55,8 @@ const metaKey = 'offline_meta_v1';
   providedIn: 'root'
 })
 export class OfflineDatabaseService {
-  private sqlite = new SQLiteConnection(CapacitorSQLite);
-  private db: SQLiteDBConnection | null = null;
+  private sqlite: any = null;
+  private db: any = null;
   private initPromise: Promise<void> | null = null;
 
   async init() {
@@ -280,6 +279,8 @@ export class OfflineDatabaseService {
     }
 
     try {
+      const sqliteModule = await import('@capacitor-community/sqlite');
+      this.sqlite = this.sqlite || new sqliteModule.SQLiteConnection(sqliteModule.CapacitorSQLite);
       const consistent = await this.sqlite.checkConnectionsConsistency();
 
       if (!consistent.result) {

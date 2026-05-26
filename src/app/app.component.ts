@@ -11,7 +11,6 @@ import { SecurityService } from './services/security/security.service';
 import { Subscription } from 'rxjs';
 import { NotificationService } from './services/notifications/notification.service';
 import { ConfigService } from './services/config/config.service';
-import { OfflineSyncService } from './services/offline/offline-sync.service';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +54,6 @@ export class AppComponent implements OnDestroy {
     private securitySvc: SecurityService,
     private notificationSvc: NotificationService,
     private configSvc: ConfigService,
-    private offlineSyncSvc: OfflineSyncService,
     private router: Router,
     private menuCtrl: MenuController
   ) {
