@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   flavor: "medianeira",
+  tenantCode: "medianeira",
   pushNotificationsEnabled: false,
   appName: "Medianeira App",
   companyName: "Medianeira",

@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   flavor: "mercandressa",
+  tenantCode: "mercandressa",
   pushNotificationsEnabled: false,
   appName: "Mercandressa App",
   companyName: "Mercandressa",
@@ -30,5 +31,5 @@ export const environment = {
     "--app-header-background": "#ffffff",
     "--app-border-color": "#c65a2e"
   },
-  url_api: "http://85.31.63.163:5120/api/v1"
+  url_api: "http://168.231.100.76:5140/api/v1"
 };

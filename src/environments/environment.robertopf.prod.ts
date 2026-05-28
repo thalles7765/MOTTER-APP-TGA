@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   flavor: "robertopf",
+  tenantCode: "robertopf",
   pushNotificationsEnabled: false,
   appName: "Robertopf App",
   companyName: "Roberto Parafusos",

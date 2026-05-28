@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   flavor: "hafam",
+  tenantCode: "hafam",
   pushNotificationsEnabled: false,
   appName: "Hafam App",
   companyName: "Hafam",
@@ -30,5 +31,5 @@ export const environment = {
     "--app-header-background": "#ffffff",
     "--app-border-color": "#1237f4"
   },
-  url_api: "http://168.231.100.76:5120/api/v1"
+  url_api: "http://168.231.100.76:5140/api/v1"
 };

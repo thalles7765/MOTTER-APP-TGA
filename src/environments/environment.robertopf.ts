@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   flavor: "robertopf",
+  tenantCode: "robertopf",
   pushNotificationsEnabled: false,
   appName: "Robertopf App",
   companyName: "Roberto Parafusos",
@@ -30,5 +31,5 @@ export const environment = {
     "--app-header-background": "#ffffff",
     "--app-border-color": "#1f6f5b"
   },
-  url_api: "http://localhost:5130/api/v1"
+  url_api: "http://localhost:5140/api/v1"
 };

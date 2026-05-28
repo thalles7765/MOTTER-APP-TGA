@@ -46,8 +46,6 @@ export class BranchService {
     return axios.put(
       `${environment.url_api}/users/branch`,
       {
-        id: Number(sourceUser.id || sourceUser.ID || 0),
-        codven,
         default_branch: defaultBranch,
         select_branch: Boolean(sourceUser.select_branch || sourceUser.SELECT_BRANCH),
         default_seller: codven,

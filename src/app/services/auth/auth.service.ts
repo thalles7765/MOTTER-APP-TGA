@@ -29,6 +29,7 @@ export class AuthService {
     // console.log(environment.url_api)
     return await axios
       .post(`${environment.url_api}/auth`, {
+        "tenant_code": this.tenantCode(),
         "username": user,
         "password": password
       }, { withCredentials: true })
@@ -56,10 +57,18 @@ export class AuthService {
       .post(`${environment.url_api}/auth/check`, {}, { withCredentials: true })
       .then(async (data: any) => {
         // console.log(data?.data)
-        if (data.data?.data) {
-          await this.setCurrentUser(data.data.data);
+        const response = data?.data || {};
+        const isAuthenticated = response.authenticated !== false && response.error !== true;
+
+        if (!isAuthenticated) {
+          await this.clearCurrentUser();
+          return false;
         }
-        return Boolean(true);
+
+        if (response.data) {
+          await this.setCurrentUser({ ...(await this.readStoredCurrentUser()), ...response.data });
+        }
+        return true;
       }).catch(async (err) => {
         // console.log('56sa1d51as6d16as1d6a1s56d1sa6')
         return false
@@ -149,10 +158,27 @@ export class AuthService {
     await this.getCurrentUser();
   }
 
+  private async readStoredCurrentUser() {
+    const storedUser = await Preferences.get({ key: currentUserKey });
+
+    if (!storedUser.value) {
+      return {};
+    }
+
+    try {
+      return JSON.parse(storedUser.value) || {};
+    } catch {
+      return {};
+    }
+  }
+
   private normalizeUser(user: any): app_user {
     return {
       ...user,
       id: user.id || user.ID,
+      tenant_id: user.tenant_id || user.tenantId || user.TENANT_ID,
+      tenant: user.tenant || user.TENANT || null,
+      fullName: user.fullName || user.full_name || user.FULLNAME || user.NOME,
       user: user.user || user.USER || user.username || user.USERNAME,
       username: user.username || user.USERNAME || user.user || user.USER,
       email: user.email || user.EMAIL,
@@ -213,6 +239,10 @@ export class AuthService {
   private toBoolean(value: any) {
     const normalized = String(value ?? '').trim().toUpperCase();
     return value === true || value === 1 || normalized === '1' || normalized === 'TRUE' || normalized === 'T' || normalized === 'S';
+  }
+
+  private tenantCode() {
+    return String((environment as any).tenantCode || environment.flavor || '').trim();
   }
 
 }

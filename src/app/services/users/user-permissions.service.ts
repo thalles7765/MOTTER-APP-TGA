@@ -16,7 +16,6 @@ export type UserPermissionsPayload = {
 
 export type UserBranchDefaultsPayload = {
   id: number;
-  codven: string | null;
   default_branch: number | null;
   select_branch: boolean;
   default_seller: string | null;
@@ -66,7 +65,6 @@ export class UserPermissionsService {
 
     return {
       id: Number(user.id || user.ID || 0),
-      codven,
       default_branch: Number(user.default_branch || 1),
       select_branch: Boolean(user.select_branch),
       default_seller: codven,

@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 
 export interface SystemConfig {
   id?: number;
+  tenantId?: number;
   precoDefault: number;
   descPreco1: string;
   descPreco2: string;
@@ -79,7 +80,7 @@ export class ConfigService {
     const config = this.normalizeConfig({ ...this.configSubject.value, ...payload });
 
     return await apiClient
-      .put(`${environment.url_api}/configs`, config, { withCredentials: true })
+      .put(`${environment.url_api}/configs`, this.writableConfig(config), { withCredentials: true })
       .then((response) => {
         const updated = this.normalizeConfig(response.data?.data || response.data || config);
         this.setConfig(updated);
@@ -196,6 +197,7 @@ export class ConfigService {
 
     return {
       id: config.id ?? config.ID,
+      tenantId: config.tenantId ?? config.TENANTID ?? config.tenant_id ?? config.TENANT_ID,
       precoDefault: this.numberValue(config.precoDefault ?? config.PRECODEFAULT, defaultConfig.precoDefault),
       descPreco1: String(config.descPreco1 ?? config.DESCPRECO1 ?? defaultConfig.descPreco1),
       descPreco2: String(config.descPreco2 ?? config.DESCPRECO2 ?? defaultConfig.descPreco2),
@@ -209,6 +211,24 @@ export class ConfigService {
       habilitaPreco5: this.booleanValue(config.habilitaPreco5 ?? config.HABILITAPRECO5, defaultConfig.habilitaPreco5),
       habilitaPrecofilial: this.booleanValue(config.habilitaPrecofilial ?? config.HABILITAPRECOFILIAL, defaultConfig.habilitaPrecofilial),
       habilitaSaldofilial: this.booleanValue(config.habilitaSaldofilial ?? config.HABILITASALDOFILIAL, defaultConfig.habilitaSaldofilial),
+    };
+  }
+
+  private writableConfig(config: SystemConfig) {
+    return {
+      precoDefault: config.precoDefault,
+      descPreco1: config.descPreco1,
+      descPreco2: config.descPreco2,
+      descPreco3: config.descPreco3,
+      descPreco4: config.descPreco4,
+      descPreco5: config.descPreco5,
+      habilitaPreco1: config.habilitaPreco1,
+      habilitaPreco2: config.habilitaPreco2,
+      habilitaPreco3: config.habilitaPreco3,
+      habilitaPreco4: config.habilitaPreco4,
+      habilitaPreco5: config.habilitaPreco5,
+      habilitaPrecofilial: config.habilitaPrecofilial,
+      habilitaSaldofilial: config.habilitaSaldofilial,
     };
   }
 

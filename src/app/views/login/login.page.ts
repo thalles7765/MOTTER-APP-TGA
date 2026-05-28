@@ -80,8 +80,8 @@ export class LoginPage implements OnInit {
 		await this.auth.authUser(form.value['username'].toUpperCase(), form.value['password']).then(async (login) => {
 			// console.log('###@@@')
 			// console.log(login.data)
-			if (!login.data.data.error) {
-				const userData = this.extractUserData(login.data.data);
+			if (!this.hasLoginError(login.data)) {
+				const userData = this.extractUserData(login.data);
 				await loading.dismiss();
 
 				const branchWasSelected = await this.resolveBranchSelection(userData);
@@ -92,6 +92,7 @@ export class LoginPage implements OnInit {
 				}
 			} else {
 				await loading.dismiss();
+				await this.showLoginError(login.data?.message || 'verifique suas credenciais e tente novamente.');
 			}
 		}).catch(async (err) => {
 			await loading.dismiss();
@@ -173,7 +174,23 @@ export class LoginPage implements OnInit {
 	}
 
 	private extractUserData(authData: any) {
-		return authData?.data || authData?.DATA || authData;
+		const data = authData?.data || authData?.DATA || authData;
+		return data?.data || data?.DATA || data;
+	}
+
+	private hasLoginError(authData: any) {
+		const data = authData?.data || authData?.DATA || authData;
+		return authData?.error === true || data?.error === true;
+	}
+
+	private async showLoginError(message: string) {
+		const alert = await this.alertController.create({
+			header: 'Login invalido',
+			message,
+			buttons: ['Fechar']
+		});
+
+		await alert.present();
 	}
 
 	private async openBranchSelection(branches: branch[]) {

@@ -9,7 +9,7 @@ export const apiClient = axios.create();
 apiClient.interceptors.request.use(async (config) => {
   const url = config.url || '';
 
-  if (url.includes('/auth') || url.includes('/branches') || url.includes('/security')) {
+  if (url.includes('/auth') || url.includes('/branches') || url.includes('/security') || url.includes('/configs') || url.includes('/users')) {
     return config;
   }
 

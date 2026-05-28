@@ -1,6 +1,13 @@
 export interface app_user {
   id?: number;
   ID?: number;
+  tenant_id?: number;
+  tenant?: {
+    id?: number;
+    code?: string;
+    name?: string;
+  } | null;
+  fullName?: string;
   user?: string;
   USER?: string;
   username?: string;
